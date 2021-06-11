@@ -218,9 +218,9 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
     this[canv].context = this[canv].canvas.getContext( '2d' );
     var smooth = false;
     this[canv].context.imageSmoothingEnabled = smooth;
-    this[canv].context.mozImageSmoothingEnabled = smooth;
+    /*this[canv].context.mozImageSmoothingEnabled = smooth;
     this[canv].context.webkitImageSmoothingEnabled = smooth;
-    this[canv].context.msImageSmoothingEnabled = smooth;
+    this[canv].context.msImageSmoothingEnabled = smooth;*/
     this[canv].context.fillStyle = 'rgb(255,255,255)',
     this[canv].context.fillRect( 0, 0, this[canv].canvas.width, this[canv].canvas.height );
     return true;
