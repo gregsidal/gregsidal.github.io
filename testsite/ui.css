@@ -366,7 +366,7 @@ a.empha:hover {background-color:#dfd; text-decoration:none;}
   .json, .list {min-width: 0;}
   input {margin-bottom:0.1em;}*/
 }
-.thumb {display:block; max-width: 310px;}
+.thumb {display:block; max-width: 270px;}
 .thumb.hires {display: none;}
 .thumbcap {display:block; font-size: 75%;}
 .thumbbox {display:block;}
