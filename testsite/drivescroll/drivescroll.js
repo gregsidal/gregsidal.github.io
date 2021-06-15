@@ -23,7 +23,7 @@ DS.setup = function( id ) {
                                   UI.int(id+'_steplines',1,10000,3), notify );
   DS.addurls( id, DS.defaulturls );
 }
-DS.testfail = 0;
+//DS.testfail = 0;
 DS.testcanvas = function( id ) {
   try {
     var c = document.createElement( 'canvas' );
@@ -33,10 +33,10 @@ DS.testcanvas = function( id ) {
     i.data[0] = 1, i.data[1] = 2, i.data[2] = 3, i.data[3] = 255;
     cx.putImageData( i, 0, 0 );
     i = cx.getImageData( 0, 0, 1, 1 );
-    if (DS.testfail)
+    //if (DS.testfail)
       if (i.data[0] == 1 && i.data[1] == 2 && i.data[2] == 3 && i.data[3] == 255)
         return true;
-    DS.testfail++;
+    //DS.testfail++;
     alert( "Canvas data must be enabled for this browser" );
   }
   catch( e ) {
