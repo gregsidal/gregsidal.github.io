@@ -65,15 +65,16 @@
       }
     </style>
   </head>
+
   <body onload="DS.setup('ds');DS.run('ds');" onresize="DS.resize('ds');" id="ds_back">
+
     <div class="back fix" onclick="DS.toggle()">
       <canvas id="ds_canv" width="900" height="800">
         <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/>
                  Browser released after 2015 recommended (testing performed on Firefox and Chrome)</div>
       </canvas>
     </div>
-    <!--<div class="back cover" onclick="UI.toggle('menubar','controlpane')"></div>
--->
+
     <div class="menubar" id="menubar">
       <div class="open dispnone" id="controlbtn" onclick="DS.toggle();"></div>
     </div>
@@ -91,7 +92,6 @@
       </div>
 
       <div class="gapabove g25">
-        <!--<div tabindex=1 class="nextsmall new dispnone gap" id="ds_runbtn" onclick="DS.run('ds')">Start</div>-->
         <div class="nextsmall symbol unfold" id="ds_pausebtn"
                      onclick="DS.pause('ds');UI.unfold('ds_pausebtn','ds_resumebtn','ds_foldpane')"></div>
         <div class="nextsmall symbol dispnone new" id="ds_resumebtn"
@@ -99,19 +99,18 @@
         &nbsp;&nbsp; <div class="inlinestats" id="ds_stats">demo_drive</div>
       </div>
 
-      <div class="gapabove g25"><div class="descr i maxwid">
-          Beta: May not work on Firefox.  Try Chrome if possible, or if using Tor, 
-          <a href="drivescroll.html" class="tt" download="drivescroll.html" target="_blank">drivescroll.html</a>
-          can be saved to local drive and opened from there
-          (self-contained file, does not download from or connect to internet).
-      </div></div>
-
+      <!--<div class="gapabove g25"><div class="descr i maxwid">
+          If using Tor browser, canvas data must be allowed. Or download
+          <a href=    "drivescroll20210611.html" class="tt" 
+             download="drivescroll20210611.html" target="_blank">drivescroll.html</a>
+             (self-contained) and run from local drive.
+      </div></div>-->
 
       <div id="ds_foldpane" class="gapabove g25 dispnone">
 
-          <div tabindex=1 class="nextsmall" id="ds_openfile" 
+        <div tabindex=1 class="nextsmall" id="ds_openfile" 
                  onclick="UI.el('ds_file').click()">Build drive by adding local files</div>
-          <input type="file" multiple class="dispnone" accept="*" id="ds_file" 
+        <input type="file" multiple class="dispnone" accept="*" id="ds_file" 
                  onchange="DS.addfiles('ds',this.files);"/>
 
         <div class="gapabove g10">
@@ -143,6 +142,7 @@
 
         <div class="gapabove g25"><div class="descr i maxwid">
           Files open in browser (not uploaded to a server).
+          <!--If using secure browser (such as Tor), canvas data must be enabled.-->
           If image flickers, reduce size or use faster computer.
           Note that this is not a visualization of the data, it is the data.
         </div></div>
@@ -151,7 +151,9 @@
 
       <div class="gapabove g25">
         <div class="descr">
-          2001-2021 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc (no derivative NFTs) 
+          2001-2021 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc (no derivative NFTs)
+          <br/><a href=    "drivescroll20210614.html" class="link" 
+             download="drivescroll20210614.html" target="_blank">Self-contained downloadable</a>
           <br/><div class=""><a href="../archive.html#ds">2001 screen-saver</a></div>
         </div>
       </div>
@@ -159,5 +161,3 @@
     </div></div></div>
   </body>
 </html>
-
-

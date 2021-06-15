@@ -23,8 +23,31 @@ DS.setup = function( id ) {
                                   UI.int(id+'_steplines',1,10000,3), notify );
   DS.addurls( id, DS.defaulturls );
 }
+DS.testfail = 0;
+DS.testcanvas = function( id ) {
+  try {
+    var c = document.createElement( 'canvas' );
+    c.width = c.height = 1;
+    var cx = c.getContext( '2d' );
+    var i = cx.getImageData( 0, 0, 1, 1 );
+    i.data[0] = 1, i.data[1] = 2, i.data[2] = 3, i.data[3] = 255;
+    cx.putImageData( i, 0, 0 );
+    i = cx.getImageData( 0, 0, 1, 1 );
+    if (DS.testfail)
+      if (i.data[0] == 1 && i.data[1] == 2 && i.data[2] == 3 && i.data[3] == 255)
+        return true;
+    DS.testfail++;
+    alert( "Canvas data must be enabled for this browser" );
+  }
+  catch( e ) {
+    alert( "Browser lacks support for canvas" );
+  }
+  return false;
+}
 DS.run = function( id ) {
   DS.resize( id );
+  if (!DS.testcanvas( id ))
+    return;
   if (DS.anims[id].start())
     UI.setstyle( id+'_runbtn', 'display', 'none' ),
     UI.setstyle( id+'_pausebtn', 'display', 'inline-block' ),
@@ -41,9 +64,12 @@ DS.setpausectrls = function( id ) {
     UI.el(id+'_pausebtn').innerHTML = 'PAUSE';
 }
 DS.pause = function( id ) {
+  if (!DS.testcanvas( id ))
+    return false;
   DS.setspeed( id );
   DS.anims[id].pause();
   DS.setpausectrls( id );
+  return true;
 }
 DS.ispaused = function( id ) {
   return DS.anims[id].ispaused();
@@ -133,8 +159,7 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
   }
   this.scrollframe = function() {
     var y =  UI.clipnum( this.params.steplines, 1, this.view.canvas.height );
-    var d = this.view.context.getImageData( 0, y, 
-                                     this.view.canvas.width, this.view.canvas.height-y );
+    var d = this.view.context.getImageData( 0, y, this.view.canvas.width, this.view.canvas.height-y );
     this.frame.data.top = d;
     d = this.view.context.getImageData( 0, 0, this.view.canvas.width, y );
     this.frame.data.bottom = d;
@@ -151,7 +176,7 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
       fill[j] = data[i],
       fill[j+1] = data[i+1],
       fill[j+2] = data[i+2],
-      fill[j+3] = 250;
+      fill[j+3] = 255;
     this.file.offset = i;
     this.frame.filloffset = j;
     return j == filllen;
@@ -184,7 +209,7 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
     if (this.nextfile >= files.length)
       this.nextfile = 0;
   }
-  this.timesup = function() {
+  this.timeout = function() {
     var curtime = (new Date()).getTime();
     var deadtime = this.prevtime + this.params.delay;
     var yes = !this.prevtime || (curtime >= deadtime);
@@ -195,7 +220,7 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
   this.onstep = function() {
     if (this.paused)
       return;
-    if (!this.loadinprogress && this.timesup()) {
+    if (!this.loadinprogress && this.timeout()) {
       this.scrollframe();
       this.filldata();
     }
@@ -211,23 +236,21 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
   this.pause = function() {
     this.paused = !this.paused;
     if (!this.paused)
-      window.requestAnimationFrame( DS.nextstep );
+      //window.requestAnimationFrame( DS.nextstep );
+      this.start();
   }
   this.initcanvas = function( canv ) {
     if (!this[canv].canvas) return;
     this[canv].context = this[canv].canvas.getContext( '2d' );
     var smooth = false;
     this[canv].context.imageSmoothingEnabled = smooth;
-    /*this[canv].context.mozImageSmoothingEnabled = smooth;
-    this[canv].context.webkitImageSmoothingEnabled = smooth;
-    this[canv].context.msImageSmoothingEnabled = smooth;*/
-    this[canv].context.fillStyle = 'rgb(255,255,255)',
+    this[canv].context.fillStyle = 'rgb(255,255,255)';
     this[canv].context.fillRect( 0, 0, this[canv].canvas.width, this[canv].canvas.height );
     return true;
   }
   this.start = function() {
     if (!this.view.canvas) return;
-    this.nextfile = 0;
+    //this.nextfile = 0;
     if (this.params.files.length || this.params.urls.length)
       window.requestAnimationFrame( DS.nextstep );
     else
@@ -270,6 +293,7 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
     this.params.files = [];
     this.params.urls.push( u );
   }
+  this.nextfile = 0;
   this.view = {};
   this.params = {metadata:{}, files:[], urls:[]};
   this.frame = {filloffset:0,data:{}};
