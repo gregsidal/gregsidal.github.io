@@ -48,6 +48,32 @@
         UI.toggle( 'menubar', 'controlpane' );
         UI.setstyle( 'controlbtn', 'display', DS.ispaused('ds')?'inline-block':'none' );
       }
+      DS.resumefold = function() {
+        if (!DS.testcanvas( 'ds' ))
+          return false;
+        DS.pause( 'ds' );
+        UI.fold( 'ds_pausebtn', 'ds_resumebtn', 'ds_foldpane' );
+        return true;
+      }
+      DS.pauseunfold = function() {
+        if (!DS.ispaused( 'ds' ))
+          DS.pause( 'ds' );
+        UI.unfold( 'ds_pausebtn', 'ds_resumebtn', 'ds_foldpane' );
+        return true;
+      }
+      DS.onload2 = function() {
+        if (!DS.testcanvas( 'ds' ))
+          return DS.pauseunfold();
+        DS.run( 'ds' );
+        return true;
+      }
+      DS.onload = function() {
+        DS.forcedisallowcanvasdata = false; //true: simulate Tor Browser for testing
+        UI.setstyle( 'ds_canvasdata', 'display', DS.forcedisallowcanvasdata?'block':'none' );
+        DS.setup( 'ds' );
+        DS.resize( 'ds' );
+        setTimeout( 'DS.onload2()', 100 );
+      }
     </script>
     <style>
       body {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
@@ -66,7 +92,7 @@
     </style>
   </head>
 
-  <body onload="DS.setup('ds');DS.run('ds');" onresize="DS.resize('ds');" id="ds_back">
+  <body onload="DS.onload()" onresize="DS.resize('ds');" id="ds_back">
 
     <div class="back fix" onclick="DS.toggle()">
       <canvas id="ds_canv" width="900" height="800">
@@ -93,18 +119,11 @@
 
       <div class="gapabove g25">
         <div class="nextsmall symbol unfold" id="ds_pausebtn"
-                     onclick="DS.pause('ds');UI.unfold('ds_pausebtn','ds_resumebtn','ds_foldpane')"></div>
+                     onclick="DS.pauseunfold()"></div>
         <div class="nextsmall symbol dispnone new" id="ds_resumebtn"
-                     onclick="DS.pause('ds');UI.fold('ds_pausebtn','ds_resumebtn','ds_foldpane')"></div>
+                     onclick="DS.resumefold()"></div>
         &nbsp;&nbsp; <div class="inlinestats" id="ds_stats">demo_drive</div>
       </div>
-
-      <!--<div class="gapabove g25"><div class="descr i maxwid">
-          If using Tor browser, canvas data must be allowed. Or download
-          <a href=    "drivescroll20210611.html" class="tt" 
-             download="drivescroll20210611.html" target="_blank">drivescroll.html</a>
-             (self-contained) and run from local drive.
-      </div></div>-->
 
       <div id="ds_foldpane" class="gapabove g25 dispnone">
 
@@ -142,8 +161,8 @@
 
         <div class="gapabove g25"><div class="descr i maxwid">
           Files open in browser (not uploaded to a server).
-          <!--If using secure browser (such as Tor), canvas data must be enabled.-->
           If image flickers, reduce size or use faster computer.
+          Firefox/Chrome browsers tested.
           Note that this is not a visualization of the data, it is the data.
         </div></div>
 
@@ -152,9 +171,12 @@
       <div class="gapabove g25">
         <div class="descr">
           2001-2021 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc (no derivative NFTs)
-          <br/><a href=    "drivescroll20210614.html" class="link" 
-             download="drivescroll20210614.html" target="_blank">Self-contained downloadable</a>
+          <br/><a href="drivescroll2021.html" download="drivescroll2021.html" 
+                  class="link" target="_blank">Self-contained downloadable</a>
           <br/><div class=""><a href="../archive.html#ds">2001 screen-saver</a></div>
+          <div id="ds_canvasdata" class="gap dispnone">
+            <div class="nextsmall" onclick="DS.togglecanvasdata()">Toggle allow canvas data</div>
+          </div>
         </div>
       </div>
 

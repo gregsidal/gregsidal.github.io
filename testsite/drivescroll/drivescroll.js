@@ -23,31 +23,30 @@ DS.setup = function( id ) {
                                   UI.int(id+'_steplines',1,10000,3), notify );
   DS.addurls( id, DS.defaulturls );
 }
-//DS.testfail = 0;
+DS.forcedisallowcanvasdata = false; //true: simulate Tor Browser for testing
+DS.togglecanvasdata = function() {DS.forcedisallowcanvasdata = !DS.forcedisallowcanvasdata;}
 DS.testcanvas = function( id ) {
   try {
     var c = document.createElement( 'canvas' );
     c.width = c.height = 1;
     var cx = c.getContext( '2d' );
     var i = cx.getImageData( 0, 0, 1, 1 );
-    i.data[0] = 1, i.data[1] = 2, i.data[2] = 3, i.data[3] = 255;
+    i.data[0] = 10, i.data[1] = 20, i.data[2] = 30, i.data[3] = 255;
     cx.putImageData( i, 0, 0 );
     i = cx.getImageData( 0, 0, 1, 1 );
-    //if (DS.testfail)
-      if (i.data[0] == 1 && i.data[1] == 2 && i.data[2] == 3 && i.data[3] == 255)
-        return true;
-    //DS.testfail++;
+    if (DS.forcedisallowcanvasdata)
+      i.data[0] = 255;
+    if (i.data[0] == 10 && i.data[1] == 20 && i.data[2] == 30 && i.data[3] == 255)
+      return true;
     alert( "Canvas data must be enabled for this browser" );
   }
   catch( e ) {
-    alert( "Browser lacks support for canvas" );
+    alert( "Browser lacks full support for canvas" );
   }
   return false;
 }
 DS.run = function( id ) {
-  DS.resize( id );
-  if (!DS.testcanvas( id ))
-    return;
+  //DS.resize( id );
   if (DS.anims[id].start())
     UI.setstyle( id+'_runbtn', 'display', 'none' ),
     UI.setstyle( id+'_pausebtn', 'display', 'inline-block' ),
@@ -64,8 +63,6 @@ DS.setpausectrls = function( id ) {
     UI.el(id+'_pausebtn').innerHTML = 'PAUSE';
 }
 DS.pause = function( id ) {
-  if (!DS.testcanvas( id ))
-    return false;
   DS.setspeed( id );
   DS.anims[id].pause();
   DS.setpausectrls( id );
