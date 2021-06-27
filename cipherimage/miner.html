@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Cipher-Image Miner</title>
+    <meta content="Launch brute-force attack against a Cipher Image" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link rel="stylesheet" type="text/css" href="../ui.css">
+    <script src="../lib/cryptojs/rollups/aes.js"></script>
+    <script src="../lib/cipherimage/cipherimage.js"></script>
+    <script src="cipherimage_ui.js"></script>
+    <script>
+      CI.defaultname = "(open a CipherImage)";
+      CI.defaulturl = "";
+    </script>
+  </head>
+  <body onload="CI.miner.init('ci');CI.setup('ci',CI.defaulturl,CI.defaultname);" id="ci_back">
+
+    <div class="back" onclick="CI.clickback('ci');">
+      <canvas id="ci_canv" width="900" height="800">
+        <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/>
+                 Browser released after 2015 recommended (testing performed on Firefox and Chrome)</div>
+      </canvas>
+    </div>
+
+    <div class="menubar" id="menubar">
+      <div class="open" id="controlbtn" onclick="UI.toggle('menubar','controlpane')"></div>
+    </div>
+
+    <div class="titlebar" id="titlebar">
+      <div><div id="ci_title" class="tt titlesection big"></div></div>
+      <div class="descr" id="ci_subtitle"></div>
+    </div>
+
+    <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
+      <div class="corner">
+        <div class="close" id="controlbtn" onclick="UI.toggle('menubar','controlpane')"></div>
+      </div>
+      <div class="title">
+        Cipher-Image Miner
+      </div>
+      <div class="">
+        <div class="descr">
+          Launch brute-force attack against a Cipher Image
+        </div>
+      </div>
+
+      <div class="gapabove g25 dispnone" id="ci_passvw">
+        <div class="line">
+          Key: <input class="inplong tt" id="ci_pass" value="" readonly></input>
+        </div>
+      </div>
+
+      <div class="line gapabove g25">
+        <div tabindex=1 class="nextsmall openfile" id="ci_openfile" 
+                 onclick="UI.el('ci_file').click()"></div>
+        <input type="file" class="dispnone" accept=".png" id="ci_file" 
+                 onchange="if (this.files[0]) CI.setsrc('ci',this.files[0]);"/>
+        <div class="inlinestats" id="ci_stats">(open a CipherImage)</div>
+      </div>
+
+      <!--<div class="line gap">
+        <div class="nextsmall unfold" id="ci_unfoldbtn"
+                     onclick="UI.unfold('ci_unfoldbtn','ci_foldbtn','ci_foldpane')"></div>
+        <div class="nextsmall dispnone fold" id="ci_foldbtn"
+                     onclick="UI.fold('ci_unfoldbtn','ci_foldbtn','ci_foldpane')"></div>
+      </div>-->
+
+      <div class="gapabove g25 dispnone" id="ci_iscipherimg">
+        <div><div class="inlinestats" id="ci_msg">Image raster is cipher</div></div>
+        <div class="gapmedabove">
+          <div class="line">
+            Key length if known: <input class="inpshort" id="ci_randbytes" value=""></input> (# bytes)
+          </div>
+        </div>
+        <div class="nextsmall gapmedabove" id="ci_minebtn" onclick="CI.miner.start('ci')">Mine</div>
+        <div class="nextsmall gapmedabove dispnone" id="ci_pausebtn" onclick="CI.miner.pause('ci')">Pause</div>
+
+        <div class="gapabove g25">
+          <div class="descr i">
+            Operates on images encrypted with random keys.
+            <br/>Beta: Firefox/Chrome browsers tested.
+            <br/>This demo is too slow to be a practical miner.
+          </div>
+        </div>
+
+      </div>
+
+      <div class="gapabove g25">
+        <div class="descr">
+          2021 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc
+          <br/><a href="index.html" class="link">Cipher Image Creation Utility</a>
+          <div id="ci_canvasdata" class="gap dispnone">
+            <div class="nextsmall" onclick="CI.togglecanvasdata()">Toggle allow canvas data</div>
+          </div>
+        </div>
+      </div>
+
+    </div></div></div>
+  </body>
+</html>
+
+
