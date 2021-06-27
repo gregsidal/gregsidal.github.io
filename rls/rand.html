@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>AE Generator</title>
+    <meta content="AE Generator" name="description">
+    <meta content="Greg Sidal" name="author">
+    <link rel="stylesheet" type="text/css" href="../ui.css">
+    <script src="../ui.js"></script>
+    <script src="rls.js"></script>
+  </head>
+  <body onload="UI.onload();drawrandpic();">
+
+    <div class="back" onclick="toggle('menubar','controlpane')">
+      <canvas id="canv" width="2400" height="2100">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>
+      <img src="" id="canvimg" width=100 height=100 class="dispnone" />
+    </div>
+
+    <div class="menubar" id="menubar">
+      <div class="open" id="controlbtn" onclick="toggle('menubar','controlpane')"></div>
+      <div class="next" id="nextbtn" onclick="drawrandpic()"></div>
+    </div>
+
+    <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
+      <div class="corner">
+        <div class="close" id="controlbtn" onclick="toggle('menubar','controlpane')"></div>
+      </div>
+      <div class="title">
+        AE Generator
+      </div>
+      <div class="descr gapbelow">
+        Pictures generated from random lines
+      </div>
+
+      <div class="line">
+        <div class="nextsmall new gap" id="rand_nextbtn" onclick="drawrandpic()">Generate New</div>
+        <div class="nextsmall dispnone stop gap" id="rand_stopbtn" onclick="genstop()">Stop</div>
+        <div class="nextsmall unfold gap" id="rand_unfoldbtn" 
+                     onclick="UI.unfold('rand_unfoldbtn','rand_foldbtn','rand_foldpane')"></div>
+        <div class="nextsmall dispnone fold gap" id="rand_foldbtn" 
+                     onclick="UI.fold('rand_unfoldbtn','rand_foldbtn','rand_foldpane')"></div>
+        <br/><div class="stats" id="rand_stats">&nbsp;</div>
+      </div>
+
+      <div id="rand_foldpane" class="dispnone gapabove g25">
+        <div class="gapmed line">
+          Image width: <input class="inp" id="rand_wid" value="2400"></input>
+          height: <input class="inp" id="rand_hgt" value="2100"></input>
+        </div>
+        <div class="gapmed line">
+          Line length min: <input class="inp" id="rand_minlinelen" value="1"></input>
+          max: <input class="inp" id="rand_maxlinelen" value="2000"></input>
+        </div>
+        <div class="gapmed line">
+          Line width min: <input class="inp" id="rand_minlinewid" value="1"></input>
+          max: <input class="inp" id="rand_maxlinewid" value="4"></input>
+        </div>
+        <div class="gapmed line">
+          Line angle min: <input class="inp" id="rand_minlineangle" value="-180"></input>
+          max: <input class="inp" id="rand_maxlineangle" value="180"></input>
+        </div>
+        <div class="gap line">
+          Max lines: <input class="inp" id="rand_maxlines" value="2000"></input>
+          &nbsp; <input type="checkbox" checked id="rand_inview"> in field of view</input>
+        </div>
+        <div class="gap line">
+          Color palette:
+        </div>
+        <div class="line">
+          <input type="radio" id="rand_mono" onclick="colchk(this);"> monochrome</input>
+        </div>
+        <div class="line">
+          <input type="radio" id="rand_gray" onclick="colchk(this);"> grayscale</input>
+        </div>
+        <div class="line">
+          <input checked type="radio" id="rand_col" onclick="colchk(this);"> all</input>
+        </div>
+        <div class="line">
+          <input type="radio" id="rand_coltbl" onclick="colchk(this);"> limited to:</input>
+          <input class="inp" id="rand_maxcols" value="10" disabled></input>
+        </div>
+        <div class="gap">
+          JSON output:
+        </div>
+        <div class="br">
+          <textarea class="json vis" readonly id="rand_json"></textarea>
+        </div>
+        <div class="descr gapmedabove">
+          <a href="redraw.html" class="link">JSON Redraw Utility</a> 
+        </div>
+
+      </div>
+
+      <div class="gapabove g25">
+        <div class="little">
+          cc-by-nc 2015-2021 <a href="../index.html" class="link">Greg Sidal</a>
+        </div>
+        <div class="little">
+          <a href="../archive.html#aegen" class="link">2001-2009 releases</a>
+        </div>
+      </div>
+
+    </div></div></div>
+  </body>
+</html>
