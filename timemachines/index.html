@@ -1,1 +1,209 @@
-xyz
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8"/>
+    <title>Time Machines</title>
+    <meta content="Time Machines by Greg Sidal Digital Art" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link rel="stylesheet" type="text/css" href="../ui.css">
+    <script src="../ui.js"></script>
+    <script>
+      function calcfuture( passlen, showfun ) {
+        function getBaseLog(x, y) {
+          return Math.log(y) / Math.log(x);
+
+        }
+        function showres( Year, passlen, per ) {
+          //console.log( Math.floor(Year+0.5) + ": breakable in 1 "+per );
+          showfun( Math.floor(Year+0.5) + ": crackable in 1 " + per );
+        }
+        function calcyear( Passlen, seconds2solve ) {
+          var triespersecond = Math.pow( 2, Passlen );
+          var triesper = triespersecond * seconds2solve;
+          var passlen = getBaseLog( 2, triesper );
+          var year = ((Passlen - 64) * 2) + 2016; //year for 1 second solve
+          year -= (passlen - Passlen) * 2;
+          return year;
+        }
+
+        //passlen *= 8;
+
+        //bits = log 2 tries
+        //tries = 2 ^ bits
+        //var passlen = ((Year-2016) / 2) + 64;
+
+        //console.log( " " );
+        //console.log( Math.floor(passlen+0.5) + " bits: " );
+        //showfun( Math.floor(passlen+0.5) + " bits: " );
+        //showfun( "" );
+        showres( calcyear(passlen,1), passlen, "second" );
+        showres( calcyear(passlen,60*60), passlen, "hour" );
+        showres( calcyear(passlen,60*60*24), passlen, "day" );
+        showres( calcyear(passlen,60*60*24*30), passlen, "month" );
+        //showres( calcyear(passlen,60*60*24*91), passlen, "quarter" );
+        //showres( calcyear(passlen,60*60*24*182), passlen, "half-year" );
+        showres( calcyear(passlen,60*60*24*365), passlen, "year" );
+      }
+      function calcfuture_( passid, outid ) {
+        var linenum = 0;
+        function showfun( line ) {
+          var e = UI.gete( outid );
+          if (e) e.innerHTML += (linenum?"<br/>":"") + line;
+          linenum++;
+        }
+        var e = UI.gete( outid );
+        if (e) e.innerHTML = "";
+        calcfuture( UI.getint(passid,1,999,128), showfun );
+      }
+        /*{
+          "metadata": {
+            "title": {
+              "main": "My Amazing Photo",
+              "sub": "from Trip to Mars Album"
+            }
+          }
+          "image": "amazing_photo.png"
+        }*/
+      UI.gallery_imgs = [
+{"image":"timemachine12.png",metadata:{title:{main:
+"<a href='timemachine12.png' class='tt bigger' target='_blank'>timemachine12.png</a>",
+sub:"96 bit key, breakable in 2037"}}},
+{"image":"timemachine14.png",metadata:{title:{main:
+"<a href='timemachine14.png' class='tt bigger' target='_blank'>timemachine14.png</a>",
+sub:"112 bit key, breakable in 2069"}}},
+{"image":"timemachine16.png",metadata:{title:{main:
+"<a href='timemachine16.png' class='tt bigger' target='_blank'>timemachine16.png</a>",
+sub:"128 bit key, breakable in 2101"}}} /*,
+{"image":"timemachine32.png",metadata:{title:{main:
+"<a href='timemachine32.png' class='tt bigger' target='_blank'>timemachine32.png</a>",
+sub:"256 bit key, breakable in 2357"}}}*/
+      ];
+    </script>
+  </head>
+
+  <body onload="UI.onload();UI.jsonslideshowarray(1,'sample',UI.gallery_imgs)">
+
+    <div class="back" onclick="UI.toggle('controlbtn','controlpane')">
+      <!-- <canvasx id="canv" class="dispnone">
+        <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/> Vector graphics support required </div>
+      </canvasx> -->
+      <img src="" id="canvimg" class="emulatecanvas"/>
+    </div>
+
+    <div class="menubar toggled">
+      <div class="open ctrlbtn" id="controlbtn" onclick="UI.toggle('controlbtn','controlpane')"></div>
+      <div class="prev" onclick="UI.jsonslideshowarray(-1)"></div>
+      <div class="new" onclick="UI.jsonslideshowarray()"></div>
+    </div>
+
+    <div class="titlebar" id="titlebar">
+      <div><div id="canv_subtitle" class="canvtitle2"></div></div>
+      <div class="descr tt" id="canv_title"></div>
+    </div>
+
+    <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
+
+      <div class="corner">
+        <div class="close" id="closebtn" onclick="UI.toggle('controlbtn','controlpane')"></div>
+      </div>
+      <div class="title">
+        Time Machines
+      </div>
+      <div class="essay">
+        <div class="descr">
+Cipher-images designed to become vulnerable to brute-force attacks at measurable future times
+        </div>
+      </div>
+
+      <div class="gapabove g25 essay">
+The images in this series have been encrypted with random keys of increasing lengths with the expectation that each key will ultimately become vulnerable to discovery by brute-force search once sufficient computing power becomes available.
+      </div>
+
+      <div class="gapabove g30">
+        <div class="nextsmall unfold" id="tm_unfoldbtn"
+                     onclick="UI.unfold('tm_unfoldbtn','tm_foldbtn','tm_foldpane');"></div>
+        <div class="nextsmall dispnone fold" id="tm_foldbtn"
+                     onclick="UI.fold('tm_unfoldbtn','tm_foldbtn','tm_foldpane');"></div>
+        &nbsp; <div class="in">Vulnerability calculator</div>
+      </div>
+
+      <div class="gapabove g15 essay dispnone" id="tm_foldpane">
+
+        <div class="gapabove g25 indent">
+        <div class="">
+        <div class="">
+          The formula used to measure the time needed for computing power to advance sufficiently
+          to feasibly brute-force keys of various lengths is described in <a href=
+"https://medium.com/@drgutteridge/whats-the-deal-with-encryption-strength-is-128-bit-encryption-enough-or-do-you-need-more-3338b53f1e3d">a 2016 post,</a> 
+          excerpted here:
+        </div>
+        <div class="gapabove g15 indent i">
+"...the maximum possible decryption speed available today would be able to brute force a 64 bit key in a second.
+        </div>
+        <div class="gapabove g10 indent i">
+Moore's law says that computers get twice as fast every 2 years. 
+In cryptography terms that means that advances in computer power will give you one extra bit every two years."
+<!--That is, if you can crack a 64-bit key in a second this year, you should be able to crack a 65-bit key in a 
+second 2 years later.-->
+        </div>
+        <!--<div class="gapabove g10 indent i">
+On that basis increases in computer power would bring the time to crack a 128-key down to one year 
+78 years from now and 128 years to bring it down to a second."
+        </div>-->
+
+        <div class="gapabove g15">
+          For the purposes of the Time Machines project, a cipher image is deemed vulnerable when it becomes possible 
+          to crack it by applying the 
+          "maximum possible decryption speed available" for one month.
+        </div>
+        <div class="gapabove g15">
+Moore's law is usually understood as applying specifically to integrated curcuit technology, but it is often also viewed as representative of progress more generally.  In the longer term, it seems likely that computation will become vastly more capable, even if current technology becomes obsolete.
+        </div>
+        </div>
+        </div>
+
+        <div class="gapabove g25 indent" id="calculator">
+          <div class="gapminabove">
+            <div class="line">
+              Key length: <input class="inpshort" value="512" id="keylen"></input> (# bits)
+              &nbsp; <div class="nextsmall rand" onclick="calcfuture_('keylen','output')">Calculate</div>
+            </div>
+          </div>
+          <div class="gapabove g10 indent">
+            <div class="little tt" id="output"></div>
+          </div>
+        </div>
+
+        <!--<div class="gapabove g35 i">
+          <div class="descr gapabove g10 br">
+            "The bourgeoisie cannot exist without constantly revolutionizing the instruments of production, 
+            and thereby the relations of production, and with them the whole relations of society." - Karl Marx
+          </div>
+        </div>-->
+
+      </div>
+
+      <!--<div class="gapabove g30 essay">
+          <div class="">Programs used to create and test this series:</div>
+          <div class="gapabove g05 indent">
+            <div class=""><a class="app" href="../cipherimage/index.html">Cipher-image encryption/decryption utility</a></div>
+            <div class="gapabove g05"><a class="app" href="../cipherimage/miner.html">Cipher-image miner</a></div>
+          </div>
+      </div>-->
+
+      <div class="gapabove g35 essay">
+        <div class="descr">
+          2021 <a href="../index.html">Greg Sidal</a> cc-by-nc
+          <br/><a class="app" href="../cipherimage/index.html">Cipher-image creation utility</a>
+          <br/><a class="app" href="../cipherimage/miner.html">Cipher-image miner</a>
+          <br/>2000 related series <a href="../archive.html#ii">Illicit Images</a>
+        </div>
+      </div>
+
+      <div class="dispnone">scale: <input class="inp" id="sample_scale" value="1.0"></input></div>
+
+    </div></div></div>
+
+  </body>
+</html>
