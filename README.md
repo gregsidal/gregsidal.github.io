@@ -1,2 +1,2 @@
-# thomas-zero.github.io
+# gregsidal.github.io
 website
