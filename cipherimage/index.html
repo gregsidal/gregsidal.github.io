@@ -45,9 +45,8 @@
       </div>
 
       <div class="line gapabove g25">
-        <div tabindex=1 class="nextsmall openfile" id="ci_openfile" onclick="UI.el('ci_file').click()"></div>
-        <input type="file" class="dispnone" accept="image/*" id="ci_file" 
-                 onchange="if (this.files[0]) CI.setsrc('ci',this.files[0]);"/>
+        <div tabindex=1 class="nextsmall openfile" id="ci_openfile" onclick="CI.clickopen('ci')"></div>
+        <input type="file" class="dispnone" accept="image/*" id="ci_file" onchange="CI.setsrc('ci',this.files[0]);"/>
         <div class="inlinestats" id="ci_stats"> (open an image)</div>
       </div>
 

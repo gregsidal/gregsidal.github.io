@@ -39,6 +39,10 @@ CI.clickback = function( id ) {
   if (CI.open)
     UI.toggle( 'menubar', 'controlpane' );
   else
+    CI.clickopen( id );
+}
+CI.clickopen = function( id ) {
+  if (CI.testcanvas( id ))
     UI.el( id+'_file' ).click();
 }
 CI.togglecanvasdata = function() {CI.forcedisallowcanvasdata = !CI.forcedisallowcanvasdata;}
@@ -67,7 +71,8 @@ CI.drawimg = function( id, f, u ) {
   //CI.testcanvas( id );
 }
 CI.setsrc = function( id, f, u ) {
-  CI.views[id].setsrc( f, u );
+  if (f || u)
+    CI.views[id].setsrc( f, u );
 }
 CI.resize = function( id, chg ) {
   CI.setsizectrls( id, chg );

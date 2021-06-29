@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html>
+
   <head>
     <meta charset="utf-8"/>
     <title>Cipher-Image Encryption/Decryption Utility</title>
@@ -1003,6 +1004,10 @@ CI.clickback = function( id ) {
   if (CI.open)
     UI.toggle( 'menubar', 'controlpane' );
   else
+    CI.clickopen( id );
+}
+CI.clickopen = function( id ) {
+  if (CI.testcanvas( id ))
     UI.el( id+'_file' ).click();
 }
 CI.togglecanvasdata = function() {CI.forcedisallowcanvasdata = !CI.forcedisallowcanvasdata;}
@@ -1031,7 +1036,8 @@ CI.drawimg = function( id, f, u ) {
   //CI.testcanvas( id );
 }
 CI.setsrc = function( id, f, u ) {
-  CI.views[id].setsrc( f, u );
+  if (f || u)
+    CI.views[id].setsrc( f, u );
 }
 CI.resize = function( id, chg ) {
   CI.setsizectrls( id, chg );
@@ -1292,6 +1298,7 @@ var UI = {
       CI.defaulturl = "";
     </script>
   </head>
+
   <body onload="CI.setup('ci',CI.defaulturl,CI.defaultname);" id="ci_back">
 
     <div class="back" onclick="CI.clickback('ci');">
@@ -1322,9 +1329,8 @@ var UI = {
       </div>
 
       <div class="line gapabove g25">
-        <div tabindex=1 class="nextsmall openfile" id="ci_openfile" onclick="UI.el('ci_file').click()"></div>
-        <input type="file" class="dispnone" accept="image/*" id="ci_file" 
-                 onchange="if (this.files[0]) CI.setsrc('ci',this.files[0]);"/>
+        <div tabindex=1 class="nextsmall openfile" id="ci_openfile" onclick="CI.clickopen('ci')"></div>
+        <input type="file" class="dispnone" accept="image/*" id="ci_file" onchange="CI.setsrc('ci',this.files[0]);"/>
         <div class="inlinestats" id="ci_stats"> (open an image)</div>
       </div>
 
@@ -1371,10 +1377,10 @@ var UI = {
 
       <div class="gapabove g25">
         <div class="descr">
-          Self-contained downloadable v0.60 (2021.06.27)
+          Self-contained downloadable v0.60 (2021.06.29)
           <br/>2021 <a href="https://gregsidal.neocities.org" target="_blank" class="link">Greg Sidal</a>
                cc-by-nc
-          <br/><a href="https://gregsidal.neocities.org/cipherimage/miner.html" class="link">Miner</a>
+          <br/><a href="https://gregsidal.neocities.org/cipherimage/miner.html" class="link">Cipher-image miner</a>
           <div id="ci_canvasdata" class="gap dispnone">
             <div class="nextsmall" onclick="CI.togglecanvasdata()">Toggle allow canvas data</div>
           </div>
