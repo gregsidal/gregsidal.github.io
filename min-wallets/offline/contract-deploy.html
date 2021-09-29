@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Ethereum Utilities - Deploy Contract (Offline)</title>
+    <meta "Ethereum Web3.js based contract deployment with no dependencies or installs required" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link  href="../lib/web3/css/web3ui.css" rel="stylesheet" type="text/css">
+    <script src="../lib/cryptojs/js/aes.js"  ></script>
+    <script src="../lib/web3/js/web3.min.js" ></script>
+    <script src="../lib/web3/js/web3ui.js"   ></script>
+    <script src="../meu.js"                  ></script>
+  </head>
+
+  <body onload="MEU.onload('offline',['params','broad','deploy']);">
+    <h1>Minimal Ethereum Utilities <div class="mbr">Offline Contract Deployment</div></h1>
+
+    <p class="descr">
+      <span id="Web3UI_0VERSION"></span>
+      Deploys contract instance from ABI, offline version for use on an air-gapped device.
+      <span id="Web3UI_0LINKS"></span>
+    </p>
+
+    <p>
+      <b>Contract</b>
+      <span class='subsec'>
+        <span class='control'>
+          <span class='tag'>ABI (from Remix or other Solidity compiler):</span>
+          <textarea id="Web3UI_0contractABI" value="" size="30" oninput="Web3UI.Gen.HTML.abichanged();"/></textarea>
+        </span>
+      </span>
+      <span class='subsec'>
+        <span class='btngroup'>
+          <span class='label'>Open from </span>
+          <button class='open sameline' onclick="Web3UI.Utils.gete('Web3UI_0file').click()">File</button>
+          <button class='abi sameline' onClick="Web3UI.Gen.HTML.resetdeploy(true);">Entry</button>
+          <input type="file" class="dispnone" accept="text/*" id="Web3UI_0file" 
+                 onchange="Web3UI.Gen.HTML.openabi(this.files[0],true,true);"/>
+        </span>
+        <i id="Web3UI_0resetmsg"></i>
+      </span>
+    </p>
+
+    <div id="Web3UI_0UIGEN"></div>
+
+    <div id="Web3UI_0FOOT"></div>
+
+  </body>
+
+</html>

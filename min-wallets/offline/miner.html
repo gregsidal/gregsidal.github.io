@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Minimal Ethereum Utilities - Vanity Address Miner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta "Ethereum Web3.js based vanity address miner with no dependencies or installs required" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link  href="../lib/web3/css/web3ui.css"  rel="stylesheet" type="text/css">
+    <script src="../lib/web3/js/web3.min.js"  ></script>
+    <script src="../lib/cryptojs/js/aes.js"   ></script>
+    <script>
+      var Miner = {wallet:{},appname:"min-wallet"};
+
+      // connect to provider
+      Miner.setconnection = function() {
+        var p = "https://cloudflare-eth.com";
+        Miner.web3 = new Web3( p );
+        Miner.reset();
+      }
+
+      // show msg on page
+      Miner.showmsg = function( id, msg ) {
+        if (msg && !Miner.running) console.log( msg );
+        document.getElementById( id ).innerHTML = msg;
+      }
+
+      Miner.setstyle = function( id, s, v ) {
+        var e = document.getElementById( id );
+        if (e) e.style[s] = v;
+      }
+      Miner.getstyle = function( id, prop ) {
+        var e = document.getElementById( id );
+        if (!e) return;
+        return window.getComputedStyle( e ).getPropertyValue( prop );
+      }
+
+      // show a msg in input
+      Miner.showeditmsg = function( id, msg ) {
+        document.getElementById( id ).value = msg;
+      }
+
+      // reset
+      Miner.reset = function() {
+        Miner.wallet.account = null;
+        Miner.running = false;
+        Miner.showmsg( 'Miner_privatekey2', "" );
+        Miner.showmsg( 'Miner_address', "" );
+        Miner.showmsg( 'Miner_numtries', "" );
+        Miner.setstyle( 'Miner_savecontrols', 'display', 'none' );
+      }
+
+      // create a wallet
+      Miner.createkeypair = function() {
+        Miner.wallet.account = Miner.web3.eth.accounts.create();
+        Miner.showmsg( 'Miner_privatekey2', "Private key: "+Miner.wallet.account.privateKey );
+        Miner.showmsg( 'Miner_address', "Address: "+Miner.wallet.account.address );
+      }
+
+      // search next group, update display
+      Miner.group = 50;
+      Miner.numtries = 0;
+      Miner.next = function() { 
+        if (!Miner.running)
+          return;
+        var targetprefix = document.getElementById( 'Miner_vanityprefix' ).value;
+        for( var i=0; i<Miner.group; i++ ) {
+          Miner.wallet.account = Miner.web3.eth.accounts.create();
+          var prefix = Miner.wallet.account.address.toString().slice(2,2+targetprefix.length);
+          Miner.numtries++;
+          if (prefix == targetprefix) {
+            Miner.running = false;
+            Miner.setstyle( 'Miner_savecontrols', 'display', 'block' );
+            break;
+          }
+        }
+        Miner.showmsg( 'Miner_privatekey2', "Private key: "+Miner.wallet.account.privateKey );
+        Miner.showmsg( 'Miner_address', "Address: "+Miner.wallet.account.address );
+        Miner.showmsg( 'Miner_numtries', "Tries: "+Miner.numtries );
+        setTimeout( 'Miner.next()', 1 );
+      }
+
+      Miner.mine = function() { 
+        Miner.reset();
+        Miner.running = true;
+        Miner.numtries = 0;
+        Miner.next();
+      }
+
+      // encrypt string with AES256
+      Miner.encryptstr = function( plain, pass, pfx ) {
+        if (!pfx) pfx = "";
+        var cipher = "";
+        if (CryptoJS && CryptoJS.AES) {
+          var cipher = CryptoJS.AES.encrypt( pfx+plain, pass );
+          cipher = cipher.toString();
+        }
+        console.log( "CIPHER:", cipher );
+        return cipher;
+      }
+
+      // save wallet to file
+      Miner.savetofile = function() {
+        var id = 'Miner_numtries';
+        if (!Miner.wallet.account)
+          return Miner.showmsg( id, "Search first" );
+        try {
+          var w = {privateKey: Miner.wallet.account.privateKey, address: Miner.wallet.account.address};
+          var pass = document.getElementById( 'Miner_pass' ).value;
+          if (pass == "password")
+            pass = "";
+          if (pass) {
+            w.privateKeyEncrypted = Miner.encryptstr( w.privateKey, pass, "PK" );
+            if (!w.privateKeyEncrypted)
+              throw( "Encryption failed" );
+            w.privateKey = "";
+          }
+          var e = document.getElementById( 'Miner_save' );
+          e.href = "data:text/plain," + JSON.stringify(w);
+          e.download = Miner.appname + "-account-" + Miner.wallet.account.address + ".txt";
+          e.click();
+        }
+        catch( e ) {
+          Miner.showmsg( id, e );
+        }
+      }
+    </script>
+    <script src="../meu.js"></script>
+  </head>
+
+  <body onload="MEU.onplainload('offline');Miner.setconnection();">
+    <h1>Minimal Ethereum Utilities <div class="mbr">Vanity Address Miner</div></h1>
+
+    <p class="descr">
+      Simple Ethereum key-pair wallet miner, offline version for use on an air-gapped device.
+      <!--<br/><br/>
+      Private keys will be encrypted when saved if a wallet password is provided. 
+      Since encrypted data is not possible to recover if the password is lost,
+      <span class="warn">keys of important accounts should also be written down or photographed</span>.-->
+    </p>
+
+    <p>
+      <b>Mine a Wallet with a Vanity Address Prefix</b>
+      <span class="subsec">
+        <span class="control">
+          <span class="tag">Desired prefix:</span>
+          <input type="text" id="Miner_vanityprefix" value="777" class="int" oninput="Miner.reset();"/>
+        </span>
+      </span>
+      <span class="subsec">
+        <button onclick="Miner.mine();">Mine</button>
+        <i id="Miner_address"></i>
+        <i id="Miner_privatekey2"></i>
+        <i id="Miner_numtries"></i>
+      </span>
+      <span class='subsec dispnone' id='Miner_savecontrols'>
+        <button id='Miner_savebtn' class="send" onclick="Miner.savetofile();">Save</button>
+        <a id="Miner_save" href="" download="min-wallet.txt" class="dispnone"></a>
+        <span class="control">
+          <span class="label">Wallet password:</span>
+          <input type="text" id="Miner_pass" class="net num pass" value="password"/>
+        </span>
+        <span class="subsec">
+          <span class="label">
+      Private key will be encrypted when saved if password is provided. 
+      Since encrypted data is not possible to recover if the password is lost,
+      <span class="warn">keys of important accounts should also be written down or photographed</span>.
+          </span>
+        </span>
+      </span>
+    </p>
+
+    <div id="Web3UI_0FOOT"></div>
+
+  </body>
+
+</html>
