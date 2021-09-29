@@ -1,1 +1,117 @@
-.y {}
+/*default css for Minimal Ethereum Utilities*/
+/*main*/
+      body {
+        margin:3em 25%; padding:0;
+        font-family:"Open Sans", sans-serif; font-size:85%;
+        color:#444; background-color:#e8e8e8;
+      }
+      @media all and (min-width:1700px) and (orientation:landscape) {
+        body {margin:3em 30%;}
+      }
+      @media all and (max-width:1250px) and (orientation:landscape) {
+        body {margin:3em 20%;}
+      }
+      @media all and (max-width:950px) and (orientation:landscape) {
+        body {margin:3em 10%;}
+      }
+
+/*section*/
+      p {border:1px solid #ccc; padding:1em; background-color:rgb(237,240,246); margin-bottom:3em;}
+      /*p.wallet {background-color:rgb(237,245,240); padding-bottom:1.2em;}*/
+      p.wallet, p.infobox {padding-bottom:1.2em;}
+      p.infobox {padding-top:1.1em; padding-bottom:1.3em;}
+      p.descr, p.break, p.foot, p.appendix {border:0; padding:0; background-color:inherit;}
+      p.wallet, p.method, p.call, p.transact {}
+      p.descr {margin-bottom:3em;}
+      p.break {font-size:120%;}
+      p.foot, p.appendix {font-size:90%;}
+      p.appendix {border-top:1px dashed rgb(130,130,130); padding-top:2.1em; margin-top:6em; margin-bottom:0;}
+      ul {font-size:90%;}
+
+/*subsection*/
+      .subsec, .control, .nest, .indent, .tag {display:block; margin:0; padding:0;}
+      .subsec {margin-top:1.5em;}
+      .subsec.min {margin-top:0;}
+      .subsec:empty {display:none;}
+      .control, .nest {margin-top:0.3em;}
+      .indent, .nest {margin-left:1.5em;}
+      .control.struct {margin-top:1em; margin-bottom:1em;}
+      .control.array {margin-top:0.7em; margin-bottom:0.7em;}
+      .control.pay {margin-bottom:1.2em;}
+      .control:first-child, .nest:first-child {margin-top:0;}
+      .control:last-child {margin-bottom:0;}
+      .nest {margin-bottom:1em;}
+      .subsec.sep {/*border-top:1px dashed rgb(130,130,130); margin-top:2em; */padding-top:1.5em;}
+
+/*text*/
+      h1, h2 {font-size:130%; padding-bottom:1.5em; padding-top:1em; margin:0;}
+      b {font-size:115%; font-weight:bold; display:block;}
+      i {font-family:monospace; word-wrap:break-word;}
+      i {font-size:120%; color:rgb(40,160,40); font-style:normal; padding-top:1em; display:block;}
+      i.code {font-size:90%; color:rgb(90,90,110);}
+      i:empty {padding:0;}
+      tt {font-size:120%; word-wrap:break-word;}
+      /*.warn {color:rgb(150,50,50);}*/
+      .beta {display:block; color:rgb(150,20,20); border:1px solid #ccc; padding:0.5em; margin-top:0; margin-bottom:3em;}
+      .explain, .label, .beta {font-size:85%;}
+      .mbr, .sbr, .tsbr, h1, .tag.array, .tag.sameline {display:inline-block;}
+      .mbr:before {content:' -- ';}
+      .mbr:empty:before {content:'';}
+      .tsbr:before {content:'';}
+      .sbr:before {content:' | ';}
+
+/*button*/
+      button, textarea {display:block; margin:0; border:0;}
+      button {font-size:100%; padding:0.3em 0.7em; color:#fff; background-color:rgb(90,100,160); cursor:pointer;}
+      button.abi, button.create, button.open, button.call, button.sign, button.send {}
+      button.abi {margin-top:0;}
+      button.open {margin-top:0.3em;}
+      button.send {margin-top:1em;}
+      button.inline, button.sameline {display:inline-block;}
+      .subbtn {display:inline-block; font-size:80%; border:1px solid rgb(170,170,170); 
+                   padding:0.3em 0.7em; background-color:transparent; cursor:pointer;}
+      .donate:hover {color:rgb(20,150,20); cursor:pointer;}
+      button:hover, .subbtn:hover {color:#fff; background-color:rgb(220,90,110);}
+      button:disabled, .subbtn:disabled {color:#fff; background-color:rgb(220,220,220);}
+      button.dispnone, button.hideifempty:empty, .dispnone {display:none;}
+
+/*input*/
+      input {font-size:120%;}
+      input, textarea {font-family:monospace; width:30em; margin:0; border:1px solid #bbb;}
+      input[type="radio"] {width:inherit;}
+      .num {width:14em;}
+      .int {width:3em;}
+      .pk {width:99%; max-width:50em;}
+      textarea {width:99%; font-size:85%; height:15em;}
+      input.provider, input.chainid, input.net {background-color:rgb(240,240,240); margin-bottom:0.2em;}
+      input.provider:focus, input.chainid:focus, input.net:focus,
+      input.provider:hover, input.chainid:hover, input.net:hover {background-color:rgb(255,255,255);}
+      input.pass {font-size:110%;}
+
+/*link*/
+      a {color:rgb(60,60,180);}
+      a:visited {color:inherit;}
+
+/*phone overrides*/
+      @media all and (orientation:portrait) {
+        body {font-size:4vw; margin:0; padding:0;}
+        h1, h2 {font-size:120%;}
+        h1, h2 {margin-left:0.75em; margin-right:0.75em; padding-bottom:0em; padding-top:1.5em;}
+        h1>.mbr {font-size:120%; padding-top:0.1em; padding-bottom:1.2em;}
+        h2 {font-size:150%; padding-bottom:1.2em;}
+        i {font-size:110%;}
+        tt {font-size:95%;}
+        p {border:0; width 100%;}
+        p.descr, p.break, p.foot, p.appendix {padding:0 1em;}
+        p.appendix {padding-top:2em; margin-top:4em;}
+        p.break {font-size:110%;}
+        .mbr, .sbr, .tsbr {display:block;}
+        .sbr, .tsbr {margin-top:0.4em;}
+        .mbr:before,.sbr:before,.tsbr:before {content:'';}
+        input {font-size:110%;}
+        .x {font-family:"Courier", serif;}
+        textarea {display:block; width:99%; border:1px solid #c8c8c8;}
+        input {max-width:99%; border:1px solid #c8c8c8;}
+        input[type="radio"] {width:inherit; display:inline-block;}
+        button.inline {display:block; margin-top:0.2em;}
+      }
