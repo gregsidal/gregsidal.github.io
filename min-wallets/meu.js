@@ -142,14 +142,14 @@ var MEU = {
       '<span class="beta"> ' +
         'Beta test version 0.50 (released 2021-09-29). ' +
         'Reports of bugs or other issues can be submitted to the ' +
-        "project's <a href='https://github.io/gregsidal/min-wallets/'>GitHub page</a>. " + 
+        "project's <a href='https://github.com/gregsidal/min-wallets/issues'>GitHub page</a>. " + 
         'Instructions for using Ropsten Testnet are provided at the bottom of this page. ' +
       '</span>',
     versionoffline: 
       '<span class="beta"> ' +
         'Beta test version 0.50 (released 2021-09-29). ' +
         'Reports of bugs or other issues can be submitted to the ' +
-        "project's GitHub page: <tt>https://github.io/gregsidal/min-wallets/</tt> " + 
+        "project's GitHub page: <tt>https://github.com/gregsidal/min-wallets/issues</tt> " + 
         'Instructions for using Ropsten Testnet are provided at the bottom of this page. ' +
       '</span>',
     highvaluemsg: '<br/><br/> ' +
