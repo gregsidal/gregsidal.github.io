@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Ethereum Utilities - Deploy Contract from ABI</title>
+    <meta "Simple small Ethereum Web3.js based contract deployment utility with no dependencies or installs required" 
+          name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link  href="lib/web3/css/web3ui.css" rel="stylesheet" type="text/css">
+    <script src="lib/cryptojs/js/aes.js"  ></script>
+    <script src="lib/web3/js/web3.min.js" ></script>
+    <script src="lib/web3/js/web3ui.js"   ></script>
+    <script src="meu.js"                  ></script>
+  </head>
+
+  <body onload="MEU.onload();">
+    <h1>Minimal Ethereum Utilities <div class="mbr">Contract Deployment</div></h1>
+
+    <p class="descr">
+      <span id="Web3UI_0VERSION"></span>
+      A small simple Ethereum contract deployment wallet. Generates deploy interface from contract ABI.
+      <br/><br/>
+      For a more secure way to deploy contracts, try the <a href="offline-install.html">offline wallets</a>.
+    </p>
+
+    <p>
+      <b>Contract</b>
+      <span class='subsec'>
+        <span class='control'>
+          <span class='tag'>ABI (from Remix or other Solidity compiler):</span>
+          <textarea id="Web3UI_0contractABI" value="" size="30" oninput="Web3UI.Gen.HTML.abichanged();"/></textarea>
+        </span>
+      </span>
+      <span class='subsec'>
+        <span class='btngroup'>
+          <span class='label'>Open from </span>
+          <button class='open sameline' onclick="Web3UI.Utils.gete('Web3UI_0file').click()">File</button>
+          <button class='abi sameline' onClick="Web3UI.Gen.HTML.resetdeploy();">Entry</button>
+          <input type="file" class="dispnone" accept="text/*" id="Web3UI_0file" 
+                 onchange="Web3UI.Gen.HTML.openabi(this.files[0],true);"/>
+        </span>
+        <i id="Web3UI_0resetmsg"></i>
+      </span>
+    </p>
+
+    <div id="Web3UI_0UIGEN"></div>
+
+    <div id="Web3UI_0FOOT"></div>
+
+  </body>
+
+</html>
+
+
+<!--
+
+Simple storage
+[
+	{
+		"inputs": [],
+		"name": "retrieve",
+		"outputs": [
+			{ "internalType": "uint256", "name": "","type": "uint256" }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{"internalType": "uint256", "name": "num", "type": "uint256"}
+		],
+		"name": "store",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
+
+{
+	"generatedSources": [],
+	"linkReferences": {},
+	"object": "608060405234801561001057600080fd5b5061012f806100206000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80632e64cec11460375780636057361d146051575b600080fd5b603d6069565b6040516048919060c2565b60405180910390f35b6067600480360381019060639190608f565b6072565b005b60008054905090565b8060008190555050565b60008135905060898160e5565b92915050565b60006020828403121560a057600080fd5b600060ac84828501607c565b91505092915050565b60bc8160db565b82525050565b600060208201905060d5600083018460b5565b92915050565b6000819050919050565b60ec8160db565b811460f657600080fd5b5056fea2646970667358221220c019e4614043d8adc295c3046ba5142c603ab309adeef171f330c51c38f1498964736f6c63430008040033",
+	"opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x12F DUP1 PUSH2 0x20 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x32 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x2E64CEC1 EQ PUSH1 0x37 JUMPI DUP1 PUSH4 0x6057361D EQ PUSH1 0x51 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH1 0x3D PUSH1 0x69 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH1 0x48 SWAP2 SWAP1 PUSH1 0xC2 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH1 0x67 PUSH1 0x4 DUP1 CALLDATASIZE SUB DUP2 ADD SWAP1 PUSH1 0x63 SWAP2 SWAP1 PUSH1 0x8F JUMP JUMPDEST PUSH1 0x72 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x0 DUP1 SLOAD SWAP1 POP SWAP1 JUMP JUMPDEST DUP1 PUSH1 0x0 DUP2 SWAP1 SSTORE POP POP JUMP JUMPDEST PUSH1 0x0 DUP2 CALLDATALOAD SWAP1 POP PUSH1 0x89 DUP2 PUSH1 0xE5 JUMP JUMPDEST SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 PUSH1 0x20 DUP3 DUP5 SUB SLT ISZERO PUSH1 0xA0 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH1 0x0 PUSH1 0xAC DUP5 DUP3 DUP6 ADD PUSH1 0x7C JUMP JUMPDEST SWAP2 POP POP SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0xBC DUP2 PUSH1 0xDB JUMP JUMPDEST DUP3 MSTORE POP POP JUMP JUMPDEST PUSH1 0x0 PUSH1 0x20 DUP3 ADD SWAP1 POP PUSH1 0xD5 PUSH1 0x0 DUP4 ADD DUP5 PUSH1 0xB5 JUMP JUMPDEST SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP2 SWAP1 POP SWAP2 SWAP1 POP JUMP JUMPDEST PUSH1 0xEC DUP2 PUSH1 0xDB JUMP JUMPDEST DUP2 EQ PUSH1 0xF6 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xC0 NOT 0xE4 PUSH2 0x4043 0xD8 0xAD 0xC2 SWAP6 0xC3 DIV PUSH12 0xA5142C603AB309ADEEF171F3 ADDRESS 0xC5 SHR CODESIZE CALL 0x49 DUP10 PUSH5 0x736F6C6343 STOP ADDMOD DIV STOP CALLER ",
+	"sourceMap": "141:356:0:-:0;;;;;;;;;;;;;;;;;;;"
+}
+
+deployed at:
+0x37667cC2695AE3b9872a8BDF443B30fd04BF84D5
+
+Gas to deploy:
+118819
+
+Gas to store:
+43736
+
+
+      // "ABI" of the contract (typically from Remix), this is partial ERC20 interface
+      Sample.ERC20TransferABI = 
+[ 
+        { 
+          "name": "transfer",
+          "inputs": [
+            {"name": "_to",    "type": "address"}, 
+            {"name": "_value", "type": "uint256"}
+          ],
+          "outputs": [
+            {"name": "", "type": "bool"}
+          ],
+          "constant": false, 
+          "payable": false, 
+          "stateMutability": "nonpayable", 
+          "type": "function"
+        },
+        {
+          "name": "balanceOf",
+          "inputs": [
+            {"name": "_owner", "type": "address"}
+          ],
+          "outputs": [
+            {"name": "balance","type": "uint256"}
+          ],
+          "constant": true, 
+          "payable": false, 
+          "stateMutability": "view", 
+          "type": "function"
+        },
+        {
+          "name": "name",
+          "inputs": [],
+          "outputs": [
+            {"name": "", "type": "string"}
+          ],
+          "constant": true,
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "name": "decimals",
+          "inputs": [],
+          "outputs": [
+            {"name": "","type": "uint8"}
+          ],
+          "constant": true,
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "name": "totalSupply",
+          "inputs": [],
+          "outputs": [
+            	{"name": "","type": "uint256"}
+          ],
+          "constant": true,
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
+;
+-->
+

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Ethereum Utilities - Account Wallet</title>
+    <meta "Simple small Ethereum Web3.js based account wallet with no dependencies or installs required" 
+          name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link  href="lib/web3/css/web3ui.css" rel="stylesheet" type="text/css">
+    <script src="lib/cryptojs/js/aes.js"  ></script>
+    <script src="lib/web3/js/web3.min.js" ></script>
+    <script src="lib/web3/js/web3ui.js"   ></script>
+    <script src="meu.js"                  ></script>
+  </head>
+
+  <body onload="MEU.onload();">
+    <h1>Minimal Ethereum Utilities <div class="mbr">Account Wallet</div></h1>
+
+    <p class="descr">
+      <span id="Web3UI_0VERSION"></span>
+      A small simple non-custodial Ethereum key-pair wallet that runs locally in the browser.
+      <span id="Web3UI_0HIGHVALUEMSG"></span>
+      <span id="Web3UI_0PKSAVEMSG"></span>
+    </p>
+
+    <p class='wallet'>
+      <b>Create or Open Wallet</b>
+      <span class='subsec'>
+        <span class="control">
+          <span class="label">Wallet password:</span>
+          <input type="text" id="Web3UI_0account_pass" class="net num pass" value="password"/>
+        </span>
+      </span>
+      <span class='subsec'>
+        <span class="control">
+          <button class="create sameline" onclick="Web3UI.Wallet.new()">Create</button>
+          <button id='Web3UI_0account_savebtn' class="create sameline hideifempty" onclick="Web3UI.Wallet.savetofile();"></button>
+          <a href="" download="minimal-ethereum-utilities-wallet.txt" class="dispnone" id="Web3UI_0account_save"></a>
+          <i id='Web3UI_0account_privatekeyshow'></i>
+        </span>
+      </span>
+      <span class='subsec'>
+        <span class="control">
+          <span class="tag">Private key:</span>
+          <input type='text' id='Web3UI_0account_privatekey' class='pk' oninput='Web3UI.Wallet.clr()'/>
+          <span class='btngroup'>
+            <span class='label'>Open from </span>
+            <button class='open sameline' onclick="Web3UI.Utils.gete('Web3UI_0account_file').click()">File</button>
+            <button class='open sameline' onclick="Web3UI.Wallet.open()">Entry</button>
+            <input type="file" class="dispnone" accept="text/*" id="Web3UI_0account_file" 
+                   onchange="Web3UI.Wallet.openfromfile(this.files[0]);"/>
+          </span>
+          <i id='Web3UI_0account_address'></i>
+        </span>
+      </span>
+      <span class="subsec sep">
+        <span class="control">
+          <span class="tag">Balance</span>
+          <input type='text' id='Web3UI_0account_balance' value='' size='10' class='num' disabled/>
+          <span class='subbtn refresh' onClick='Web3UI.Wallet.getBalance();'>Refresh</span>
+        </span>
+        <span class="control">
+          <span class="tag">Wallet Transaction Count ("Nonce")</span>
+          <input type='text' id='Web3UI_0account_nonce' value='' size='10' class='num' oninput='Web3UI.Wallet.clrwmsg()'/>
+          <span class='subbtn refresh' onClick='Web3UI.Wallet.getNonce();'>Refresh</span>
+        </span>
+        <span class="control">
+          <span class="tag">Gas Price for Transactions</span>
+          <input type='text' id='Web3UI_0account_gasprice' value='' size='10' class='num' oninput='Web3UI.Wallet.clrwmsg()'/>
+          <span class='subbtn refresh' onclick="Web3UI.Wallet.getGasPrice();">Refresh</span>
+        </span>
+        <span class="control">
+          <span class="tag">Gas Limit for Transactions</span>
+          <input type='text' id='Web3UI_0account_gas' value='30000' size='10' class='num' oninput='Web3UI.Wallet.clrwmsg()'/>
+        </span>
+        <i id='Web3UI_0account_response'></i>
+      </span>
+    </p>
+
+    <p>
+      <b>Sign/Send Transfer Transaction</b>
+      <span class='subsec'>
+        <span class="control">
+          <span class="tag">Recipient address:</span>
+          <input type="text" id="Web3UI_0account_toaddress" value=""
+                 oninput="Web3UI.Wallet.clearAccountTxMsgs();"/>
+        </span>
+        <span class="control">
+          <span class="tag">Amount to send:</span>
+          <input type="text" id="Web3UI_0account_0pay" value="0.01" size="10" class="num" oninput="Web3UI.Wallet.clearAccountTxMsgs();"/>
+        </span>
+      </span>
+      <span class='subsec'>
+        <button id="Web3UI_0account_0signbtn" class='sign' onClick="Web3UI.Wallet.signAccountTx();">Sign</button>
+        <i id='Web3UI_0account'></i>
+        <i id='Web3UI_0account_0cost'></i>
+      </span>
+      <span class='subsec min'>
+        <button id='Web3UI_0account_0sendbtn' class='send hideifempty' onClick='Web3UI.Wallet.sendAccountTx()'></button>
+        <i id='Web3UI_0account_0send'></i>
+        <i id='Web3UI_0account_0fee'></i>
+      </span>
+    </p>
+
+    <div id="Web3UI_0FOOT"></div>
+
+  </body>
+
+</html>
+

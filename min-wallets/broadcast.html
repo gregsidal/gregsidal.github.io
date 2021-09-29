@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Ethereum Utilities - Broadcast Raw Signed Transaction</title>
+    <meta "Ethereum broadcast raw signed transaction" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link  href="lib/web3/css/web3ui.css" rel="stylesheet" type="text/css">
+    <script src="lib/web3/js/web3.min.js" ></script>
+    <script src="lib/web3/js/web3ui.js"   ></script>
+    <script src="meu.js"                  ></script>
+    <script>
+      Web3UI.Basic = {};
+      // set signed raw tx
+      Web3UI.Basic.sendRawTx = function() {
+        var methodname = '0account';
+        var idhash = 'Web3UI_' + methodname;
+        var id = 'Web3UI_' + methodname + '_0send';
+        var idfee = 'Web3UI_' + methodname + '_0fee';
+        var idbtn = 'Web3UI_' + methodname + '_0sendbtn';
+        var rawtx = document.getElementById( 'Web3UI_0rawtx' ).value;
+        if (!rawtx) {
+          Web3UI.Basic.rawTxChange();
+          return Web3UI.Utils.showmsg( id, "Transaction bytecode required" );
+        }
+        Web3UI.Utils.en( idbtn, false );
+        function onerror( err ) {
+          Web3UI.Utils.en( idbtn, true );
+        }
+        function onwait( msg, info ) {
+          Web3UI.Utils.showmsg( idhash, info?("Transaction ID: "+info.txhash):"" );
+        }
+        function oncompletion( res, receipt ) {
+          Web3UI.Utils.en( idbtn, true );
+        }
+        Web3UI.Network.broadcastTx( rawtx, 
+          { 'gasprice':Web3UI.Utils.getv('Web3UI_0account_gasprice',""), 
+            'value':"0.0", 
+            'idmsg':id, 
+            'idcost':idfee },
+          { 'oncompletion':oncompletion, 'onwait':onwait, 'onerror':onerror } );
+      },
+      // tx bytecode edited by user
+      Web3UI.Basic.rawTxChange = function() {
+        Web3UI.Wallet.clearAccountTxMsgs();
+        var rawtx = document.getElementById( 'Web3UI_0rawtx' ).value;
+        Web3UI.Utils.setin( 'Web3UI_0account_0sendbtn', rawtx?"Send":"" );
+        Web3UI.Utils.en( 'Web3UI_0account_0sendbtn', true );
+      }
+      Web3UI.Basic.openFromFile = function( file ) { 
+        function cb( tx ) {
+          Web3UI.Utils.showeditmsg( 'Web3UI_0rawtx', tx );
+          Web3UI.Basic.rawTxChange();
+        }
+        Web3UI.Utils.openjsonfile( 'Web3UI_0account', file, cb, true );
+      }
+    </script>
+
+  </head>
+
+  <body onload="MEU.onload('nosign');">
+    <h1>Minimal Ethereum Utilities <div class="mbr">Broadcast Transaction</div></h1>
+
+    <p class="descr"></p>
+
+    <p id="broadcast">
+      <b>Broadcast Signed Raw Transaction</b>
+      <span class='subsec'>
+        <button class='open' onclick="Web3UI.Utils.gete('Web3UI_0file').click()">Open</button>
+        <input type="file" class="dispnone" accept="text/*" id="Web3UI_0file" 
+                   onchange="Web3UI.Basic.openFromFile(this.files[0]);"/>
+      </span>
+      <span class='subsec'>
+        <span class='control'>
+          <span class='tag'>Transaction bytecode:</span>
+          <textarea id="Web3UI_0rawtx" value="" size="30" oninput="Web3UI.Basic.rawTxChange();"/></textarea>
+        </span>
+      </span>
+      <span class='subsec'>
+        <button id='Web3UI_0account_0sendbtn' class='send hideifempty' onClick='Web3UI.Basic.sendRawTx()'></button>
+        <i id='Web3UI_0account'></i>
+        <i id='Web3UI_0account_0send'></i>
+        <i id='Web3UI_0account_0fee'></i>
+      </span>
+    </p>
+
+    <div id="Web3UI_0FOOT"></div>
+
+  </body>
+
+</html>
+

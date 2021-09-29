@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Ethereum Utilities - Install Offline Wallets</title>
+    <meta "Installation instructions for offline Minimal Ethereum Wallets" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link rel="stylesheet" type="text/css" href="lib/web3/css/web3ui.css">
+    <script src="meu.js"></script>
+  </head>
+
+  <body onload="MEU.onindexload();">
+    <h1>Minimal Ethereum Utilities <div class="mbr">Install Offline Wallets</div></h1>
+
+    <p class="descr">
+      Offline wallets can by used to protect private keys
+      from hackers, monopolistic corporations, authoritarian governments,
+      and other security threats.
+      <br/><br/>
+      To install the offline wallets, download 
+      <a href="min-wallets-offline-v050.zip" 
+         download="min-wallets-offline-v050.zip"><tt>min-wallets-offline-v050.zip</tt></a> 
+      onto a thumb drive or SD card, move the zip file to an air-gapped device and unzip it there
+      (the air-gapped device should never be connected to the internet).
+      <br/><br/>
+      On the air-gapped device, open <tt>offline/index.html</tt> and use the wallets to manage keys and sign transactions.
+      A connected device such as a phone can be used to retrieve the
+      <a href="address.html">parameters</a> (such as wallet nonce and gas price) needed to prepare transactions.
+      <br/><br/>
+      Once signed, transactions can be saved to text files, moved back to the online device,
+      and safely <a href="broadcast.html">broadcast</a> to the Ethereum network.
+      <br/><br/>
+      Previews of the offline wallets are available below.
+    </p>
+
+    <p class='infobox'>
+      <a href="offline/account-wallet.html" target=_blank>Offline Account Wallet</a>
+      <br/><br/>
+      <a href="offline/contract-wallet.html" target=_blank>Offline Contract Wallet</a>
+      <br/><br/>
+      <a href="offline/contract-deploy.html" target=_blank>Offline Deploy Contract</a>
+      <br/><br/>
+      <a href="offline/miner.html" target=_blank>Offline Vanity Address Miner</a>
+    </p>
+
+    <div id="Web3UI_0FOOT"></div>
+
+  </body>
+
+</html>
