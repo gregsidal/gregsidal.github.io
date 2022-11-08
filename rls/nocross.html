@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!--2022-10 ADD-->
     <title>Random Line Studies: No Crossings Generator</title>
     <meta content="Random Line Studies: No Crossings Generator" name="description" />
     <meta content="Greg Sidal" name="author" />
@@ -12,13 +13,18 @@
   <body onload="UI.onload();UI.Processes.setdelay('nocross',1);drawnocrosspic();">
 
     <div class="back" onclick="toggle('menubar','controlpane')">
-      <canvas id="canv" width="2400" height="2300">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>
+      <canvas id="canv" width="2000" height="2400">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>  <!--2022-10 EDIT size-->
       <img src="" id="canvimg" width=100 height=100 class="dispnone" />
     </div>
 
-    <div class="menubar" id="menubar">
+    <div class="menubar hidden" id="menubar">
       <div class="open" id="controlbtn" onclick="toggle('menubar','controlpane')"></div>
       <div class="next" id="nextbtn" onclick="drawnocrosspic()"></div>
+    </div>
+
+    <div class="titlebar" id="titlebar">  <!--2022-10 ADD-->
+      <i><div id="canv_title"></div></i>
+      <div class="descr collapsible" id="canv_subtitle"></div>
     </div>
 
     <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
@@ -32,17 +38,18 @@
         Lines crossing previously drawn lines culled
       </div>
 
-      <div class="line gap">
-        <div class="nextsmall new" id="nocross_nextbtn" onclick="drawnocrosspic()">Generate New</div>
-        <div class="nextsmall dispnone stop" id="nocross_stopbtn" onclick="genstop()">Stop</div>
+      <div class="line gap">       <!--2022-10 EDIT rearrange-->
         <div class="nextsmall unfold" id="nocross_unfoldbtn" 
                      onclick="UI.unfold('nocross_unfoldbtn','nocross_foldbtn','nocross_foldpane')"></div>
         <div class="nextsmall dispnone fold" id="nocross_foldbtn" 
                      onclick="UI.fold('nocross_unfoldbtn','nocross_foldbtn','nocross_foldpane')"></div>
+        <div class="nextsmall new" id="nocross_nextbtn" onclick="drawnocrosspic()">Generate New</div>
+        <div class="nextsmall dispnone stop" id="nocross_stopbtn" onclick="genstop()">Stop</div>
         <br/><div class="stats" id="nocross_stats">&nbsp;</div>
       </div>
 
-      <div id="nocross_foldpane" class="dispnone gapabove g25">
+      <div id="nocross_foldpane" class="slider closed">  <!--2022-10 EDIT add slider class-->
+      <div class="gapabove g25">                         <!--2022-10 ADD move gapabove g25-->
         <div class="gapmed line">
           Image width: <input class="inp" id="nocross_wid" value="2400"></input>
           height: <input class="inp" id="nocross_hgt" value="2300"></input>
@@ -92,6 +99,7 @@
         <div class="descr gapmedabove">
           <a href="redraw.html" class="link">JSON Redraw Utility</a> 
         </div>
+      </div>  <!--2022-10 ADD-->
       </div>
 
       <div class="descr gapabove g25">
