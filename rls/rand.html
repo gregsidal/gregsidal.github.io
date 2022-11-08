@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <!--2022-10 ADD-->
     <title>AE Generator</title>
     <meta content="AE Generator" name="description">
     <meta content="Greg Sidal" name="author">
@@ -12,13 +13,18 @@
   <body onload="UI.onload();drawrandpic();">
 
     <div class="back" onclick="toggle('menubar','controlpane')">
-      <canvas id="canv" width="2400" height="2100">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>
+      <!--2022-10 EDIT--> <canvas id="canv" width="2000" height="2400">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>
       <img src="" id="canvimg" width=100 height=100 class="dispnone" />
     </div>
 
-    <div class="menubar" id="menubar">
+    <div class="menubar hidden" id="menubar">  <!--2022-10 EDIT add hidden-->
       <div class="open" id="controlbtn" onclick="toggle('menubar','controlpane')"></div>
       <div class="next" id="nextbtn" onclick="drawrandpic()"></div>
+    </div>
+
+    <div class="titlebar" id="titlebar">  <!--2022-10 ADD-->
+      <i><div id="canv_title"></div></i>
+      <div class="descr collapsible" id="canv_subtitle"></div>
     </div>
 
     <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
@@ -32,17 +38,18 @@
         Pictures generated from random lines
       </div>
 
-      <div class="line">
-        <div class="nextsmall new gap" id="rand_nextbtn" onclick="drawrandpic()">Generate New</div>
-        <div class="nextsmall dispnone stop gap" id="rand_stopbtn" onclick="genstop()">Stop</div>
+      <div class="line">       <!--2022-10 EDIT rearrange-->
         <div class="nextsmall unfold gap" id="rand_unfoldbtn" 
                      onclick="UI.unfold('rand_unfoldbtn','rand_foldbtn','rand_foldpane')"></div>
         <div class="nextsmall dispnone fold gap" id="rand_foldbtn" 
                      onclick="UI.fold('rand_unfoldbtn','rand_foldbtn','rand_foldpane')"></div>
+        <div class="nextsmall new gap" id="rand_nextbtn" onclick="drawrandpic()">Generate New</div>
+        <div class="nextsmall dispnone stop gap" id="rand_stopbtn" onclick="genstop()">Stop</div>
         <br/><div class="stats" id="rand_stats">&nbsp;</div>
       </div>
 
-      <div id="rand_foldpane" class="dispnone gapabove g25">
+      <div id="rand_foldpane" class="slider closed">  <!--2022-10 EDIT add slider class-->
+      <div class="gapabove g25">                      <!--2022-10 ADD move gapabove g25-->
         <div class="gapmed line">
           Image width: <input class="inp" id="rand_wid" value="2400"></input>
           height: <input class="inp" id="rand_hgt" value="2100"></input>
@@ -88,7 +95,7 @@
         <div class="descr gapmedabove">
           <a href="redraw.html" class="link">JSON Redraw Utility</a> 
         </div>
-
+      </div>  <!--2022-10 ADD-->
       </div>
 
       <div class="gapabove g25">
