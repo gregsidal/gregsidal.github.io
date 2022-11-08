@@ -138,6 +138,15 @@ function setupcanv( canvid, w, h ) {
 }
 function loadopts( id ) {
   var opts = { };
+
+  /*2022-10 ADD*/
+  opts.title = {main:"Untitled"};
+  opts.title.sub = id == 'trunc' ? "from Truncations Generator" : 
+                                   (id == 'nocross' ? "from No Crossings Generator" : 
+                                                      (id == 'rand' ? "from AE Generator" : ""));
+  opts.batch = id == 'trunc' ? 7 : (id == 'nocross' ? 1 : 10);
+  /*END 2022-10 ADD*/
+
   opts.wid = UI.getint( id+"_wid", 100, 100000, 3000 );
   opts.hgt = UI.getint( id+"_hgt", 100, 100000, 2800 );
   opts.line = { count:{}, wid:{}, len:{} };
@@ -197,9 +206,12 @@ function genpic( id, opts, genfilter ) {
     if (count < 0) {
       var client = {
         name: 'Random Line Studies',
-        //url: 'http://gregsidal.org/rls',
         function: id
       };
+
+      /*2022-10 ADD*/
+      pic.setmetadata( 'title', opts.title );
+      
       pic.setmetadata( 'client', client );
       pic.setmetadata( 'time', (new Date()).toString() );
       pic.setmetadata( 'options', loadopts(id) );
@@ -207,7 +219,7 @@ function genpic( id, opts, genfilter ) {
       UI.notify( '', pic.lines().length, pic.lines().length, id, opts.canvas, pic );
     }
     else
-      UI.notify( 'processing', i, count, id, opts.canvas, pic );
+      UI.notify( 'generating', i, count, id, opts.canvas, pic );  /*2022-10 EDIT*/
   }
   UI.putin( id+'_json', " " );
   var pic = new RandLinePic( genfilter, notifycallback );
@@ -334,7 +346,8 @@ function RandLinePic( filtercallback, notifycallback ) {
     this.genpack = null;
     if (!this.noanim) {
       this.genpack = { 'pic': pic, 'w': w, 'h': h, 'opts': opts, 'cols': cols };
-      this.procid = UI.Processes.start( count, this );
+      //this.procid = UI.Processes.start( count, this );
+      this.procid = UI.Processes.start( count, this, count<100 ? 150 : (count<300?40:15) );  /*2022-10 EDIT*/
     }
     else
       this.gennextlines( pic, w, h, opts, cols, count );
@@ -357,9 +370,10 @@ function RandLinePic( filtercallback, notifycallback ) {
   }
   this.onstep = function( i, maxlines ) {
     var gp = this.genpack;
-    for( var j=0, gen; !gen && (j<200) && (i<maxlines); j+=40, i+=40 )
+    var batch = gp.opts.batch;  //(maxlines>1000) ? 15 : ((maxlines>100) ? 7 : 2);     //40;  /*2022-10 ADD*/
+    for( var j=0, gen; !gen && (j<200) && (i<maxlines); j+=batch, i+=batch )
       gen = this.gennextlines( gp.pic, gp.w, gp.h, gp.opts, gp.cols, 
-                               (maxlines-i) > 40 ? 40 : (maxlines-i) );
+                               (maxlines-i) > batch ? batch : (maxlines-i) );
     return i;
   }
   this.filtercallback = filtercallback;
