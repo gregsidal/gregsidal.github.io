@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!--2022-10 ADD--> 
     <title>Cipher-Image Encryption/Decryption Utility</title>
     <meta content="Encrypt/decrypt image rasters with AES" name="description"/>
     <meta content="Greg Sidal" name="author"/>
@@ -18,13 +19,13 @@
   <body onload="CI.setup('ci',CI.defaulturl,CI.defaultname);" id="ci_back">
 
     <div class="back" onclick="CI.clickback('ci');">
-      <canvas id="ci_canv" width="900" height="800">
+      <canvas id="ci_canv" width="400" height="500">   <!--2022-10 EDIT--> 
         <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/>
                  Browser released after 2015 recommended (testing performed on Firefox and Chrome)</div>
       </canvas>
     </div>
 
-    <div class="menubar" id="menubar">
+    <div class="menubar hidden" id="menubar">  <!--2022-10 EDIT add hidden--> 
       <div class="open" id="controlbtn" onclick="UI.toggle('menubar','controlpane')"></div>
     </div>
 
@@ -47,63 +48,76 @@
       <div class="line gapabove g25">
         <div tabindex=1 class="nextsmall openfile" id="ci_openfile" onclick="CI.clickopen('ci')"></div>
         <input type="file" class="dispnone" accept="image/*" id="ci_file" onchange="CI.setsrc('ci',this.files[0]);"/>
-        <div class="inlinestats" id="ci_stats"> (open an image)</div>
+        <div class="inlinestats" id="ci_stats"> &nbsp; (open an image)</div>
       </div>
 
     <div class="dispnone" id="ci_isimgopen">
 
       <div class="line gap">
-        Key: <input class="inplong" id="ci_pass" value="key or password"></input>
+        Key: <input tabindex=2 class="inplong" id="ci_pass" value="key or password"></input>
       </div>
-      <div class="line gap">
-        <div class="nextsmall fwd" id="ci_encryptbtn" onclick="CI.encrypt('ci')">Encrypt</div>
-        <div class="nextsmall dispnone rev" id="ci_decryptbtn" onclick="CI.decrypt('ci')">Decrypt</div>
-        &nbsp; <div class="nextsmall unfold" id="ci_unfoldbtn"
+      <div class="line gap">   <!--2022-10 EDIT rearrange-->
+        <div class="nextsmall unfold" id="ci_unfoldbtn" tabindex=3
                      onclick="UI.unfold('ci_unfoldbtn','ci_foldbtn','ci_foldpane')"></div>
-        <div class="nextsmall dispnone fold" id="ci_foldbtn"
+        <div class="nextsmall dispnone fold" id="ci_foldbtn" tabindex=4
                      onclick="UI.fold('ci_unfoldbtn','ci_foldbtn','ci_foldpane')"></div>
+        <div tabindex=5 class="nextsmall fwd" id="ci_encryptbtn" onclick="CI.encrypt('ci')">Encrypt</div>
+        <div tabindex=6 class="nextsmall dispnone rev" id="ci_decryptbtn" onclick="CI.decrypt('ci')">Decrypt</div>
       </div>
 
       <div class="gapabove g25 dispnone" id="ci_iscipherimg">
         <div class="inlinestats" id="ci_msg"></i>Image raster is cipher</i></div>
-        <div class="nextsmall" id="ci_savebtn" onclick="CI.save('ci')">Save</div>
-                 <a href="" download="cipherimage.png" class="dispnone" id="ci_save"></a>
+        <div tabindex=7 class="nextsmall" id="ci_savebtn" onclick="CI.save('ci')">Save</div>
+                                 <a href="" download="cipherimage.png" class="dispnone" id="ci_save"></a>
+        <div class="line gap dispnone" id="ci_savectrls">    <!--2022-10 ADD-->
+          File name: <input class="inplong" id="ci_savefilename" value="cipherimage.png"></input>
+        </div>
       </div>
 
-      <div id="ci_foldpane" class="dispnone gapabove g25">
+      <div id="ci_foldpane" class="slider shortmedhgt closed">  <!--2022-10 EDIT add slider-->
+      <div class="gapabove g25">  <!--2022-10 ADD-->
 
         <div class="">
           <div class="descr i">
-            Files open in browser (not uploaded).
-            <br/>PNG files are saved to preserve intact ciphers.
+                 Files open in browser (not uploaded).
+            <br/>PNG files saved to preserve intact ciphers.
             <br/>Saving JPEG not possible (lossy compression).
             <br/>Ciphers in PNGs are auto-recognized.
-            <br/>Beta: Firefox/Chrome browsers tested.
+            <br/>Beta: Brave/Firefox/Chrome browsers tested.
+            <br/>Last updated Nov 2022.
           </div>
         </div>
 
         <div class="gapabove g25 line" id="ci_randpass">
-          <div class="nextsmall rand" id="ci_randbtn" onclick="CI.randpass('ci')">Random key</div>
+          <div tabindex=9 class="nextsmall rand" id="ci_randbtn" onclick="CI.randpass('ci')">Random key</div>
           &nbsp;(# bytes:<input class="inpshort inpbox" id="ci_randbytes" value="12"></input>)
         </div>
 
       </div>
+      </div>  <!--2022-10 ADD-->
 
     </div>
 
       <div class="gapabove g25">
         <div class="descr">
           2021 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc
-          <br/><a href="cipherimage2021v060.html" download="cipherimage2021v060.html" 
+          <!--2022-10 EDIT (2022)-->
+          <br/><a href="cipherimage2022v061.html" download="cipherimage2022v061.html"  
                   class="link" target="_blank">Self-contained downloadable</a>
           <br/><a href="miner.html" class="link">Miner</a>
-          <div id="ci_canvasdata" class="gap dispnone">
+          <div id="ci_canvasdata" class="gapabove g25 dispnone">
             <div class="nextsmall" onclick="CI.togglecanvasdata()">Toggle allow canvas data</div>
           </div>
         </div>
       </div>
 
     </div></div></div>
+
+    <!--2022-10 ADD-->
+    <div id="ci_wait" class="wait">
+      w o r k i n g . . .
+    </div>
+
   </body>
 </html>
 
