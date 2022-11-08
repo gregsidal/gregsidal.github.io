@@ -76,11 +76,24 @@ DS.setsizectrls = function( id, chg ) {
 
   var pw = DS.prev.w;
   var ph = DS.prev.h;
-  var w = window.innerWidth;
-  var h = window.innerHeight;
-  if (w < h && pw >= ph)
+
+  /*2022-10 ADD*/
+  var usedpr = UI.ischk( id+'_devicepixelratio', true );
+  var pixelratio = UI.num( id+'_pixelratio', 0.01, 20.0, 1.0 );
+  if (usedpr)
+    pixelratio = window.devicePixelRatio;
+  if (usedpr)
+    UI.el(id+'_pixelratio').value = pixelratio;
+  UI.el(id+'_pixelratio').disabled = usedpr;
+  /*END 2022-10 ADD*/
+
+  var w = Math.floor( window.innerWidth*pixelratio );   /*2022-10 EDIT add pr*/
+  var h = Math.floor( window.innerHeight*pixelratio );  /*2022-10 EDIT add pr*/
+
+  if (w < h && pw == 0 && ph == 0)  /*2022-10 EDIT*/
     if (UI.ischk( id+'_autosize', true ))
       UI.putv( id+'_autoperc', 100 );
+
   DS.prev.w = w;
   DS.prev.h = h;
 
@@ -89,8 +102,11 @@ DS.setsizectrls = function( id, chg ) {
   var perc = UI.num( id+'_autoperc', 1, 100, 50 );
   //var w = parseFloat( UI.style(id+'_back','width') );
   //var h = parseFloat( UI.style(id+'_back','height') );
-  UI.el(id+'_size2msg').innerHTML = w>h ? 'width' : 'height';
-  UI.el(id+'_size1msg').innerHTML = w>h ? 'height' : 'width';
+
+  /*2022-10 DEL*/
+  /*UI.el(id+'_size2msg').innerHTML = w>h ? 'width' : 'height';
+  UI.el(id+'_size1msg').innerHTML = w>h ? 'height' : 'width';*/
+
   if (w > h)
     w = Math.floor( w*perc/100 );
   else
@@ -212,6 +228,9 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
     var yes = !this.prevtime || (curtime >= deadtime);
     if (yes)
       this.prevtime = curtime;
+    //else    /*2022-10 ADD 4DEBUG*/
+      //if (DS.debug)
+        //console.log( "Not enough time elapsed: "+(deadtime-curtime) );
     return yes;
   }
   this.onstep = function() {
@@ -221,6 +240,7 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
       this.scrollframe();
       this.filldata();
     }
+    //console.log( 'next step' );
     window.requestAnimationFrame( DS.nextstep );
   }
   this.onnotify = function( msg ) {
@@ -249,7 +269,7 @@ DS.Animator = function( w, h, canv, delay, steplines, callback ) {
     if (!this.view.canvas) return;
     //this.nextfile = 0;
     if (this.params.files.length || this.params.urls.length)
-      window.requestAnimationFrame( DS.nextstep );
+      {/*console.log( 'start' );*/  window.requestAnimationFrame( DS.nextstep );}
     else
       this.onnotify( "No files on drive" );
     return this.params.files.length || this.params.urls.length;
@@ -457,6 +477,46 @@ UI.int = function( id, min, max, def ) {
   UI.putv( id, n );
   return n;
 }
+
+/*2022-10 ADD*/
+UI.replaceclass = function( id, cls1, cls2 ) {
+  var e = document.getElementById( id );
+  if (e) {
+    e.classList.remove( cls1 );
+    e.classList.add( cls2 );
+  }
+}
+UI.swapclass = function( id, cls1, cls2 ) {
+  var e = document.getElementById( id );
+  if (e)
+    if (e.classList.contains( cls1 ))
+      UI.replaceclass( id, cls1, cls2 );
+    else
+      if (e.classList.contains( cls2 ))
+        UI.replaceclass( id, cls2, cls1 );
+      else
+        e.classList.add( cls2 );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.replaceclass( idfoldpane, 'closed', 'opened' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.replaceclass( idfoldpane, 'opened', 'closed' );
+}
+UI.toggle = function( id1, id2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  UI.swapclass( id2, 'visible', 'hidden' );
+}
+/*END 2022-10 ADD*/
+
+/*2022-10 REM
 UI.toggle = function( idbtn, id ) {
   UI.swapstyle( idbtn, id, 'visibility' );
 }
+*/
+
+
