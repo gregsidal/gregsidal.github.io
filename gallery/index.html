@@ -3,6 +3,7 @@
 
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   <!--2022-10 ADDITION-->
     <title>Greg Sidal Art Gallery</title>
     <meta content="Greg Sidal art gallery" name="description">
     <meta content="Greg Sidal" name="author">
@@ -13,6 +14,7 @@ sizes="64x64">
     <script src="../ui.js"></script>
     <script src="gallery.js"></script>
 
+    <!--2022-10 DELETION
     <style>
       body {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
       .panewrap {position: static;}
@@ -28,6 +30,7 @@ sizes="64x64">
         canvas, img, .emulatecanvas {height: 100%; width: auto;}
       }
     </style>
+    END 2022-10 DELETION-->
 
   </head>
 
@@ -41,9 +44,11 @@ sizes="64x64">
     </div>
 
     <div class="menubar toggled">
-      <div class="open ctrlbtn" id="controlbtn" onclick="UI.toggle('controlbtn','controlpane')"></div>
+      <div class="togglepart hidden" id="controlbtn" onclick="UI.toggle('controlbtn','controlpane')">  <!--2022-10 ADD-->
+        <div class="open"></div>  <!--2022-10 EDIT rem ctrlbtn-->
+      </div>
       <div class="prev" onclick="UI.jsonslideshowarray(-1)"></div>
-      <div class="new" onclick="UI.jsonslideshowarray()"></div>
+      <div class="next" onclick="UI.jsonslideshowarray()"></div>  <!--2022-10 EDIT next-->
     </div>
 
     <div class="titlebar" id="titlebar">
