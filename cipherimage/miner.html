@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <!--2022-10 ADD-->
     <title>Cipher-Image Miner</title>
     <meta content="Launch brute-force attack against a Cipher Image" name="description"/>
     <meta content="Greg Sidal" name="author"/>
@@ -17,13 +18,13 @@
   <body onload="CI.miner.init('ci');CI.setup('ci',CI.defaulturl,CI.defaultname);" id="ci_back">
 
     <div class="back" onclick="CI.clickback('ci');">
-      <canvas id="ci_canv" width="900" height="800">
+      <canvas id="ci_canv" width="400" height="500">   <!--2022-10 EDIT (400,500)--> 
         <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/>
                  Browser released after 2015 recommended (testing performed on Firefox and Chrome)</div>
       </canvas>
     </div>
 
-    <div class="menubar" id="menubar">
+    <div class="menubar hidden" id="menubar">    <!--2022-10 EDIT hidden--> 
       <div class="open" id="controlbtn" onclick="UI.toggle('menubar','controlpane')"></div>
     </div>
 
@@ -66,7 +67,7 @@
 
       <div class="gapabove g25 dispnone" id="ci_iscipherimg">
         <div><div class="inlinestats" id="ci_msg">Image raster is cipher</div></div>
-        <div class="gapmedabove">
+        <div class="gapabove g25">  <!-- 2022-10 EDIT (g25) -->
           <div class="line">
             Key length if known: <input class="inpshort" id="ci_randbytes" value=""></input> (# bytes)
           </div>
@@ -79,6 +80,7 @@
             Operates on images encrypted with random keys.
             <br/>Beta: Firefox/Chrome browsers tested.
             <br/>This demo is too slow to be a practical miner.
+            <br/>Expect delays mining large cipher-images.   <!--2022-10 ADD-->
           </div>
         </div>
 
