@@ -3,6 +3,7 @@
 
   <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!--2022-10 ADD-->
     <title>Time Machines</title>
     <meta content="Time Machines by Greg Sidal Digital Art" name="description"/>
     <meta content="Greg Sidal" name="author"/>
@@ -12,7 +13,6 @@
       function calcfuture( passlen, showfun ) {
         function getBaseLog(x, y) {
           return Math.log(y) / Math.log(x);
-
         }
         function showres( Year, passlen, per ) {
           //console.log( Math.floor(Year+0.5) + ": breakable in 1 "+per );
@@ -55,16 +55,13 @@
         var e = UI.gete( outid );
         if (e) e.innerHTML = "";
         calcfuture( UI.getint(passid,1,999,128), showfun );
+        //2022-10 ADD
+        UI.replaceclass( 'calculatorpane', 'closed', 'opened' );
       }
-        /*{
-          "metadata": {
-            "title": {
-              "main": "My Amazing Photo",
-              "sub": "from Trip to Mars Album"
-            }
-          }
-          "image": "amazing_photo.png"
-        }*/
+      function calcfuture_reset() {  //2022-10 ADD
+        UI.replaceclass( 'calculatorpane', 'opened', 'closed' );
+      }
+
       UI.gallery_imgs = [
 {"image":"timemachine96.png",metadata:{title:{main:
 "<a href='timemachine96.png' class='tt bigger' target='_blank'>timemachine96.png</a>",
@@ -79,12 +76,17 @@ sub:"128 bit (16 byte) key, vulnerable in 2101"}}} /*,
 "<a href='timemachine256.png' class='tt bigger' target='_blank'>timemachine256.png</a>",
 sub:"256 bit (32 byte) key, vulnerable in 2357"}}}*/
       ];
+
+      <!--2022-10 ADD-->
+      function UItog() { 
+        UI.toggleall( 'controlbtn', ['controlpane','titlebug'] );
+      }
     </script>
   </head>
 
   <body onload="UI.onload();UI.jsonslideshowarray(1,'sample',UI.gallery_imgs)">
 
-    <div class="back" onclick="UI.toggle('controlbtn','controlpane')">
+    <div class="back" onclick="UItog()"> <!--2022-10 EDIT (tog)-->
       <!-- <canvasx id="canv" class="dispnone">
         <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/> Vector graphics support required </div>
       </canvasx> -->
@@ -92,20 +94,27 @@ sub:"256 bit (32 byte) key, vulnerable in 2357"}}}*/
     </div>
 
     <div class="menubar toggled">
-      <div class="open ctrlbtn" id="controlbtn" onclick="UI.toggle('controlbtn','controlpane')"></div>
+      <div class="togglepart hidden" id="controlbtn" onclick="UItog()">  <!--2022-10 ADD-->
+        <div class="open"></div>  <!--2022-10 EDIT rem ctrlbtn-->
+      </div>
       <div class="prev" onclick="UI.jsonslideshowarray(-1)"></div>
-      <div class="new" onclick="UI.jsonslideshowarray()"></div>
+      <div class="next" onclick="UI.jsonslideshowarray()"></div>  <!--2022-10 EDIT next-->
     </div>
 
-    <div class="titlebar" id="titlebar">
+    <div class="titlebug visible toggledifsmallscreen" id="titlebug">  <!--2022-10 EDIT (titlebug)--> 
       <div><div id="canv_subtitle" class="canvtitle2"></div></div>
       <div class="descr tt" id="canv_title"></div>
+    </div>
+
+    <div class="titlebar">  <!--2022-10 ADD--> 
+      <div><div id="canv_subtitle2" class="canvtitle2"></div></div>
+      <div class="descr tt" id="canv_title2"></div>
     </div>
 
     <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
 
       <div class="corner">
-        <div class="close" id="closebtn" onclick="UI.toggle('controlbtn','controlpane')"></div>
+        <div class="close" id="closebtn" onclick="UItog()"></div>
       </div>
       <div class="title">
         Time Machines
@@ -120,17 +129,20 @@ Cipher-images designed to become vulnerable to brute-force attacks at measurable
 The images in this series have been encrypted with random keys of increasing lengths with the expectation that each key will ultimately become vulnerable to discovery by brute-force search once sufficient computing power becomes available.
       </div>
 
-      <div class="gapabove g30">
-        <div class="nextsmall unfold" id="tm_unfoldbtn"
+      <div class="gapabove g25">     <!--2022-10 EDIT (g30)--> 
+        <div class="nextsmall unfold" id="tm_unfoldbtn"   
                      onclick="UI.unfold('tm_unfoldbtn','tm_foldbtn','tm_foldpane');"></div>
         <div class="nextsmall dispnone fold" id="tm_foldbtn"
                      onclick="UI.fold('tm_unfoldbtn','tm_foldbtn','tm_foldpane');"></div>
-        &nbsp; <div class="in">Vulnerability calculator</div>
+        <!--2022-10 REM &nbsp; <div class="in">Vulnerability calculator</div> -->
+        <div class="nextsmall new toggledifsmallscreen inline" onclick="UI.jsonslideshowarray()"></div>   <!--2022-10 ADD--> 
+        <div id="canv_subtitle3" class="inlinestats toggledifsmallscreen inline"></div>   <!--2022-10 ADD--> 
       </div>
 
-      <div class="gapabove g15 essay dispnone" id="tm_foldpane">
+      <div id="tm_foldpane" class="slider closed">    <!--2022-10 EDIT add slider class-->
+      <div class="gapabove g15 essay">                <!--2022-10 ADD move gapabove g25-->
 
-        <div class="gapabove g25 indent">
+        <!--2022-10 EDIT (-indent)--> <div class="gapabove g25">
         <div class="">
         <div class="">
           The formula used to measure the time needed for computing power to advance sufficiently
@@ -163,16 +175,21 @@ Moore's law is usually understood as applying specifically to integrated curcuit
         </div>
         </div>
 
-        <div class="gapabove g25 indent" id="calculator">
+        <div class="gapabove g25" id="calculator">
+
           <div class="gapminabove">
             <div class="line">
-              Key length: <input class="inpshort" value="512" id="keylen"></input> (# bits)
+              Key length: <input class="inpshort" value="512" id="keylen" oninput="calcfuture_reset()"></input> (# bits)
               &nbsp; <div class="nextsmall rand" onclick="calcfuture_('keylen','output')">Calculate</div>
             </div>
           </div>
+
           <div class="gapabove g10 indent">
-            <div class="little tt" id="output"></div>
+            <div id="calculatorpane" class="slider em10 closed">    <!--2022-10 ADD-->
+              <div class="little tt" id="output"></div>
+            </div>
           </div>
+
         </div>
 
         <!--<div class="gapabove g35 i">
@@ -182,6 +199,7 @@ Moore's law is usually understood as applying specifically to integrated curcuit
           </div>
         </div>-->
 
+      </div>   <!--2022-10 ADD-->
       </div>
 
       <!--<div class="gapabove g30 essay">
@@ -192,7 +210,7 @@ Moore's law is usually understood as applying specifically to integrated curcuit
           </div>
       </div>-->
 
-      <div class="gapabove g35 essay">
+      <div class="gapabove g25 essay">   <!--2022-10 EDIT (g35)--> 
         <div class="descr">
           2021 <a href="../index.html">Greg Sidal</a> cc-by-nc
           <br/><a class="app" href="../cipherimage/index.html">Cipher-image creation utility</a>
