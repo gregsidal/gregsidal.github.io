@@ -14,6 +14,48 @@ UI.onload = function( drawpic, id ) {
     UI.swapstyle( 'canv', 'canvimg', 'display' );
   if (drawpic) drawpic( id );
 }
+
+/*2022-10 ADD*/
+UI.replaceclass = function( id, cls1, cls2 ) {
+  var e = document.getElementById( id );
+  if (e) {
+    e.classList.remove( cls1 );
+    e.classList.add( cls2 );
+  }
+}
+UI.swapclass = function( id, cls1, cls2 ) {
+  var e = document.getElementById( id );
+  if (e)
+    if (e.classList.contains( cls1 ))
+      UI.replaceclass( id, cls1, cls2 );
+    else
+      if (e.classList.contains( cls2 ))
+        UI.replaceclass( id, cls2, cls1 );
+      else
+        e.classList.add( cls2 );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.replaceclass( idfoldpane, 'closed', 'opened' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.replaceclass( idfoldpane, 'opened', 'closed' );
+}
+UI.toggle = function( id1, id2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  UI.swapclass( id2, 'visible', 'hidden' );
+}
+UI.toggleall = function( id1, ids2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  for( var i=0; i<ids2.length; i++ )
+    UI.swapclass( ids2[i], 'visible', 'hidden' );
+}
+/*END 2022-10 ADD*/
+
+/*2022-10 REM
 UI.toggle = function( idbtn, id ) {
   UI.swapstyle( idbtn, id, 'visibility' );
 }
@@ -27,6 +69,8 @@ UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
   UI.setstyle( idfoldbtn, 'display', 'none' );
   UI.setstyle( idfoldpane, 'display', 'none' );
 }
+*/
+
 UI.unroll = function( id ) {
   UI.setstyle( id+'_unfoldbtn', 'display', 'none' );
   UI.setstyle( id+'_foldbtn', 'display', 'inline-block' );
@@ -51,10 +95,39 @@ UI.mkid = function( id, sub ) {
   return id.split('_')[0] + sub;
 }
 UI.showtitle = function( canvid, title ) {
-  if (!title) title = {};
+  if (!title) title = {main:"",sub:""}; /*2022-10 EDIT*/
   UI.putin( UI.mkid(canvid,'_title'), title.main );
   UI.putin( UI.mkid(canvid,'_subtitle'), title.sub );
+  UI.putin( UI.mkid(canvid,'_title2'), title.main );   /*2022-10 ADD*/
+  UI.putin( UI.mkid(canvid,'_subtitle2'), title.sub ); /*2022-10 ADD*/
 }
+UI.notify = function( act, i, count, id, canvas, pic ) { /*2022-10 REPLACE*/
+  if (count < 0)
+    return;
+  var statselem = UI.gete( id+'_stats' );
+  var stopelem = UI.gete( id+'_stopbtn' );
+  var restartelem = UI.gete( id+'_nextbtn' );
+  var msg = "";
+  if (i < count)
+    msg = i ? act + " " + (i+1) + " of " + count + " lines" : act;
+  else
+    msg = count + " lines drawn";
+  if (statselem)
+    statselem.innerHTML = msg;
+  if (i <= 0)
+    UI.swapstyle( stopelem, restartelem, 'display', 'none' );
+  if (i >= 0 && i < count && pic)
+    UI.showtitle( canvas.id, {main:"",sub:msg} );
+  if (i >= count) {
+    UI.swapstyle( restartelem, stopelem, 'display', 'none' );
+    if (pic)
+      UI.showtitle( canvas.id, pic.getmetadata().title );
+  }
+  if (i >= count && canvas)
+    UI.canvtoimg( canvas );
+}
+/* 
+2022-10 REM
 UI.notify = function( act, i, count, id, canvas, pic ) {
   if (count < 0)
     return;
@@ -76,6 +149,7 @@ UI.notify = function( act, i, count, id, canvas, pic ) {
   if (i >= count && canvas)
     UI.canvtoimg( canvas );
 }
+*/
 UI.drawpic = function( pic, canvas, id ) {
   function drawcallback( i, count ) {UI.notify('drawing',i,count,id,canvas,pic);}
   pic.draw( canvas, drawcallback );
@@ -163,7 +237,7 @@ UI.jsonslideshowarray = function( dir, id, jsonpics ) {
     */
     var m = UI.slideshow.array[n].metadata;
     if (!m.title)
-      UI.slideshow.array[n].metadata.title = { main:"#"+n, sub:"" };
+      UI.slideshow.array[n].metadata.title = { main:"Untitled #"+n, sub:"" }; /*2022-10 EDIT 'untitled'*/
     if (m.client && m.client.name)
       UI.slideshow.array[n].metadata.title.sub = m.client.name;
     if (m.client && m.client.function) {
@@ -247,7 +321,8 @@ UI.Pic = function( w, h ) {
     else {
       this.context = context;
       this.lines = lines;
-      this.procid = UI.Processes.start( lines.length, this, 15 );
+      var count = lines.length; /*2022-10 ADD*/
+      this.procid = UI.Processes.start( count, this, count>100?(count>300?15:60):150 );  /*2022-10 EDIT*/
     }
   }
   this.onnotify = function( i, linecount ) {
@@ -261,7 +336,8 @@ UI.Pic = function( w, h ) {
     UI.Processes.stop( this.procid );
   }
   this.onstep = function( i, linecount ) {
-    for( var j=0; j<10 && i<linecount; i++, j++ )
+    var batch = linecount > 500 ? 20 : this.batch;   /*2022-10 ADD*/
+    for( var j=0; j<batch && i<linecount; i++, j++ )
       this.drawline( this.context, this.lines[i] );
     return i;
   }
@@ -335,6 +411,7 @@ UI.Pic = function( w, h ) {
     canvas.height = (this.pic.margin.top+this.pic.margin.bottom+this.pic.hgt) * this.scale.y;
     return canvas;
   }
+  this.batch = 10;  /*2022-10 ADD*/
   this.pic = {metadata:{}, wid:w, hgt:h, lines:[]};
   this.setscale();
   this.setmargin();
@@ -345,10 +422,26 @@ UI.Pic = function( w, h ) {
  *  process
  */
 UI.Process = function( id, count, service, delay ) {
+  this.timeout = function() {    /*2022-10 ADD*/
+    var curtime = (new Date()).getTime();
+    var deadtime = this.prevtime ? (this.prevtime+this.delay) : 0;
+    var yes = curtime >= deadtime;
+    if (yes)
+      this.prevtime = curtime;
+    /*else 
+      if (UI.debug)
+        console.log( "Not enough time elapsed: "+(deadtime-curtime) );*/
+    return yes;
+  }
   this.step = function() {
     if (this.paused)
       return;
-    if (this.i < this.count || this.count == undefined) {
+    if (this.i < this.count) {     /*2022-10 EDIT*/  /*|| this.count == undefined*/
+      if (!this.timeout()) {       /*2022-10 ADD*/
+        //setTimeout( 'UI.Processes.step("'+this.id+'")', 25 );
+        window.requestAnimationFrame( UI.Processes.stepall );
+        return;
+      }
       if (this.service.onnotify)
         this.service.onnotify( this.i, this.count );
       var n = this.service.onstep( this.i, this.count );
@@ -356,7 +449,8 @@ UI.Process = function( id, count, service, delay ) {
         this.i++;
       else
         this.i = n;
-      setTimeout( 'UI.Processes.step("'+this.id+'")', this.delay );
+      //setTimeout( 'UI.Processes.step("'+this.id+'")', this.delay );
+      window.requestAnimationFrame( UI.Processes.stepall );
       return;
     }
     if (this.service.onnotify)
@@ -385,6 +479,7 @@ UI.Process = function( id, count, service, delay ) {
   this.setdelay( delay );
   this.step();
 }
+
 UI.Processes = {
   nextid: 1,
   current: {},
@@ -400,7 +495,8 @@ UI.Processes = {
   stop: function( id ) { if (id && UI.Processes.current[id]) UI.Processes.current[id].stop(); },
   pause: function( id ) { if (id && UI.Processes.current[id]) UI.Processes.current[id].pause(); },
   setdelay: function( id, delay ) { if (id && UI.Processes.current[id]) UI.Processes.current[id].setdelay(delay); },
-  stopall: function( ) { for (var id in UI.Processes.current) UI.Processes.stop(id); }
+  stopall: function( ) { for (var id in UI.Processes.current) UI.Processes.stop(id); },
+  stepall: function( ) { for (var id in UI.Processes.current) UI.Processes.step(id); }  /*2022-10 ADD*/
 }
 
 
