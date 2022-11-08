@@ -7,6 +7,7 @@
  *  UI main
  */
 var CI = {open:false,views:[],fresh:true,default:0,opencallback:function(id){},filename:""};
+CI.waitsize = 1600000;         /*2022-10 ADD min img size for wait prompt*/
 CI.forcedisallowcanvasdata = false; //true: simulate Tor Browser for testing
 
 CI.setup = function( id, srcu, srcname ) {
@@ -32,7 +33,7 @@ CI.setup = function( id, srcu, srcname ) {
   }
   else
     CI.default = 1;
-  UI.setstyle( id+'_canvasdata', 'display', CI.forcedisallowcanvasdata?'block':'none' );
+  //UI.setstyle( id+'_canvasdata', 'display', CI.forcedisallowcanvasdata?'block':'none' );
 }
 CI.clickback = function( id ) {
   //if (UI.style( id+'_isimgopen', 'display' ) == 'none')
@@ -90,6 +91,7 @@ CI.save = function( id ) {
     else {
       var url = CI.views[id].getBmpDataUrl();
       UI.el(id+'_save').href = url;
+      UI.el(id+'_save').download = UI.v( id+'_savefilename', "cipherimage.png" );  /*2022-10 ADD*/
       UI.el(id+'_save').click();
     }
 
@@ -97,12 +99,14 @@ CI.save = function( id ) {
   }
 }
 CI.setupctrls = function( id, iscry ) {
+  UI.setstyle( id+'_wait', 'display', 'none' );      /*2022-10 ADD*/
   UI.setstyle( id+'_isimgopen', 'display', 'block' );
   UI.setstyle( id+'_encryptbtn', 'display', iscry?'none':'inline-block' );
   UI.setstyle( id+'_randpass', 'display', iscry?'none':'block' );
   UI.setstyle( id+'_decryptbtn', 'display', iscry?'inline-block':'none' );
   UI.setstyle( id+'_iscipherimg', 'display', iscry?'block':'none' );
   UI.setstyle( id+'_savebtn', 'display', CI.fresh?'none':'inline-block' );
+  UI.setstyle( id+'_savectrls', 'display', CI.fresh?'none':'block' );   /*2022-10 ADD*/
   //UI.el(id+'_save').disabled = iscry;
   var canv = UI.el( id+'_canv' );
   if (canv && CI.filename)
@@ -115,28 +119,44 @@ CI.showpass = function( id, pass ) {
   UI.puts( id+'_title', pass );
 }
 CI.randpass = function( id, numbytes ) {
+  if (!window.crypto || !window.crypto.getRandomValues)   /*2022-10 ADD*/
+    return alert( "Browser lacks support for secure random number generation" );
   numbytes = numbytes ? numbytes : UI.int(id+'_randbytes',1,32);
   var ra = Rand.bytearray( numbytes );
   var pass = Rand.bytes2hexstr( ra );
   CI.showpass( id, pass );
   UI.putv( id+'_numbytes', numbytes );
 }
-CI.encrypt = function( id ) {
+CI.wait = function( id, act ) {     /*2022-10 ADD*/
   if (!CI.testcanvas( id ))
     return;
+  var canv = UI.el( id+'_canv' );
+  if (!canv)
+    return;
+  if ((canv.width*canv.height) > CI.waitsize)
+    UI.setstyle( id+'_wait', 'display', 'block' );
+  setTimeout( "CI._" + act + "('" + id + "')", 10 );
+}
+
+/*2022-10 ADD*/
+CI._encrypt = function( id ) {
   CI.views[id].encrypt( UI.v(id+'_pass') );
   CI.fresh = false;
   CI.setupctrls( id, true );
 }
-CI.decrypt = function( id ) {
-  if (!CI.testcanvas( id ))
-    return;
-  //if (!CI.views[id].testpass( UI.v(id+'_pass') ))
-    //return alert( "Wrong key!!!" );
+CI._decrypt = function( id ) {
   var plain = CI.views[id].decrypt( UI.v(id+'_pass') );
   if (!plain)
     alert( "Wrong key!!!" );
   CI.setupctrls( id, plain?false:true );
+}
+/*2022-10 END ADD*/
+
+CI.encrypt = function( id ) {   /*2022-10 EDIT*/
+  CI.wait( id, 'encrypt' );
+}
+CI.decrypt = function( id ) {    /*2022-10 EDIT*/
+  CI.wait( id, 'decrypt' );
 }
 
 
@@ -311,7 +331,8 @@ var UI = {
     n = UI.clipnum( n, min, max );
     UI.putv( id, n );
     return n;
-  },
+  } 
+  /*  2022-10 REM,
   toggle: function( idbtn, id ) {
     UI.swapstyle( idbtn, id, 'visibility' );
   },
@@ -324,5 +345,45 @@ var UI = {
     UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
     UI.setstyle( idfoldbtn, 'display', 'none' );
     UI.setstyle( idfoldpane, 'display', 'none' );
-  }
+  }*/
 };
+
+/*2022-10 ADD*/
+UI.replaceclass = function( id, cls1, cls2 ) {
+  var e = document.getElementById( id );
+  if (e) {
+    e.classList.remove( cls1 );
+    e.classList.add( cls2 );
+  }
+}
+UI.swapclass = function( id, cls1, cls2 ) {
+  var e = document.getElementById( id );
+  if (e)
+    if (e.classList.contains( cls1 ))
+      UI.replaceclass( id, cls1, cls2 );
+    else
+      if (e.classList.contains( cls2 ))
+        UI.replaceclass( id, cls2, cls1 );
+      else
+        e.classList.add( cls2 );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.replaceclass( idfoldpane, 'closed', 'opened' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.replaceclass( idfoldpane, 'opened', 'closed' );
+}
+UI.toggle = function( id1, id2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  UI.swapclass( id2, 'visible', 'hidden' );
+}
+UI.toggleall = function( id1, ids2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  for( var i=0; i<ids2.length; i++ )
+    UI.swapclass( ids2[i], 'visible', 'hidden' );
+}
+/*END 2022-10 ADD*/
