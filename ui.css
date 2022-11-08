@@ -32,17 +32,15 @@ a, p, .descr, .canvtitle, .i, .in {
 a {
   color: rgb(20,40,160);
 }
-a:hover {
-  text-decoration: underline;
-}
 a:visited {
   color: inherit;
 }
 .i, .canvtitle {
   font-style: italic;
 }
-.canvtitle, .canvtitle2 {font-size:117%;}
+.canvtitle {font-size:117%;}
 .canvtitle2 {font-size:110%;}
+.canvtitle:empty, .titlesection.big:empty {display:none;}  /*2022-10 ADD*/
 .indent {margin-left:1.2em; margin-right:1.2em;}
 .tt {font-family: 'Courier',serif; font-size:105%;}
 a.tt {text-decoration:none; font-size:105%;}
@@ -58,9 +56,9 @@ input:hover, input:focus, textarea, button, .btn {
   border: 1px solid #ccc;
   background-color: #fff;
 }
-input:disabled, textarea:disabled, button:disabled, .btn:disabled {
-  border: 1px solid #ccc;
-  background-color: rgba(230,230,230,0.95);
+input:disabled, textarea:disabled, button:disabled, .btn:disabled {  /*2022-10 EDIT*/
+  border: 1px solid #ddd;  /*ccc*/
+  background-color: rgba(235,235,235,0.95);  /*230*/
 }
 textarea {
   margin-bottom: 0.2em;
@@ -82,6 +80,9 @@ input[type="checkbox"], input[type="radio"] {
 }
 .inp {
   width: 3em;
+}
+.inp.float {  /*2022-10 ADD*/
+  width: 6em;
 }
 .inplong {
   width: 15em;
@@ -168,7 +169,7 @@ canvas, .emulatecanvas {
 .line {white-space: nowrap;}
 /*.br, .line {display: block;}*/
 
-.menubar, .controls, .titlebar, .titlemenu {
+.menubar, .controls, .titlebar, .titlebug, .titlemenu {    /*2022-10 ADD titlebug*/ 
   display: block;
   position: absolute;
 }
@@ -178,23 +179,28 @@ canvas, .emulatecanvas {
 .controls.center {
   left: auto;
 }
-.titlebar, .titlemenu, .menubar {
+.titlebug, .titlebar, .titlemenu, .menubar {    /*2022-10 ADD titlebug*/
   right: 0;
   text-align: right;
   background-color: transparent;
 }
-.titlebar {
+.titlebug, .titlebar {    /*2022-10 ADD titlebug*/ 
   bottom: 0;
-  margin: 1em;
+  margin: /*1em*/ 0;  /*2022-10 EDIT*/ 
+  padding: 0.2em;     /*2022-10 ADD*/
+  background-color: rgba(204,204,204,0.65);   /*2022-10 ADD*/
   font-size: 95%;
 }
-.titlebar div {
+
+.titlebug {top: 0; bottom: auto; /*color: #ddd; background-color: rgba(180,180,180,0.6);*/}   /*2022-10 ADD*/ 
+
+.titlebug div, .titlebar div {     /*2022-10 ADD titlebug*/ 
   display: inline-block;
 }
-.titlebar > i > div {
+.titlebug > i > div, .titlebar > i > div {   /*2022-10 ADD titlebug*/ 
   font-size: 90%;
 }
-.titlebar > div {
+.titlebug > div, .titlebar > div {    /*2022-10 ADD titlebug*/ 
   font-size: 75%;
 }
 .titlemenu, .menubar {
@@ -231,21 +237,21 @@ canvas, .emulatecanvas {
 }
 
 .menubar.toggled {visibility: visible;}
-.menubar > .ctrlbtn {visibility: hidden;}
+/*.menubar > .ctrlbtn {visibility: hidden;} 2022-10 REM*/
 
 .open:after, .openfile:before {content: '\22EF' ;} /*&ctdot; 22ef*/
 .close:after {content: '\2716' ;}  /*&Close; 274e 2716 2573*/
 .prev:after {content: '\25C2' ;}   /*&lt; \003C  \25C2  25B5 21E6 */
 .next:after {content: '\25B8' ;}   /*&gt; \003E 25b8 25B7  25B9 279E 27AD 21E8*/
-.fold:after {content: '\25B4' ;} /*25b4 2259; 225A 2227*/
-.unfold:after {content: '\22EE' ;} /*2999 2982 22ee 25be(down arrow)*/
+.fold:after {content: '\22ee' ;}   /*25b4 2259 225A 2227*/
+.unfold:after {content: '\22ee' ;} /*2999(vert dots 4) 2982(dots 2) 22ee(vert dots) 25be(down arrow)*/
 a, .link {text-decoration: underline; color:rgb(20,50,150);}
 .app {} /**/
 /*.app:before {content: '\2699  ' ;} /**/
 .new:before {content: '\25B8  ' ;}   /*b8 littler*/
 .fwd:after {content: '  \25B8 ' ;}   /**/
 .rev:before {content: '\25C2  ' ;}   /*c2 littler*/
-.stop:before {content: '\2716  ' ;}   /*2297 2716 2981*/
+.stop:before {content: '\2981  ' ;}   /*2297(cirled x) 2716(big x) 2981(bold dot)*/  /*2022-10 EDIT (dot)*/
 .rand:after {content: '  \21BB ' ;}   /*21bb 2682 27ff*/
 .archive:before {content: '\2707  ' ;}   /*2707(tape) 1F4BE(floppy) 1F33B(sunflower)*/
 
@@ -265,7 +271,7 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
   padding-left: 0.4em;
   padding-right: 0.4em;
   min-width: 1.0em;
-  border: 1px solid #bbbbbb;
+  border: 1px solid #c8c8c8;
   background-color: transparent;
   text-align: center;
 }
@@ -289,51 +295,74 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
 
 .empha {font-size:106%; border:1px solid #999; padding:0.4em; background-color:#fff; font-family:'Arial',sans-serif;}
 .empha {text-decoration:none; display:inline-block;}
-a.empha:hover {background-color:#dfd; text-decoration:none;}
 
-.open, .next, .titlemenu > div, .menubar > div {
+.open, .next, .prev /*, .titlemenu > div, .menubar > div*/ {
   display: block;
-  border: 1px solid #999;
-  color: #999;
-  font-size: 125%;
+  border: 1px solid #aaa;         /*2022-10 EDIT*/
+  color: /*#999*/ #444;           /*2022-10 EDIT*/ 
+  font-size: /*125*/ 110%;        /*2022-10 EDIT*/ 
   padding: 0em;
   padding-left: 0.2em;
   padding-right: 0.2em;
   min-width: 1.15em;
   text-align: center;
-  background-color: transparent;
+  background-color: rgba(204,204,204,0.7);   /*2022-10 ADD*/
 }
-.titlemenu > div, .menubar > div {
+.titlemenu > div, .open, .next, .prev /*.menubar > div*/ {
   /*border-right-width: 0;*/
   margin-bottom: 1.3em;
-  margin-right: 3em;
+  margin-right: /*3*/ 2em;  /*2022-10 EDIT*/
 }
-.menubar > div:after, .menubar > div:before {font-family: 'Lucida Sans Unicode',sans-serif; }
-.open {
+.open:after, .next:after, .prev:after 
+/*.menubar > div:after, .menubar > div:before*/ {font-family: 'Lucida Sans Unicode',sans-serif; }
+
+/*.open {  2022-10 REM
   border-top: 0;
   border-left: 0;
 }
 .next {
   margin-top: 1.5em;
   border-left: 0;
+}*/
+
+/*2022-10 ADD*/
+@media (hover: hover) {
+  a:hover {text-decoration: underline;}
+  a.empha:hover {background-color:#dfd;}
+  .close:hover, .open:hover, .next:hover, .prev:hover, .nextsmall:hover, /*.menubar > div:hover,*/ a:hover, .link:hover {
+    cursor: pointer;
+    color: red;
+  }
+  .open:hover, .next:hover, .prev:hover, .nextsmall:hover /*, .titlemenu > div:hover, .menubar > div:hover*/ {
+    background-color: #fff;
+  }
 }
-.close:hover, .open:hover, .next:hover, .prev:hover, .nextsmall:hover, .menubar > div:hover, a:hover, .link:hover {
-  cursor: pointer;
+.close:active, .open:active, .next:active, .prev:active, .nextsmall:active, a:active, .link:active {
   color: red;
 }
-.open:hover, .next:hover, .nextsmall:hover, .titlemenu > div:hover, .menubar > div:hover {
+.open:active, .next:active, .prev:active, .nextsmall:active {
   background-color: #fff;
 }
+.open, .next, .prev, .nextsmall, input, a {
+  transition: background-color 0.75s, color 0.75s;
+}
+.close {
+  transition: color 0.75s;
+}
+/*2022-10 ADD END*/
+
 .nextsmall:disabled {
   visibility: hidden;
 }
+
+.unfold, .running, .open, .openfile {font-weight: bold;}  /*2022-10 ADD*/
 
 .toggled {visibility: visible;}
 .nottoggled {visibility: hidden;}
 .toggledifsmallscreen {display: none;}
 .nottoggledifsmallscreen {display: block;}
 .dispnone {display: none;}
-.gapminabove {margin-top: 0.1em;}
+.gapminabove {margin-top: /*0.5em;*/ 0.2em;}  /*2022-10 EDIT*/
 .gapmedabove {margin-top: 0.5em;}
 .gap, .gapnormabove {margin-top: 1.2em;}
 .gapleft {margin-left: 1em;}
@@ -355,8 +384,9 @@ a.empha:hover {background-color:#dfd; text-decoration:none;}
 .bold { font-weight: bold;}
 .center { text-align: center; width: 100%;}
 
-.json, .list {height: 15em; width: 100%; color: #555; font-family: 'Courier',serif;}
-.json.long, .list.long {height: 25em;}
+.json, .list {height: 15em; width: 28em; /*100%*/; color: #555; font-family: 'Courier',serif;}   /*2022-10 EDIT*/
+.json {width: 30em;}   /*2022-10 ADD*/
+.json.long, .list.long {height: /*25*/ 20em;}  /*2022-10 EDIT*/
 
 @media all and (max-width:900px) {
   .controls {font-size: 90%;}
@@ -366,11 +396,11 @@ a.empha:hover {background-color:#dfd; text-decoration:none;}
   .json, .list {min-width: 0;}
   input {margin-bottom:0.1em;}*/
 }
-.thumb {display:block; max-width: 280px;}
+/*2022-10 EDIT*/ .thumb {display:block; max-width: /*280px*/ 100%; width: /*280*/ 200px;}
 .thumb.hires {display: none;}
 .thumbcap {display:block; font-size: 75%;}
 .thumbbox {display:block;}
-.titlebar > div, .titlebar > i > div {display: block;}
+/*2022-10 ADD titlebug*/ .titlebug > div, .titlebar > div, .titlebug > i > div, .titlebar > i > div {display: block;}
 /*@media all and (max-width:400px) {
   .controls {font-size: 90%;}
   .stats {display: block;}
@@ -380,24 +410,25 @@ a.empha:hover {background-color:#dfd; text-decoration:none;}
   .json, .list {font-size: 0.8em;}
   .maxwid {width: 25em;}
   .pwid, .essaywid {max-width: 30em;}
-  .essay {width: 25em; font-size:100%; line-height:125%;}
+  /*2022-10 EDIT*/ .essay {width: /*25*/ 24em; font-size:/*100*/ 95%; line-height:125%;}
+  /*2022-10 ADD*/ .titlebug {bottom:0; top:auto;}
 }
 @media all and (min-width:1800px) and (orientation:landscape) {
   .controls {font-size: 120%;}
-  .thumb {width: 352px; max-width: 352px;}
+  /*2022-10 EDIT*/ .thumb {width: 352px; max-width: /*352px*/ 100%;}
   .thumb.lores {display: none;}
   .thumb.hires {display: block;}
   .pwid, .essaywid {max-width: 45em;}
 }
 @media all and (orientation:portrait) {
-  body {font-size: 5vw;}
+  /*2022-10 EDIT*/ body {font-size: /*5vw*/ 1.1em;}
   .panewrap {width: 100%;}
   canvas, .emulatecanvas {height: auto; width: 100%;}
   .controls {border: 0; width:100%;}
   .controls.center {border: 0; width:100%;}
   .controlset {padding: 1.25em; padding-top: 2.5em; padding-bottom: 1.5em; font-size: 90%;}
   .line {white-space: inherit;}
-  .thumb {max-width: 352px; width: 352px;}
+  /*2022-10 EDIT*/ .thumb {max-width: /*352px*/ 100%; width: /*352*/ 200px;}
   .thumb.lores {display: none;}
   .thumb.hires {display: block;}
   .gapbelow.g25 {margin-bottom: 2em;}
@@ -405,25 +436,101 @@ a.empha:hover {background-color:#dfd; text-decoration:none;}
   .gapabove.g35 {margin-top: 3.5em;}
   .gapabove.g30 {margin-top: 3em;}
   .menubar, .titlemenu {top: auto; left: auto; bottom: 0; width: 100%; padding-bottom: 2em; text-align: center;}
-  .open, .next {display: inline-block; border: 1px solid #777; color: #777;}
+  /*2022-10 ADD*/ .menubar {padding-bottom: 3em;}
+  /*2022-10 EDIT*/ .open, .next, .prev {display: inline-block; /*border: 1px solid #999;*/ /*777*/ /*color: #444;*/ /*777*/}
   .next {margin-left: 1.5em;}
   .titlebar, .titlemenu, .menubar {left: 0; text-align: center;}
-  .titlebar {margin-bottom: 6em;}
-  .titlemenu > div, .menubar > div {display: inline-block; margin: 0; margin-left: 0.4em; margin-right: 0.4em; border-right-width: 1px;}
+  /*2022-10 EDIT*/ .titlebar {margin-bottom: /*6em*/ 0;}
+  /*2022-10 ADD*/ .titlebar.pintop {top: 0; bottom: auto;}
+  /*.titlemenu > div, .menubar > div*/ 
+  .open, .next, .prev {display: inline-block; margin: 0; margin-left: 0.4em; margin-right: 0.4em; border-right-width: 1px;}
+  /*2022-10 ADD*/ .menubar>.togglepart {display: inline-block;}
   .title, .titlesection {white-space: normal; font-size: 120%;}
+  /*2022-10 ADD*/ .title {font-size: 125%;}
   .titlesection {font-size: 130%;}
   /*.empha {background-color:#dfd;}*/
   .pwid, .essay, .inlinetitle {font-size:90%}
   a.tt {font-size:110%;}
   .canvtitle {font-size:110%;}
-  input[type=checkbox], input[type=radio] {width: 4vw; height: 4vw; transform: scale(1.2);}
+  input[type=checkbox], input[type=radio] 
+           /*2022-10 EDIT*/ {width: /*4vw*/ 0.95em; height: /*4vw*/ 0.95em; /*transform: scale(1.2);*/}
   .toggledifsmallscreen {display: block;}
+  /*2022-10 ADD*/ .toggledifsmallscreen.inline {display: inline-block;}
   .nottoggledifsmallscreen {display: none;}
-  /*textarea {font-size: 4vw;}*/
-  .json {height: 35em;}
-  .list {height: 30em;}
-  .json.long, .list.long {height: 50em;}
+  /*2022-10 EDIT*/ textarea {font-size: /*4vw*/ 0.8em;}
+  /*2022-10 EDIT*/ .json {height: /*35*/ 17em;}
+  /*2022-10 EDIT*/ .list {height: /*30*/ 14em;}
+  /*2022-10 EDIT*/ .json.long, .list.long {height: /*50*/ 14em;}
+  /*2022-10 ADD*/ .json, .list {width: 98%; max-width: 98%;}
 }
+
+/*2022-10 ADD*/
+
+/*app framing*/
+      body {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+      .panewrap {position: static;}
+      .back {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+      .controls {overflow-y: auto;}
+      @media all and (orientation:portrait) {
+        .controls {bottom: 0; top: auto; border-top: 1px solid #ccc; max-height:60%;}
+        .controls.maxheight {max-height:85%;}
+        .controls.fullheight {max-height:100%;}
+        .controls.pintop {bottom: auto; top: 0; border-top: 0; border-bottom: 1px solid #ccc;}
+        canvas, .emulatecanvas {width: 100%;}
+        canvas, .emulatecanvas {display: block; position: absolute; bottom: auto; left: 0; top: 0;}
+        canvas.pinbottom, .emulatecanvas.pinbottom {display: block; position: absolute; bottom: 0; left: 0; top: auto;}
+      }
+      @media all and (orientation:landscape) {
+        canvas, .emulatecanvas {height: 100%; width: auto;}
+        .controls.fullwidth {width:100%;}
+      }
+
+      @media all and (max-width:500px) and (orientation:portrait) {
+        body {font-size: 1.0em;}
+       .list {height: 10em;}
+      }
+
+/*wait box*/
+.wait {
+  position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+  background-color: rgba(80,80,80,0.6);
+  font-size: 120%;
+  text-align: center;
+  padding-top: 6em;
+  color: rgba(250,250,250,0.95);
+  display: none;
+}
+
+/*transitions*/
+.slider {
+  max-height: 50em;
+  overflow: hidden;
+}
+.slider.em10, .slider.shorthgt {max-height: 10em;}
+.slider.em20, .slider.shortmedhgt {max-height: 20em;}
+.slider.em30, .slider.medhgt {max-height: 30em;}
+.slider.em40, .slider.highmedhgt {max-height: 40em;}
+.slider.opened {
+  transition: max-height 2s ease;
+}
+.slider.closed {
+  max-height: 0;
+  transition: max-height 1.5s ease-out;
+}
+.controls, .menubar, .menubar>.togglepart, .titlebug {
+  opacity: 1.0;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.controls.visible, .menubar.visible, .menubar>.togglepart.visible, .titlebug.visible {
+}
+.controls.hidden, .menubar.hidden, .menubar>.togglepart.hidden, .titlebug.hidden {
+  opacity: 0.0;
+  visibility: hidden;
+}
+/*END 2022-10 ADD*/
+
+
 /*@media all and (max-width:800px) {
   .menubar {top: auto; left: auto; bottom: 0; width: 100%; padding-bottom: 2em; text-align: center;}
   .open, .next {display: inline-block; border: 1px solid #777;}
@@ -432,6 +539,6 @@ a.empha:hover {background-color:#dfd; text-decoration:none;}
   .titlemenu > div, .menubar > div {display: inline-block; margin: 0; margin-left: 0.4em; margin-right: 0.4em; border-right-width: 1px;}
 }*/
 @media print {
-  .panewrap, .menubar, .titlebar, .titlemenu {display: none;}
+  .panewrap, .menubar, .titlebar, .titlebug, .titlemenu {display: none;}  /*2022-10 EDIT add titlebug*/
 }
 
