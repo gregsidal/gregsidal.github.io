@@ -1,5 +1,5 @@
 /*
- *  Greg Sidal 2015-2021, Source code MIT Licence
+ *  Greg Sidal 2015-2023, Source code MIT Licence
  */
 
 
@@ -8,78 +8,16 @@
  */
 var UI = { };
 UI.onload = function( drawpic, id ) {
+  /* 2023-03 REM 
   var ua = navigator.userAgent.toLowerCase();
   UI.displayasimg = ua.indexOf( "msie" ) >= 0;
   if (UI.displayasimg)
     UI.swapstyle( 'canv', 'canvimg', 'display' );
+  */
   if (drawpic) drawpic( id );
 }
-
-/*2022-10 ADD*/
-UI.replaceclass = function( id, cls1, cls2 ) {
-  var e = document.getElementById( id );
-  if (e) {
-    e.classList.remove( cls1 );
-    e.classList.add( cls2 );
-  }
-}
-UI.swapclass = function( id, cls1, cls2 ) {
-  var e = document.getElementById( id );
-  if (e)
-    if (e.classList.contains( cls1 ))
-      UI.replaceclass( id, cls1, cls2 );
-    else
-      if (e.classList.contains( cls2 ))
-        UI.replaceclass( id, cls2, cls1 );
-      else
-        e.classList.add( cls2 );
-}
-UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
-  UI.setstyle( idunfoldbtn, 'display', 'none' );
-  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
-  UI.replaceclass( idfoldpane, 'closed', 'opened' );
-}
-UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
-  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
-  UI.setstyle( idfoldbtn, 'display', 'none' );
-  UI.replaceclass( idfoldpane, 'opened', 'closed' );
-}
-UI.toggle = function( id1, id2 ) {
-  UI.swapclass( id1, 'hidden', 'visible' );
-  UI.swapclass( id2, 'visible', 'hidden' );
-}
-UI.toggleall = function( id1, ids2 ) {
-  UI.swapclass( id1, 'hidden', 'visible' );
-  for( var i=0; i<ids2.length; i++ )
-    UI.swapclass( ids2[i], 'visible', 'hidden' );
-}
-/*END 2022-10 ADD*/
-
-/*2022-10 REM
-UI.toggle = function( idbtn, id ) {
-  UI.swapstyle( idbtn, id, 'visibility' );
-}
-UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
-  UI.setstyle( idunfoldbtn, 'display', 'none' );
-  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
-  UI.setstyle( idfoldpane, 'display', 'block' );
-}
-UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
-  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
-  UI.setstyle( idfoldbtn, 'display', 'none' );
-  UI.setstyle( idfoldpane, 'display', 'none' );
-}
-*/
-
-UI.unroll = function( id ) {
-  UI.setstyle( id+'_unfoldbtn', 'display', 'none' );
-  UI.setstyle( id+'_foldbtn', 'display', 'inline-block' );
-  UI.setstyle( id+'_foldpane', 'display', 'block' );
-}
-UI.rollup = function( id ) {
-  UI.setstyle( id+'_unfoldbtn', 'display', 'inline-block' );
-  UI.setstyle( id+'_foldbtn', 'display', 'none' );
-  UI.setstyle( id+'_foldpane', 'display', 'none' );
+UI.resize = function( canvid ) {  /*2022-12 ADD*/
+  UI.center( canvid );
 }
 UI.canvtoimg = function( canvas ) {
   if (UI.displayasimg) {
@@ -114,8 +52,10 @@ UI.notify = function( act, i, count, id, canvas, pic ) { /*2022-10 REPLACE*/
     msg = count + " lines drawn";
   if (statselem)
     statselem.innerHTML = msg;
-  if (i <= 0)
+  if (i <= 0) {
     UI.swapstyle( stopelem, restartelem, 'display', 'none' );
+    UI.resize( canvas );  /*2022-12 ADD*/
+  }
   if (i >= 0 && i < count && pic)
     UI.showtitle( canvas.id, {main:"",sub:msg} );
   if (i >= count) {
@@ -180,8 +120,10 @@ UI.drawjsondirect = function( canvid, id, json ) {
   return UI.drawjsondirectscale( canvid, json, id, UI.getnum(id+'_scale',0.001,100000,1.0) );
 }
 
-UI.slideshow = {n:-1, count:1, curpic:null};
+UI.slideshow = {n:-1, count:1, curpic:null, imgloading:false};  /*2022-12 EDIT (add imgloading)*/
 UI.slideshow.step = function( draw, dir, id, count ) {
+  if (UI.slideshow.imgloading)  /*2022-12 ADD*/
+    return;
   if (id) UI.slideshow.id = id;
   if (count) UI.slideshow.count = count;
   UI.slideshow.n += dir ? dir : 1;
@@ -201,40 +143,38 @@ UI.jsonslideshow = function( dir, id, count ) {
 UI.jsonslideshowarray = function( dir, id, jsonpics ) {
   if (jsonpics) UI.slideshow.array = jsonpics;
   function drawimg( id, n, i ) {
-    UI.setstyle( 'canvimg', 'display', 'block' );
     UI.setstyle( 'canv', 'display', 'none' );
+    UI.setstyle( 'canvimg', 'visibility', 'hidden' ); //2023-03 ADD
+    UI.setstyle( 'canvimg', 'display', 'block' );
     UI.gete( 'canvimg' ).src = i.image;
-    /*
-    {
-      "metadata": {
-        "title": {
-          "main": "My Amazing Photo",
-          "sub": "from Trip to Mars Album"
-        }
-      }
-      "image": "amazing_photo.png"
+    /*2022-12 ADD*/
+    function onimgloaded() {
+      UI.slideshow.imgloading = false;
+      var t = i.metadata ? i.metadata.title : {main:"",sub:""};
+      t.main = t.main ? t.main : "";
+      t.sub = t.sub ? t.sub : "";
+      UI.remclass( UI.mkid('canv','_subtitle'), 'waitmsg' );
+      UI.remclass( UI.mkid('canv','_subtitle2'), 'waitmsg' );
+      UI.showtitle( "canv", t );
+      UI.resize( 'canvimg' );
+      UI.setstyle( 'canvimg', 'visibility', 'visible' ); //2023-03 ADD
     }
-    */
-    var t = i.metadata ? i.metadata.title : {main:"",sub:""};
-    t.main = t.main ? t.main : "";
-    t.sub = t.sub ? t.sub : "";
-    UI.showtitle( "canv", t );
+    function onwait() {
+      if (!UI.slideshow.imgloading)
+        return;
+      UI.addclass( UI.mkid('canv','_subtitle'), 'waitmsg' );
+      UI.addclass( UI.mkid('canv','_subtitle2'), 'waitmsg' );
+      UI.showtitle( "canv", {main:"", sub:"l o a d i n g . . ."} );
+    }
+    UI.slideshow.imgloading = true;
+    UI.gete( 'canvimg' ).onload = onimgloaded;
+    //(debug) setTimeout( onimgloaded, 10000 );
+    setTimeout( onwait, 500 );
+    /*2022-12 END ADD*/
   }
   function drawpic( id, n ) {
     UI.setstyle( 'canvimg', 'display', 'none' );
     UI.setstyle( 'canv', 'display', 'block' );
-    /*
-    "metadata": {
-      "title": {
-        "main": "Reclining Nude",
-        "sub": "from Truncations Generator"
-      },
-      "client": {
-        "name": "Random Line Studies",
-        "function": "trunc"
-      },
-    }
-    */
     var m = UI.slideshow.array[n].metadata;
     if (!m.title)
       UI.slideshow.array[n].metadata.title = { main:"Untitled #"+n, sub:"" }; /*2022-10 EDIT 'untitled'*/
@@ -579,3 +519,146 @@ UI.getint = function( id, min, max, def ) {
   UI.putv( id, n );
   return n;
 }
+
+/*2022-10 ADD*/
+UI.addclass = function( id, cls ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e) e.classList.add( cls );
+}
+UI.remclass = function( id, cls ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e) e.classList.remove( cls );
+}
+UI.replaceclass = function( id, cls1, cls2 ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e) {
+    e.classList.remove( cls1 );
+    e.classList.add( cls2 );
+  }
+}
+UI.swapclass = function( id, cls1, cls2 ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e)
+    if (e.classList.contains( cls1 ))
+      UI.replaceclass( id, cls1, cls2 );
+    else
+      if (e.classList.contains( cls2 ))
+        UI.replaceclass( id, cls2, cls1 );
+      else
+        e.classList.add( cls2 );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.replaceclass( idfoldpane, 'closed', 'opened' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.replaceclass( idfoldpane, 'opened', 'closed' );
+}
+UI.toggle = function( id1, id2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  UI.swapclass( id2, 'visible', 'hidden' );
+}
+UI.toggleall = function( id1, ids2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  for( var i=0; i<ids2.length; i++ )
+    UI.swapclass( ids2[i], 'visible', 'hidden' );
+}
+/*END 2022-10 ADD*/
+
+/*2022-10 REM
+UI.toggle = function( idbtn, id ) {
+  UI.swapstyle( idbtn, id, 'visibility' );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldpane, 'display', 'block' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldpane, 'display', 'none' );
+}
+*/
+
+UI.unroll = function( id ) {
+  UI.setstyle( id+'_unfoldbtn', 'display', 'none' );
+  UI.setstyle( id+'_foldbtn', 'display', 'inline-block' );
+  UI.setstyle( id+'_foldpane', 'display', 'block' );
+}
+UI.rollup = function( id ) {
+  UI.setstyle( id+'_unfoldbtn', 'display', 'inline-block' );
+  UI.setstyle( id+'_foldbtn', 'display', 'none' );
+  UI.setstyle( id+'_foldpane', 'display', 'none' );
+}
+
+
+/*2023-03 ADD*/
+UI.center = function( id, idcontainer, centervert ) {return UI.view.center(id,idcontainer);}
+UI.el = UI.gete;
+UI.view = {
+  getparent: function( id ) {
+    var e = UI.el( id );
+    return (e && e.parentElement) ? e.parentElement : null;
+  },
+  getcontainer: function( id, idcontainer ) {
+    return idcontainer ? idcontainer : UI.view.getparent( id );
+  },
+  evp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    if ((e instanceof HTMLImageElement) && e.naturalWidth)
+      vp = {wid: e.naturalWidth, hgt: e.naturalHeight};
+    else
+      if (e.width)
+        vp = {wid: e.width, hgt: e.height};
+    return vp;
+  },
+  cvp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    return vp;
+  },
+  center: function( id, idcontainer ) {
+    idcontainer = UI.view.getcontainer( id, idcontainer );
+    var ed = UI.view.evp( id, idcontainer );
+    var cd = UI.view.cvp( idcontainer );
+    var asp = {e: ed.wid / ed.hgt, c: cd.wid / cd.hgt};
+    if (asp.e < asp.c)
+      UI.replaceclass( id, 'respcenterhgt', 'respcenterwid' );  // too tall for vp
+    else
+      UI.replaceclass( id, 'respcenterwid', 'respcenterhgt' );  // too wide for vp
+    var eh = ed.hgt;
+    if (cd.wid > ed.wid && cd.hgt > ed.hgt)
+      UI.addclass( id, 'centersmall' );
+    else {
+      UI.remclass( id, 'centersmall' );
+      eh = ed.hgt * (cd.wid / ed.wid);
+    }
+    UI.remclass( id, 'centertiny' );
+    UI.remclass( id, 'centershort' );
+    UI.remclass( id, 'centermed' );
+    UI.remclass( id, 'centerlong' );
+    if (cd.hgt > (eh*3.4))
+      UI.addclass( id, 'centertiny' );
+    else
+      if (cd.hgt > (eh*2.7))
+        UI.addclass( id, 'centershort' );
+      else
+        if (cd.hgt > (eh*2.2))
+          UI.addclass( id, 'centermed' );
+        else
+          if (cd.hgt > (eh*1.7))
+            UI.addclass( id, 'centerlong' );
+  }
+}
+/*END 2023-03 ADD*/

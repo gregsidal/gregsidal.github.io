@@ -107,7 +107,7 @@ input[type="checkbox"], input[type="radio"] {
 
 canvas, .emulatecanvas {
   display: block;
-  margin: 0 auto;
+  margin: auto auto;
   width: 100%; height: auto;
   padding: 0; border: 0;
   background-color: #fff;
@@ -243,8 +243,8 @@ canvas, .emulatecanvas {
 .close:after {content: '\2716' ;}  /*&Close; 274e 2716 2573*/
 .prev:after {content: '\25C2' ;}   /*&lt; \003C  \25C2  25B5 21E6 */
 .next:after {content: '\25B8' ;}   /*&gt; \003E 25b8 25B7  25B9 279E 27AD 21E8*/
-.fold:after {content: '\22ee' ;}   /*25b4 2259 225A 2227*/
-.unfold:after {content: '\22ee' ;} /*2999(vert dots 4) 2982(dots 2) 22ee(vert dots) 25be(down arrow)*/
+.fold:after {content: '\2af6' ;}   /*22ee 25b4 2259 225A 2227  2023-03 EDIT (2af6)*/
+.unfold:after {content: '\2af6' ;} /*2999(vert dots 4) 2982(dots 2) 22ee(vert dots) 25be(down arrow)*/
 a, .link {text-decoration: underline; color:rgb(20,50,150);}
 .app {} /**/
 /*.app:before {content: '\2699  ' ;} /**/
@@ -254,6 +254,8 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
 .stop:before {content: '\2981  ' ;}   /*2297(cirled x) 2716(big x) 2981(bold dot)*/  /*2022-10 EDIT (dot)*/
 .rand:after {content: '  \21BB ' ;}   /*21bb 2682 27ff*/
 .archive:before {content: '\2707  ' ;}   /*2707(tape) 1F4BE(floppy) 1F33B(sunflower)*/
+.swap:after {content: '  \27F7 ' ;}   /*2194 2b80 21c4 21b6 21b7*/
+.swap2:after {content: '  \2B80 ' ;}   /*2b0c 2b64*/
 
 .nextsmall, .stats, .inlinestats, .inlinetitle, .inlinetag {
   display: inline-block;
@@ -344,7 +346,7 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
   background-color: #fff;
 }
 .open, .next, .prev, .nextsmall, input, a {
-  transition: background-color 0.75s, color 0.75s;
+  transition: background-color 0.75s, color 0.75s, opacity 0.75s; /*2023-03 ADD opac*/
 }
 .close {
   transition: color 0.75s;
@@ -355,7 +357,7 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
   visibility: hidden;
 }
 
-.unfold, .running, .open, .openfile {font-weight: bold;}  /*2022-10 ADD*/
+.fold, .running, .open, .openfile {font-weight: bold;}  /*2022-10 ADD, 2023-03 EDIt (fold)*/
 
 .toggled {visibility: visible;}
 .nottoggled {visibility: hidden;}
@@ -388,13 +390,16 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
 .json {width: 30em;}   /*2022-10 ADD*/
 .json.long, .list.long {height: /*25*/ 20em;}  /*2022-10 EDIT*/
 
-@media all and (max-width:900px) {
+/* @media all and (max-width:900px) { 2022-11 REM */
   .controls {font-size: 90%;}
   /*.hideifsmallscreen {display: none;}
   .title {white-space: normal; font-size: 115%;}
   .thumbnail {display: none; height: auto; width: 100%;}
   .json, .list {min-width: 0;}
   input {margin-bottom:0.1em;}*/
+/*}*/
+@media all and (orientation:portrait) and (min-width:901px) { /* 2022-11 ADD */
+  .controls {font-size: 100%;}
 }
 /*2022-10 EDIT*/ .thumb {display:block; max-width: /*280px*/ 100%; width: /*280*/ 200px;}
 .thumb.hires {display: none;}
@@ -409,12 +414,13 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
   .json {min-width: 25em;}
   .json, .list {font-size: 0.8em;}
   .maxwid {width: 25em;}
-  .pwid, .essaywid {max-width: 30em;}
+  /*2022-10 EDIT*/ .pwid {max-width: 37em; /*30em */ }
+  /*2022-10 EDIT*/ .essaywid {max-width: 30em; }
   /*2022-10 EDIT*/ .essay {width: /*25*/ 24em; font-size:/*100*/ 95%; line-height:125%;}
   /*2022-10 ADD*/ .titlebug {bottom:0; top:auto;}
 }
 @media all and (min-width:1800px) and (orientation:landscape) {
-  .controls {font-size: 120%;}
+  /*2022-10 REM .controls {font-size: 120%;} */
   /*2022-10 EDIT*/ .thumb {width: 352px; max-width: /*352px*/ 100%;}
   .thumb.lores {display: none;}
   .thumb.hires {display: block;}
@@ -423,7 +429,7 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
 @media all and (orientation:portrait) {
   /*2022-10 EDIT*/ body {font-size: /*5vw*/ 1.1em;}
   .panewrap {width: 100%;}
-  canvas, .emulatecanvas {height: auto; width: 100%;}
+  /* 2022-12 REM canvas, .emulatecanvas {height: auto; width: 100%;}*/
   .controls {border: 0; width:100%;}
   .controls.center {border: 0; width:100%;}
   .controlset {padding: 1.25em; padding-top: 2.5em; padding-bottom: 1.5em; font-size: 90%;}
@@ -476,14 +482,51 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
         .controls.maxheight {max-height:85%;}
         .controls.fullheight {max-height:100%;}
         .controls.pintop {bottom: auto; top: 0; border-top: 0; border-bottom: 1px solid #ccc;}
+        /* 2022-12 REM
         canvas, .emulatecanvas {width: 100%;}
         canvas, .emulatecanvas {display: block; position: absolute; bottom: auto; left: 0; top: 0;}
-        canvas.pinbottom, .emulatecanvas.pinbottom {display: block; position: absolute; bottom: 0; left: 0; top: auto;}
+        */
+        /* 2022-12 EDIT */
+        canvas.pinbottom, .emulatecanvas.pinbottom {position: absolute; bottom: 0; left: 0; top: auto;}
+        canvas.pinmiddle, .emulatecanvas.pinmiddle {bottom: 0; left: 0; top: auto;}  /*2022-12 ADD*/
       }
       @media all and (orientation:landscape) {
+        /* 2022-12 REM
         canvas, .emulatecanvas {height: 100%; width: auto;}
+        */
         .controls.fullwidth {width:100%;}
       }
+
+      canvas, .emulatecanvas {position: absolute;}
+
+      /*2023-03 ADD*/
+      /* responsive sizing/positioning */
+      canvas, .emulatecanvas {
+        margin: auto auto; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        width: auto; max-width: 100%; height: auto; max-height: 100%;
+        transition: top 0.7s, visibility 0.7s;
+      }
+      @media all and (orientation:portrait) {
+        canvas:not(.abscenter), .emulatecanvas:not(.abscenter) {left: 50%; top: 0; transform: translate(-50%, 0);}
+        canvas.centermed, .emulatecanvas.centermed {top: 4%;}
+        canvas.centershort, .emulatecanvas.centershort {top: 6%;}
+        canvas.centertiny, .emulatecanvas.centertiny {top: 10%;}
+      }
+      @media all and (orientation:portrait) and (min-width:750px) {
+        canvas.centerlong, .emulatecanvas.centerlong {top: 2%;}
+      }
+      /* tweaks for drivescroll size controls */
+      .list.thin {margin-bottom: 0;}
+      @media all and (orientation:landscape) {
+        .list.thin {width: 25em;}
+        .popupwid {width: 23em;}
+      }
+      input[type=checkbox], input[type=radio] {cursor: pointer;}
+      input.dulled {opacity: 0.5;}
+      input[type=checkbox].dulled, input[type=radio].dulled {opacity: 0.4;}
+      input.dulled:hover, input[type=checkbox].dulled:hover, input[type=radio].dulled:hover {opacity: 1.0;}
+      input.dulled:focus, input[type=checkbox].dulled:focus, input[type=radio].dulled:focus {opacity: 1.0;}
+      /*END 2023-03 ADD*/
 
       @media all and (max-width:500px) and (orientation:portrait) {
         body {font-size: 1.0em;}
@@ -499,6 +542,22 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
   padding-top: 6em;
   color: rgba(250,250,250,0.95);
   display: none;
+}
+@keyframes blink {
+  10% {color: rgb(255,80,80);}
+  25% {color: white;}
+  40% {color: rgb(255,80,80);}
+  55% {color: white;}
+}
+.waitmsg {
+  padding-left: 1.0em;
+  padding-right: 1.0em;
+  font-size: 120%;
+  color: white;
+  animation-name: blink;
+  animation-delay: 0.1s;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
 }
 
 /*transitions*/
@@ -540,5 +599,11 @@ a, .link {text-decoration: underline; color:rgb(20,50,150);}
 }*/
 @media print {
   .panewrap, .menubar, .titlebar, .titlebug, .titlemenu {display: none;}  /*2022-10 EDIT add titlebug*/
+
+  /*2023-03 ADD*/
+      canvas, .emulatecanvas {margin: auto auto; left: 50%; top: 50%; transform: translate(-50%, -50%);}
+     .titlebar /*, .titlebug*/ {display: block; font-size: 65%;}
+  /*2023-03 END ADD*/
+
 }
 

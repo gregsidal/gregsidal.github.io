@@ -1,0 +1,580 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greg Sidal Art</title>
+    <meta content="Greg Sidal Software Art Digital Art New Media Art" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+
+<!--    <link rel="stylesheet" type="text/css" href="ui2.css">  -->
+    <style>
+/*------ general ------*/
+  body {border: 0; margin: 0; padding: 0;}
+  body {font-family:'Arial','Helvetica Neue','Helvetica',sans-serif; font-size: 0.90em; background-color: #ccc; color: #444;}
+  body.app {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+  /*@media all and (max-width:500px) and (orientation:portrait) {
+    body {font-size: 1.0em;}
+  }*/
+  div {position: relative; margin:0; padding:0;}
+  .pin {position: absolute;}
+  .pin.corner {}
+  .pin.corner.left {left: 0;}
+  .pin.corner.top {top: 0;}
+  .pin.corner.right {right: 0;}
+  .pin.corner.bottom {bottom: 0;}
+
+
+/*------ app frame (canvas/image on backing) ------*/
+  .snap, .resp-back, .responsive {
+    position: absolute; border: 0; margin: 0; padding: 0; left: 0; top: 0; right: 0; bottom: 0;
+    touch-action: none; /*pan-x pan-y;*/
+  }
+
+  /* back with bar */
+  .snap, .resp-back  {background-color: transparent; overflow: hidden;}
+  .resp-back.bargap {}
+  .resp-back.bargap.top {top: 2.5em; border-top: 1px solid #eee;}
+  .resp-back.bargap.bottom {bottom: 2.5em; border-bottom: 1px solid #eee;}
+
+  /* image/canvas */
+  .responsive {position: relative; display: block; background-color: #fff;}
+  /* shrink/stretch wid or hgt, preserve aspect */
+  .responsive.resp-resize {left: 50%; top: 50%; transform-origin: center; transform: translate(-50%, -50%);}
+  .responsive.resp-resize {width: auto; max-width: 100%; height: auto; max-height: 100%;}
+  @media all and (orientation:portrait) {
+    .responsive.resp-resize {left: 50%; top: 0; transform: translate(-50%, 0);}
+  }
+
+  /* manip mode */
+  .responsive.resp-manip {transition: transform 0.7s ease;}
+  .responsive.resp-manip {cursor: grab; user-select: none;}
+  .responsive.resp-manip.manip-panning {cursor: grabbing;}
+  .responsive.resp-manip.manip-zooming-in {cursor: zoom-in;}
+  .responsive.resp-manip.manip-zooming-out {cursor: zoom-out;}
+  @media (hover: hover) {
+    .responsive.resp-manip.manip-zooming-in {transition: transform 1.1s ease;}
+    .responsive.resp-manip.manip-zooming-out {transition: transform 1.1s ease;}
+  }
+  .responsive.resp-manip.manip-panning {transition: none;}
+
+  @media (hover: hover) {
+    .resp-back {scrollbar-width: thin; scrollbar-color: #bbb auto;}
+    .resp-back::-webkit-scrollbar {width: 7px; height: 7px;}
+    .resp-back::-webkit-scrollbar-track {background: rgba(220,220,220,0.5);}
+    .resp-back::-webkit-scrollbar-thumb {background-color: #999; border-radius: 10px; border: 4px solid transparent;}
+    .resp-back::-webkit-scrollbar-thumb:hover {background-color: #777;}
+  }
+
+
+/*------ toolbar ------*/
+  .bar {
+    display: block; margin: 0; padding: 0; position: absolute; left: 0; right: 0; height: 2.5em;
+  }
+  .bar.top {top: 0;}
+  .bar.bottom {bottom: 0;}
+  .bar.dark {background-color: #c0c0c4;}
+
+  .toolbar {
+    display: block; margin: auto 0.3em; padding: 0.15em 0;
+    background-color: transparent; text-align: center; white-space: nowrap; overflow-x: auto;
+  }
+  .toolbar > .btnbar {font-size: 130%;}
+  .toolbar > .text {font-size: 80%; vertical-align: 0.10em;}
+  .toolbar > .text.middle {margin-left: 0.6em; margin-right: 0.5em;}
+  .toolbar > .text.clickable {margin-left: 0.4em;}
+  .toolbar > .text:empty {margin: 0;}
+  @media all and (orientation:landscape) {
+    .toolbar {text-align: right;}
+    .toolbar {overflow-x: hidden;}
+  }
+
+  /*print toolbar tiny*/
+  @media print {
+    .resp-back.bargap.top {top: 0.9em;}
+    .resp-back.bargap.bottom {bottom: 0.9em;}
+    .bar {height: 0.9em;}
+    .toolbar {font-size:70%; margin: 0;}
+    .toolbar > .btnbar {display: none; font-size: 0.1em;}
+  }
+
+
+/*------ panels ------*/
+  .panelwrap {display: block; padding:0;}
+  .panelwrap.page {position: relative; width: 50em; max-width: 100%; margin:0 auto;}
+  .panelwrap.popup {position: static; margin:0;}
+  @media all and (orientation:portrait) {
+    .panelwrap.popup, .panelwrap.page {width: 100%;}
+  }
+  .panel {
+    display: block; background-color: transparent;
+    opacity: 1.0; visibility: visible; transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  .panel.popup {
+    position: absolute; top: 0; left: 0; overflow-y: auto;  min-width: 22em; max-height: 100%;
+    border-right: 1px solid #bbb; border-bottom: 1px solid #bbb;
+  }
+  .panel.page {position: relative; height: auto; border: 0;}
+  .panel.visible {}
+  .panel.hidden {opacity: 0.0; visibility: hidden;}
+  @media all and (orientation:portrait) {
+    .panel {width: 100%;}
+    .panel.popup {min-width: auto; max-height: 60%; bottom: 0; top: auto; border: 0; border-top: 1px solid #ccc;}
+    .panel.popup.maxheight {max-height: 85%;}
+    .panel.popup.fullheight {max-height: 100%;}
+    .panel.popup.pintop {bottom: auto; top: 0; border-top: 0; border-bottom: 1px solid #ccc;}
+  }
+  /*print without popup panels*/
+  @media print {
+    .panel.popup {display: none;}
+  }
+
+
+/*------ content ------*/
+  .content {
+    background-color: rgba(245,245,245,0.95); text-align: left;
+  }
+  .content.popup {padding: 2.5em; padding-top: 3em; padding-bottom: 2.5em; font-size: 86%;}
+  .content.page {padding: 2.5em; font-size: 90%;}
+  @media all and (orientation:portrait) {
+    .content.popup {padding: 1.25em; padding-top: 2.5em; padding-bottom: 1.5em;}
+    .content.page {padding: 1.6em 1.25em; font-size: 86%;}
+  }
+  @media all and (orientation:portrait) and (min-width:601px) {
+    .content.page {font-size: 92%;}
+    .content.popup > .section.head > .text.title {font-size: 116%;}
+  }
+  .section {display: block;}
+  .section.head {}
+  .section.head > .text.title {display: block; padding-bottom: 0.25em;}
+  .section.head > .text.sub {display: block;}
+  .section.foot {}
+  .section.main {margin-top: 2.5em;}
+  .section.submain {margin-top: 2.0em;}
+  .section.sub {margin-top: 1.5em;}
+  .section.sub2 {margin-top: 0.6em;}
+  .section.sub3 {margin-top: 0.3em;}
+  .section.sub4 {margin-top: 0.1em;}
+  .section.subline {margin-top: 0;}
+  .section.indent {margin-left: 1.2em;}
+
+  .section.page.main {margin-top: 3.2em;}
+
+
+/*------ sliding container ------*/
+  .slider {
+    max-height: 50em; overflow-y: hidden;
+  }
+  .slider.em05, .slider.shortesthgt {max-height: 5em;}
+  .slider.em10, .slider.shorthgt {max-height: 10em;}
+  .slider.em20, .slider.shortmedhgt {max-height: 20em;}
+  .slider.em30, .slider.medhgt {max-height: 30em;}
+  .slider.em40, .slider.highmedhgt {max-height: 40em;}
+  .slider.em50, .slider.highhgt {max-height: 50em;}
+  .slider.em60, .slider.pagehgt {max-height: 60em;}
+  .slider.em70, .slider.highpagehgt {max-height: 70em;}
+  .slider.em80, .slider.scrollhgt {max-height: 80em;}
+  .slider.opened {transition: max-height 1.2s ease-in;}
+  .slider.closed {max-height: 0; transition: max-height 1.0s ease-out;}
+  .slider.shorthgt.opened, .slider.shortmedhgt.opened {transition: max-height 1.0s ease-in;}
+  .slider.shorthgt.closed, .slider.shortmedhgt.closed {transition: max-height 0.6s ease-out;}
+  .slider.highhgt.opened, .slider.highmedhgt.opened {transition: max-height 2.0s ease-in;}
+  .slider.highhgt.closed, .slider.highmedhgt.closed {transition: max-height 1.5s ease-out;}
+  .slider.pagehgt.opened, .slider.highpagehgt.opened, .slider.scrollhgt.opened {transition: max-height 2s ease-in;}
+  .slider.pagehgt.closed, .slider.highpagehgt.closed, .slider.scrollhgt.closed {transition: max-height 1.5s ease-out;}
+
+
+/*------ covering and bug messages ------*/
+  .cover {
+    display: none; position: fixed; left: 0; top: 0; right: 0; bottom: 0; padding-top: 6em;
+    background-color: rgba(80,80,80,0.6); font-size: 115%; color: rgba(250,250,250,0.95); text-align: center;
+  }
+  .msg {
+    padding-left: 1.0em; padding-right: 1.0em;
+    font-size: 110%; color: white;
+  }
+  @keyframes blink {
+    10% {color: white;}
+    15% {color: rgb(255,80,80);}
+    20% {color: white;}
+    25% {color: rgb(255,80,80);}
+    30% {color: white;}
+    35% {color: rgb(255,80,80);}
+    40% {color: white;}
+  }
+  .msg.blink {
+    animation-name: blink; animation-delay: 1.0s; animation-duration: 3s; animation-iteration-count: infinite;
+  }
+
+  .bug {
+    display: block; padding: 0.2em; font-size: 95%; text-align: right;
+    position: absolute; right: 0; top: 0; bottom: auto; 
+    background-color: rgba(204,204,204,0.65);
+  }
+  .bug > .text.i {font-size: 90%;}
+  .bug > .text {font-size: 75%;}
+
+
+/*------ buttons ------*/
+  .btnbar {display: inline-block;}
+  .btn {background-color: transparent; color: #444; text-align: center; transition: background-color 0.75s, color 0.75s;}
+  .btn {display: inline-block; min-width: 1.0em; margin: 0; padding: 0 0.2em;}
+  .btn.icon {font-size: 80%; padding: 1.5em 1.4em;}
+  .btn.box {border: 1px solid #aaa; /*background-color: rgba(204,204,204,0.7);*/}
+  .btn.box.op, .btn.box.sys {
+    border: 1px solid #c8c8c8; padding: 0.15em; padding-left: 0.4em; padding-right: 0.4em;
+  }
+  .btn.noshow {display: none;}
+  .btn.hidden {opacity: 0.0; visibility: hidden;}
+  .btn.toggle.closed {display: inline-block; opacity: 0.3; visibility: visible; cursor: auto;}
+  .btn.toggle.opened {display: inline-block; opacity: 1.0; visibility: visible;}
+  .btn:not(.closed):hover {cursor: pointer;}
+  @media (hover: hover) {
+    .btn:not(.closed):hover {color: red;}
+    .btn.box:not(.closed):hover {background-color: #fff;}
+  }
+  .btn:active {color: red;}
+  .btn.box:active {background-color: #fff;}
+  .btn.box:disabled {border: 1px solid #ddd; background-color: rgba(235,235,235,0.95);}
+
+  /*btn icons*/
+  .btn:after, .btn:before {font-family: 'Lucida Sans Unicode','Arial',sans-serif;}
+
+  .btn.closex:after {content: '\2716' ;}  /*&Close; 274e 2716 2573*/
+  .btn.fold:after {content: '\2af6'; font-weight: bold;}   /*22ee 25b4 2259 225A 2227*/
+  .btn.unfold:after, .btn.menu:after {content: '\2af6';}   /*22ee 25b4 2259 225A 2227*/
+  .btn.open:after, .openfile:before {content: '\22EF' ;} /*&ctdot; 22ef*/
+  .openfile:before {/*font-weight: bold;*/}
+  .btn.prev:after {content: '\25C2' ;}   /*&lt; \003C  \25C2  25B5 21E6 */
+  .btn.next:after {content: '\25B8' ;}   /*&gt; \003E 25b8 25B7  25B9 279E 27AD 21E8*/
+  .btn.new:before {content: '\25B8  ' ;}   /*b8 littler*/
+  .btn.fwd:after {content: '  \25B8 ' ;}   /**/
+  .btn.rev:before {content: '\25C2  ' ;}   /**/
+  .btn.stop:before {content: '\2981  ' ;}   /*2297(cirled x) 2716(big x) 2981(bold dot)*/
+
+  .btn.undo:after {content: ' \21a9 ' ;}   /*293E*/
+  .btn.undoall:after {content: ' \21ab ' ;}   /*2bbd (x in box)*/
+  .btn.savefile:after {content: ' \22EF ' ;}   /**/
+
+  .btn.openimg:after {content: '  \1f5cb ' ; font-weight: bold;}   /*page*/
+  .btn.swap:before {content: ' \27F7  ' ;}   /*2194 2b80 21c4 21b6 21b7*/
+  .btn.swap2:before {content: ' \21C4  ' ;}   /*21C4 2b80 2b0c 2b64*/
+
+  .btn.xor:before {content: ' \2295  ' ;}   /*xor*/
+  .btn.and:before {content: ' \2227  ' ;}   /*and*/
+  .btn.or:before {content: ' \2228  ' ;}   /*or*/
+  .btn.rand:after {content: '  \21BB ' ;}   /*21bb 2682 27ff*/
+  .btn.magnifier:after {content: '  \2315 ';}
+  .btn.alert:before {content: ' \26A0  ' ;}
+  .btn.eye:before {content: ' \1f441 ' ;}
+  .btn.link:after {content: '  \260D ';}
+  .btn.hand:before, .btn.manip:before {content: '\1f591';}
+  .btn.pin:before {content: ' \2299  ';}
+  .btn.skull:after {content: '  \1f571 ';}
+  .btn.worldmap:after {content: '  \1f5fa ';}
+  .btn.finger:after {content: '  \261e ';}
+  .btn.snowman:after {content: '  \2603 ';}
+  .btn.star:after {content: '  \2606 ';}
+  .btn.stopwatch:after {content: '  \23f1 ';}
+  .btn.ringer:after {content: '  \1f6ce ';}
+  .btn.calculator:after {content: '  \1f5a9 ';}
+  .btn.diskette:after {content: '  \1f5ab ';}
+  .btn.mona:after {content: '  \1f5bb ';}
+  .btn.medal:after {content: '  \1f396 ';}
+  .btn.plate:after {content: '  \1f37d ';}
+  .btn.thermometer:after {content: '  \1f321 ';}
+  .btn.mona:after {content: '  \1f5bb ';}
+  .archive:before {content: '\2707  ' ;}   /*2707(tape) 1F4BE(floppy) 1F33B(sunflower)*/
+  .btn.frosty:before {content: ' \2603  ' ;}   /*snowman*/
+  .btn.tools:before, .program:before {content: ' \2692  ' ;}   /**/
+
+  .btn.crosshaircenter:before {content: ' \25a1 ' ;}   /**/
+
+  .btn.actualsize:before {content: ' \25a1 ' ;}
+  .btn.fit:before {content: ' \25A3 ' ;}   /*block square in outline*/
+
+  .btn.fit.enabled, .btn.actualsize.enabled {display: inline-block;}
+  .btn.manip.enabled:before, .btn.menu.enabled:after {font-weight: bold;}
+
+  /*print without btnbars*/
+  @media print {
+    .btnbar {display: none;}
+  }
+
+
+/*------ text ------*/
+  .text {
+    display: inline-block; position: relative; transition: color 0.9s ease;
+  }
+  .text.status {margin-left: 0.3em;}
+  .text.truncate {max-width: 20em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;}
+  .text.ok {color: #283;}
+  .text.err {color: #a00;}
+  .text.clickable {}
+  .text.i {font-style: italic;}
+  .text.bold {font-weight: bold;}
+  /*.text.tt {font-family: 'Courier New','Courier',monospace,serif; font-size:105%;}*/
+  .text.tt {font-family: monospace; font-size:115%;}
+  .text.head {font-size: 115%;}
+  .text.title {font-size: 115%;}
+  .text.title.chapter {font-weight: bold; font-size: 115%;}
+  .text.title.sup {font-size: 93%;}
+  .text.addendum, .text.foot, .text.small {font-size: 85%;}
+  @media all and (orientation:portrait) {
+    .text.head {font-size: 110%;}
+    .text.title {font-size: 113%;}
+  }
+  a.text {color:rgb(20,40,160); text-decoration: underline;}
+  a.text:visited {color: inherit;}
+  a.text.tt {text-decoration:none; font-size:105%;}
+  .text.clickable:hover {cursor: pointer;}
+  @media (hover: hover) {
+    .text.clickable:hover {color: red;}
+    a.text:hover {text-decoration: underline;}
+  }
+  .text.clickable:active {color: red;}
+
+  .text.icon:before {font-family: 'Lucida Sans Unicode','Arial',sans-serif; color:rgb(50,50,60); white-space: pre;}
+  .text.icon:after     {content: '  ' ; white-space: pre;}
+  .text.icon.r:before  {content: '\25B8  ' ;}   /**/
+  .text.icon.l:before  {content: '\25C2  ' ;}   /**/
+  .text.icon.sw:before {content: '\21C4  ' ;}   /*reverse arrows*/
+  .text.icon.xo:before {content: '\2295  ' ;}   /*xor*/
+  .text.icon.a:before  {content: '\2227  ' ;}   /*and*/
+  .text.icon.o:before  {content: '\2228  ' ;}   /*or*/
+  .text.icon.actualsize:before {content: '\25a1  ' ;}
+
+
+/*------ inputs ------*/
+  input, textarea {font-family: 'Courier New','Courier',monospace; font-size:100%;}
+  /*input, textarea {font-family: monospace; font-size:120%;}*/
+  input {
+    border: 1px solid #ddd; background-color: transparent; text-overflow: ellipsis;
+  }
+  input.trigger {
+    border-color: transparent;
+  }
+  input:hover, input:focus, textarea {
+    border-color: #ccc; background-color: #fff;
+  }
+  input:disabled, textarea:disabled, button:disabled, .btnX:disabled {
+    border: 1px solid #ddd; background-color: rgba(235,235,235,0.95);
+  }
+  input[type="checkbox"], input[type="radio"] {border: 0;}
+  input.inpshort {width: 3em;}
+  input.inp {width: 5em;}
+  input.inp.float {width: 9em;}
+  input.inplong {width: 16em;}
+  input.inpplain {border-color: transparent;}
+  input.inpbox, .inpbox:hover, .inpbox:focus {border: 0;}
+
+  /* text areas */
+  textarea {margin-bottom: 0.2em;}
+  .json, .list {height: 15em; width: 28em; color: #555; font-size: 0.8em;}
+  .json {width: 30em;}
+  .json.long, .list.long {height: 20em;}
+  @media all and (orientation:landscape) {
+    .json {min-width: 25em;}
+  }
+  @media all and (orientation:portrait) {
+    input[type=checkbox], input[type=radio] {width: 0.95em; height: 0.95em;}
+    .json {height: 17em;}
+    .list {height: 14em;}
+    .json.long, .list.long {height: 14em;}
+    .json, .list {width: 98%; max-width: 98%;}
+  }
+  @media all and (max-width:500px) and (orientation:portrait) {
+    .list {height: 10em;}
+  }
+
+
+/*------ image arrangement ------*/
+  .gallery, .captionedbox, .captionedbox > .thumb {
+    position: relative; margin: 0; margin-top: 0.2em; border:0; padding: 0;
+  }
+  .gallery, .captionedbox {display: inline-block;}
+  .captionedbox > .thumb, .captionedbox > .caption {display: block;}
+  .captionedbox > .caption {font-size: 0.7em; line-height: 0.75em; font-style: italic;}
+  img.thumb {max-width: 200px;}
+  @media all and (min-width:600px) and (orientation:portrait) {
+    img.thumb {max-width: 280px;}
+  }
+
+
+/*------ overrides ------*/
+  .line {display: block;}
+  .line.nowrap {white-space: nowrap;}
+  .noshow {display: none;}
+  .showblock {display: block;}
+  .showinline {display: inline-block;}
+  .vis {visibility: visible;}
+  .hid {visibility: hidden;}
+  .scrollable {overflow: auto;}
+  .collapsible:empty {display: none;}
+    </style>
+
+
+    <link rel="icon" type="image/png" href="sunflower96.png" sizes="96x96">
+  </head>
+
+  <body>
+
+    <div class="panelwrap page"><div class="panel page"><div class="content page">
+
+      <div class="section head">
+        <div class="text i title sup">
+          Greg Sidal "Art on computational media"
+        </div>
+        <div class="">
+          <div class="text head">Recent Releases</div>
+        </div>
+      </div>
+
+      <div>
+
+        <div class="page section main" id="dip">
+          <div class="text title chapter">
+            <div class="">Digital Image Processing</div>
+          </div>
+          <div class="section submain">
+            <div class="text">Elementary machine operatives applied to image buffer data. 2023 releases:</div>
+          </div>
+          <div class="section submain">
+            <div class="program"><a class="text" href="dip/index.html">Image editor browser program</a></div>
+          </div>
+          <div class="section submain">
+            <div class="gallery">
+              <div class="captionedbox">
+                <div class="thumb"><a href="dip/index.html"><img class="thumb lores" src="dip/sample-swn.png"/></a></div>
+                <div class="caption">swap nibbles sample</div>
+              </div>
+<!--
+              <div class="captionedbox">
+                <div class="thumb"><a href="dip/index.html"><img class="thumb hires" src="dip/sample-swb.jpg"/></a></div>
+                <div class="caption">swap bytes sample</div>
+              </div>
+-->
+            </div>
+          </div>
+          <div class="section submain">
+            <div class="text small">
+              <a class="text" href="archive.html#dip">2008-2009 releases</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="page section main" id="time">
+          <div class="text title chapter">
+            <div class="titlesection">Time Machines</div>
+          </div>
+          <div class="section submain">
+            Cipher-images designed to become vulnerable to brute-force attacks at measurable future times. 2021 releases:
+          </div>
+          <div class="">
+            <div class="section submain">
+              <div class=""><a class="text" href="timemachines/index.html">Images and overview</a></div>
+            </div>
+            <div class="section submain">
+              <div class="">Browser programs:</div>
+            </div>
+            <div class="section sub2 indent">
+              <div class="program"><a class="text" href="cipherimage/index.html">Cipher-image creation utility</a></div>
+              <div class="program section sub4"><a class="text" href="cipherimage/miner.html">Cipher-image miner</a></div>
+            </div>
+          </div>
+          <div class="section submain">
+            <div class="gallery">
+              <div class="captionedbox">
+                <div class="thumb"><a href="timemachines/index.html"><img class="thumb lores" src="cipherimage/cipherimage352.png"/></a></div>
+                <div class="caption">sample cipher-image</div>
+              </div>
+            </div>
+          </div>
+          <div class="section submain">
+            <div class="text small">
+              2000 related series <a class="text" href="archive.html#ii">Illicit Images</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="page section main" id="ds">
+          <div class="text title chapter">
+            <div class="titlesection">Drive Scroll</div>
+          </div>
+          <div class="section submain">
+            Raw data from drive copied directly to video frame buffers. 2021 releases:
+          </div>
+          <div class="section submain">
+            <div class="program"><a class="text" href="drivescroll/index.html">Browser program</a></div>
+          </div>
+          <div class="section submain">
+            <div class="gallery">
+              <div class="captionedbox">
+                <div class="thumb"><a href="drivescroll/index.html"><img class="thumb lores" src="drivescroll/thumb3resized351.jpg"/></a></div>
+                <div class="caption">screen cap</div>
+              </div>
+            </div>
+          </div>
+          <div class="section submain">
+            <div class="text small">
+              <a class="text" href="archive.html#ds">2001 screen-saver</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="page section main" id="rls">
+          <div class="text title chapter">
+            <div class="titlesection">Random Line Studies</div>
+          </div>
+          <div class="section submain">
+            Pictures generated from random lines. 2021 releases:
+          </div>
+          <div class="">
+            <div class="section submain">
+              <div class=""><a class="text" href="gallery/index.html">Gallery</a></div>
+            </div>
+            <div class="section submain">
+              <div class="">Browser programs:</div>
+            </div>
+            <div class="section sub2 indent">
+              <div class="program"><a class="text" href="rls/trunc.html">Truncations Generator</a></div>
+              <div class="program section sub4"><a class="text" href="rls/nocross.html">No Crossings Generator</a></div>
+              <div class="program section sub4"><a class="text" href="rls/rand.html">AE Generator</a></div>
+            </div>
+          </div>
+          <div class="section submain">
+            <div class="gallery">
+              <div class="captionedbox">
+                <div class="thumb"><a href="rls/trunc.html"><img class="thumb lores" src="rls/railyard280.png"/></a></div>
+                <div class="caption">sample from Truncations Generator</div>
+              </div>
+<!--
+              <div class="captionedbox">
+                <div class="thumb"><a href="rls/nocross.html"><img class="thumb lores" src="rls/zigzag352.png"/></a></div>
+                <div class="caption">sample from No Crossings Generator</div>
+              </div>
+-->
+            </div>
+          </div>
+          <div class="section submain">
+            <div class="text small">
+              <a class="text" href="archive.html#aegen">2001-2009 AE Generator releases</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="page section main">
+        <div class="text foot">
+          2021-2023 Greg Sidal
+          <br/>Content cc-by-nc unless otherwise stated (no derivative NFTs)
+          <br/><a class="text" href="archive.html" tabindex class="">Prior releases</a>
+        </div>
+      </div>
+
+    </div></div></div>
+
+  </body>
+</html>
