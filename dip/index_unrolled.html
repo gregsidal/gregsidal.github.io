@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- , user-scalable=no -->
+    <title>Digital Image Processing Editor</title>
+    <meta content="Apply elementary machine operatives to image rasters" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+    <link rel="stylesheet" type="text/css" href="../ui2.css">
+    <script src="../lib/image/imageproc.js"></script>
+    <script src="../uiutil.js"></script>
+    <script src="../imageprocui.js"></script>
+    <script src="dip.js"></script>
+    <script>
+      DIP.defaultname = "(open an image)";
+      DIP.defaulturl = "";
+      DIP.debug = false;
+    </script>
+  </head>
+  <body class="app" onload="DIP.setup('dip',DIP.defaulturl,DIP.defaultname);" onresize="DIP.resize('dip');">
+
+    <div class="snap">
+
+      <div id="dip_back" class="resp-back bargap bottom" onclick="DIP.clickbackevent(event)">
+        <canvas id="dip_canv" width="800" height="1000" class="responsive resp-resize">
+          <div class="text title center">NO CANVAS SUPPORT IN BROWSER <br/>
+                   Full-featured browser such as Firefox or Chrome required</div>
+        </canvas>
+      </div>
+
+      <div class="bar bottom">
+        <div class="toolbar" id="titlebar">
+          <div class="btnbar">
+            <div class="btn menu enabled" id="menubar" onclick="UI.togglemenu('menubar','controlpane')"></div>
+            <div class="btn toggle noshow fit" id="dip_fitbtn" onclick="UI.ImageViewer.setmanipstate('dip','fit')" 
+                 title="view letterbox (drag to pan, ctrl-press to zoom)"></div>
+            <div class="btn toggle noshow actualsize" id="dip_actualbtn" onclick="UI.ImageViewer.setmanipstate('dip','actualsize')" 
+                 title="view 1 px == 1 device px (drag to pan, ctrl-press to zoom)"></div>
+          </div>
+          <div class="text info middle" id="dip_size"></div>
+          <div class="btnbar">
+            <div class="btn openfile" id="dip_openfile" onclick="DIP.clickopen('dip')"></div>
+          </div>
+          <div class="text info clickable" id="dip_subtitle" onclick="DIP.clickopen('dip')">(open an image)</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panelwrap popup"><div id="controlpane" class="panel popup"><div class="content popup">
+
+      <div class="pin corner top right">
+        <div class="btn icon closex" id="controlbtn" onclick="UI.togglemenu('menubar','controlpane')"></div>
+      </div>
+
+      <div class="section head">
+        <div class="text title">
+          "Digital Image Processing" Editor
+        </div>
+        <div class="text addendum">
+          Apply machine primitives to image raster data
+        </div>
+      </div>
+
+      <div class="section main line nowrap">
+        <div class="btn box sys open" id="dip_openfile" onclick="DIP.clickopen('dip')"></div>
+        <input type="file" class="noshow" accept="image/*" id="dip_file" onchange="DIP.setsrc('dip',this.files[0]);"/>
+        <div class="text status">
+          <div class="text ok truncate clickable" id="dip_stats" onclick="DIP.clickopen('dip')">(open an image)</div>
+        </div>
+      </div>
+
+      <div class="slider pagehgt closed" id="dip_isimgopen">
+        <div class="section main">
+
+          <div class="section subline">
+            <div class="btn box sys unfold" id="dip_unfoldbtn"
+                           onclick="UI.unfold('dip_unfoldbtn','dip_foldbtn','dip_foldpane',true)"></div>
+            <div class="btn box sys noshow fold" id="dip_foldbtn"
+                           onclick="UI.fold('dip_unfoldbtn','dip_foldbtn','dip_foldpane')"></div>
+            <div class="btn box op fwd" id="dip_shrbtn" onclick="DIP.op('dip','shr')">shr</div>
+            <div class="btn box op rev" id="dip_shlbtn" onclick="DIP.op('dip','shl')">shl</div>
+          </div>
+
+          <div class="section sub3">
+            <div class="btn box op unfold hid"></div>
+            <div class="btn box op swap2" id="dip_swbbtn" onclick="DIP.op('dip','swb')">swb</div>
+            <div class="btn box op xor" id="dip_xobbtn" onclick="DIP.op('dip','xob')">xob</div>
+            <div class="btn box op and" id="dip_abbtn" onclick="DIP.op('dip','ab')">ab</div>
+            <div class="btn box op or" id="dip_obbtn" onclick="DIP.op('dip','ob')">ob</div>
+          </div>
+
+          <div class="section sub3">
+            <div class="btn box op unfold hid"></div>
+            <div class="btn box op swap2" id="dip_swnbtn" onclick="DIP.op('dip','swn')">swn</div>
+            <div class="btn box op xor" id="dip_xonbtn" onclick="DIP.op('dip','xon')">xon</div>
+            <div class="btn box op and" id="dip_anbtn" onclick="DIP.op('dip','an')">an</div>
+            <div class="btn box op or" id="dip_onbtn" onclick="DIP.op('dip','on')">on</div>
+          </div>
+
+          <div class="section sub3">
+            <div class="btn box op unfold hid"></div>
+            <div class="btn box op swap2" id="dip_swybtn" onclick="DIP.op('dip','swy')">swy</div>
+            <div class="btn box op xor" id="dip_xoybtn" onclick="DIP.op('dip','xoy')">xoy</div>
+            <div class="btn box op and" id="dip_aybtn" onclick="DIP.op('dip','ay')">ay</div>
+            <div class="btn box op or" id="dip_oybtn" onclick="DIP.op('dip','oy')">oy</div>
+          </div>
+
+          <div id="dip_savectrls" class="slider shorthgt closed">
+            <div class="section submain">
+              <div class="section subline">
+                <div class="btn box sys undo" id="dip_undo1btn" onclick="DIP.undo('dip',1)" title="undo"></div>
+                <div class="text status ok" id="dip_oplist"></div>
+              </div>
+<!--
+              <div class="section sub3">
+                <div class="btn box sys undo" id="dip_undo1btn" onclick="DIP.undo('dip',1)">Undo</div>
+                <div class="btn box sys undoall" id="dip_undoallbtn" onclick="DIP.undo('dip')">Undo all</div>
+              </div>
+-->
+              <div class="section sub3 line nowrap">
+                <div class="btn box sys savefile" id="dip_savebtn" onclick="DIP.save('dip')" title="save to file"></div>
+                                              <a href="" download="dip.png" class="noshow" id="dip_save"></a>
+                <input class="inplong trigger" id="dip_savefilename" value="dip.png" placeholder="save file name"></input>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="dip_foldpane" class="slider highhgt closed">
+          <div class="section main">
+            <div class="">
+              <div class="text addendum i">
+                     shr: shift bitstream right
+                <br/>shl: shift bitstream left
+                <br/>
+                <br/>swb: swap adjacent bits
+                <br/>xob: xor adjacent bits
+                <br/>ab: and adjacent bits
+                <br/>ob: or adjacent bits
+                <br/>
+                <br/>swn: swap adjacent nibbles (half-bytes)
+                <br/>xon: xor adjacent nibbles
+                <br/>an: and adjacent nibbles
+                <br/>on: or adjacent nibbles
+                <br/>
+                <br/>swy: swap adjacent bytes
+                <br/>xoy: xor adjacent bytes
+                <br/>ay: and adjacent bytes
+                <br/>oy: or adjacent bytes
+              </div>
+              <div class="section submain">
+                <div class="section subline">
+                  <div class="btn box op xor" id="dip_xoCbtn" onclick="DIP.op('dip','xoC')">xoC</div>
+                  <div class="btn box op and" id="dip_aCbtn" onclick="DIP.op('dip','aC')">aC</div>
+                  <div class="btn box op or" id="dip_oCbtn" onclick="DIP.op('dip','oC')">oC</div>
+                </div>
+                <div class="section sub3 line nowrap">
+                  C: <input class="inplong" id="dip_C" value="abcdef" placeholder="hex constant"></input>
+                </div>
+              </div>
+              <div class="section sub">
+                <div class="text addendum i">
+                  xoC: xor with constant C (hex)
+                  <br/>aC: and with constant C
+                  <br/>oC: or with constant C
+                  <br/>
+<br/><div class="text icon actualsize">: 1 image pixel == 1 device pixel.</div>
+                  <br/>Files open in browser (not uploaded).
+                  <br/>Firefox/Chrome browsers tested.
+                  <br/>Last updated March 2023 (version 0.81)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="section main foot">
+        <div class="text foot">
+          2023 <a href="../index.html" class="text clickable">Greg Sidal</a> cc-by-nc
+          <br/><a href="dip2023v081.html" download="dip2023v081.html" 
+                          class="text clickable" target="_blank">Self-contained downloadable for offline use</a>
+          <br/><a href="../archive.html#dip" class="text clickable">2008-2009 releases</a>
+          <div id="dip_canvasdata" class="section main noshow">
+            <div class="btn box op" onclick="DIP.togglecanvasdata()">Toggle allow canvas data</div>
+          </div>
+        </div>
+      </div>
+
+    </div></div></div>
+
+    <div id="dip_wait" class="cover">
+      <div class="msg blink">
+        w o r k i n g . . .
+      </div>
+    </div>
+
+  </body>
+</html>
