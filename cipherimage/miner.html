@@ -15,7 +15,7 @@
       CI.defaulturl = "";
     </script>
   </head>
-  <body onload="CI.miner.init('ci');CI.setup('ci',CI.defaulturl,CI.defaultname);" id="ci_back">
+  <body onload="CI.miner.init('ci');CI.setup('ci',CI.defaulturl,CI.defaultname);" onresize="CI.resize('ci');" id="ci_back"> <!--2022-12 EDIT (onresize)-->
 
     <div class="back" onclick="CI.clickback('ci');">
       <canvas id="ci_canv" width="400" height="500">   <!--2022-10 EDIT (400,500)--> 

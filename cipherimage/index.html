@@ -16,10 +16,10 @@
       CI.defaulturl = "";
     </script>
   </head>
-  <body onload="CI.setup('ci',CI.defaulturl,CI.defaultname);" id="ci_back">
+  <body onload="CI.setup('ci',CI.defaulturl,CI.defaultname);" onresize="CI.resize('ci');" id="ci_back"> <!--2022-12 EDIT (onresize)-->
 
     <div class="back" onclick="CI.clickback('ci');">
-      <canvas id="ci_canv" width="400" height="500">   <!--2022-10 EDIT--> 
+      <canvas id="ci_canv" width="800" height="950" class="centeradjust">   <!--2022-10 EDIT 2023-03--> 
         <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/>
                  Browser released after 2015 recommended (testing performed on Firefox and Chrome)</div>
       </canvas>
@@ -83,14 +83,17 @@
             <br/>PNG files saved to preserve intact ciphers.
             <br/>Saving JPEG not possible (lossy compression).
             <br/>Ciphers in PNGs are auto-recognized.
-            <br/>Beta: Brave/Firefox/Chrome browsers tested.
-            <br/>Last updated Nov 2022.
+            <br/>
+            <br/>Last updated March 2023 (version 0.62).
+            <br/>Beta: Firefox/Chrome browsers tested.
           </div>
         </div>
 
         <div class="gapabove g25 line" id="ci_randpass">
-          <div tabindex=9 class="nextsmall rand" id="ci_randbtn" onclick="CI.randpass('ci')">Random key</div>
-          &nbsp;(# bytes:<input class="inpshort inpbox" id="ci_randbytes" value="12"></input>)
+          <div class="nextsmall rand" id="ci_randbtn" onclick="CI.randpass('ci')">Random key</div>
+          <!--2022-12 EDIT (add oninput)-->
+          &nbsp;(# bytes:<input class="inpshort inpbox" id="ci_randbytes" value="12" 
+              oninput="if (this.value) CI.randpass('ci')"></input>)
         </div>
 
       </div>
@@ -100,10 +103,10 @@
 
       <div class="gapabove g25">
         <div class="descr">
-          2021 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc
-          <!--2022-10 EDIT (2022)-->
-          <br/><a href="cipherimage2022v061.html" download="cipherimage2022v061.html"  
-                  class="link" target="_blank">Self-contained downloadable</a>
+          2021-2023 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc
+          <!--2022-10 EDIT (2022), 2023-03 (2023)-->
+          <br/><a href="cipherimage2023v062.html" download="cipherimage2023v062.html"  
+                  class="link" target="_blank">Self-contained downloadable for offline use</a>
           <br/><a href="miner.html" class="link">Miner</a>
           <div id="ci_canvasdata" class="gapabove g25 dispnone">
             <div class="nextsmall" onclick="CI.togglecanvasdata()">Toggle allow canvas data</div>

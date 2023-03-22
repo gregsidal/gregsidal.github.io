@@ -1,0 +1,1727 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!--2022-10 ADD--> 
+    <title>Cipher-Image Encryption/Decryption Utility</title>
+    <meta content="Encrypt/decrypt image rasters with AES" name="description"/>
+    <meta content="Greg Sidal" name="author"/>
+
+<!--    <link rel="stylesheet" type="text/css" href="../ui.css">  -->
+    <style>
+body {
+  margin: 0px;
+  padding: 0px;
+  background-color: #ccc;
+  font-family: 'Arial', sans-serif;
+  font-size: 0.90em;
+  color: #444;
+}
+div, .panewrap {
+  position: relative;
+  margin: 0px;
+  padding: 0px;
+}
+.panewrap {
+  display: block;
+}
+@media all and (orientation:landscape) {
+  body {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+  .panewrap {position: static;}
+  .smallerfont {font-size: 0.85em;}
+}
+
+.floatright {
+  float: right;
+}
+.floatleft {
+  float: left;
+}
+a, p, .descr, .canvtitle, .i, .in {
+  display: inline-block;
+}
+a {
+  color: rgb(20,40,160);
+}
+a:visited {
+  color: inherit;
+}
+.i, .canvtitle {
+  font-style: italic;
+}
+.canvtitle {font-size:117%;}
+.canvtitle2 {font-size:110%;}
+.canvtitle:empty, .titlesection.big:empty {display:none;}  /*2022-10 ADD*/
+.indent {margin-left:1.2em; margin-right:1.2em;}
+.tt {font-family: 'Courier',serif; font-size:105%;}
+a.tt {text-decoration:none; font-size:105%;}
+a.tt.bigger {text-decoration:none; font-size:115%;}
+
+input {
+  border: 1px solid #ddd;
+  background-color: transparent;
+  font-size: 105%;
+}
+input {font-family:'Courier',serif; font-size:110%;}
+input:hover, input:focus, textarea, button, .btn {
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+input:disabled, textarea:disabled, button:disabled, .btn:disabled {  /*2022-10 EDIT*/
+  border: 1px solid #ddd;  /*ccc*/
+  background-color: rgba(235,235,235,0.95);  /*230*/
+}
+textarea {
+  margin-bottom: 0.2em;
+  /*font-size: 1em;*/
+  /*font-family: inherit;
+  font-size: inherit;*/
+}
+/*textarea:empty {
+  display: none;
+}
+textarea.vis:empty {
+  display: inherit;
+}*/
+input[type="checkbox"], input[type="radio"] {
+  border: 0;
+}
+.inpshort {
+  width: 2em;
+}
+.inp {
+  width: 3em;
+}
+.inp.float {  /*2022-10 ADD*/
+  width: 6em;
+}
+.inplong {
+  width: 15em;
+}
+.inpplain {
+  border-color: transparent;
+}
+.inpbox, .inpbox:hover, .inpbox:focus {
+  border: 0;
+  /*background-color: transparent;*/
+}
+
+.back {
+  background-color: #ccc;
+}
+.back.cover {
+  background-color: rgba(255,255,255,0.01);
+}
+@media all and (orientation:landscape) {
+  .back {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+}
+
+canvas, .emulatecanvas {
+  display: block;
+  margin: auto auto;
+  width: 100%; height: auto;
+  padding: 0; border: 0;
+  background-color: #fff;
+}
+@media all and (orientation:landscape) {
+  canvas, .emulatecanvas {height: 100%; width: auto;}
+}
+
+.thumbnail {
+  display: inline-block;
+  margin: 0; margin-right: 1em;
+  height: 15em;
+}
+
+.title, .titleline {
+  font-size: 120%;
+  padding-bottom: 0.25em;
+  /*white-space: nowrap;*/
+}
+.titlesection {
+  font-weight: bold;
+  font-size: 125%;
+}
+.titlesection.big {
+  font-size: 150%;
+}
+/*.title > a {display: block;}*/
+.hd3 {
+  font-size: 70%;
+}
+.hd, .hd2 {
+  font-size: 115%;
+  padding-top: 2.3em;
+  padding-bottom: 0.25em;
+}
+.hd2 {
+  padding-top: 0.5em;
+}
+.descr, .little {
+  font-size: 85%;
+}
+.littler {font-size: 90%;}
+.bigger {font-size: 110%;}
+.scrollable {
+  overflow: auto;
+}
+.collapsible:empty {
+  display: none;
+}
+
+/*.control {
+  display: block;
+  margin-bottom: 0.2em;
+}
+.control:first-child {
+  min-width: 10em;
+}*/
+
+.line {white-space: nowrap;}
+/*.br, .line {display: block;}*/
+
+.menubar, .controls, .titlebar, .titlebug, .titlemenu {    /*2022-10 ADD titlebug*/ 
+  display: block;
+  position: absolute;
+}
+.controls {
+  top: 0; left: 0;
+}
+.controls.center {
+  left: auto;
+}
+.titlebug, .titlebar, .titlemenu, .menubar {    /*2022-10 ADD titlebug*/
+  right: 0;
+  text-align: right;
+  background-color: transparent;
+}
+.titlebug, .titlebar {    /*2022-10 ADD titlebug*/ 
+  bottom: 0;
+  margin: /*1em*/ 0;  /*2022-10 EDIT*/ 
+  padding: 0.2em;     /*2022-10 ADD*/
+  background-color: rgba(204,204,204,0.65);   /*2022-10 ADD*/
+  font-size: 95%;
+}
+
+.titlebug {top: 0; bottom: auto; /*color: #ddd; background-color: rgba(180,180,180,0.6);*/}   /*2022-10 ADD*/ 
+
+.titlebug div, .titlebar div {     /*2022-10 ADD titlebug*/ 
+  display: inline-block;
+}
+.titlebug > i > div, .titlebar > i > div {   /*2022-10 ADD titlebug*/ 
+  font-size: 90%;
+}
+.titlebug > div, .titlebar > div {    /*2022-10 ADD titlebug*/ 
+  font-size: 75%;
+}
+.titlemenu, .menubar {
+  bottom: 5em;
+  margin: 0;
+}
+.menubar {
+  visibility: hidden;
+}
+.controls {
+  max-height: 100%;
+  border-right: 1px solid #bbb;
+  border-bottom: 1px solid #bbb;
+  background-color: transparent;
+}
+@media all and (orientation:landscape) {
+  .controls {overflow-y: auto;}
+}
+.controlset {
+  padding: 2.5em;
+  padding-top: 3em;
+  padding-bottom: 2.5em;
+  background-color: rgba(245,245,245,0.95);
+  text-align: left;
+}
+
+.corner {
+  position: absolute; top: 0; right: 0;
+}
+
+.close {
+  display: inline-block; font-size: 70%;
+  padding: 1.5em; padding-right: 1.5em;
+}
+
+.menubar.toggled {visibility: visible;}
+/*.menubar > .ctrlbtn {visibility: hidden;} 2022-10 REM*/
+
+.open:after, .openfile:before {content: '\22EF' ;} /*&ctdot; 22ef*/
+.close:after {content: '\2716' ;}  /*&Close; 274e 2716 2573*/
+.prev:after {content: '\25C2' ;}   /*&lt; \003C  \25C2  25B5 21E6 */
+.next:after {content: '\25B8' ;}   /*&gt; \003E 25b8 25B7  25B9 279E 27AD 21E8*/
+.fold:after {content: '\2af6' ;}   /*22ee 25b4 2259 225A 2227  2023-03 EDIT (2af6)*/
+.unfold:after {content: '\2af6' ;} /*2999(vert dots 4) 2982(dots 2) 22ee(vert dots) 25be(down arrow)*/
+a, .link {text-decoration: underline; color:rgb(20,50,150);}
+.app {} /**/
+/*.app:before {content: '\2699  ' ;} /**/
+.new:before {content: '\25B8  ' ;}   /*b8 littler*/
+.fwd:after {content: '  \25B8 ' ;}   /**/
+.rev:before {content: '\25C2  ' ;}   /*c2 littler*/
+.stop:before {content: '\2981  ' ;}   /*2297(cirled x) 2716(big x) 2981(bold dot)*/  /*2022-10 EDIT (dot)*/
+.rand:after {content: '  \21BB ' ;}   /*21bb 2682 27ff*/
+.archive:before {content: '\2707  ' ;}   /*2707(tape) 1F4BE(floppy) 1F33B(sunflower)*/
+.swap:after {content: '  \27F7 ' ;}   /*2194 2b80 21c4 21b6 21b7*/
+.swap2:after {content: '  \2B80 ' ;}   /*2b0c 2b64*/
+
+.nextsmall, .stats, .inlinestats, .inlinetitle, .inlinetag {
+  display: inline-block;
+  position: relative;
+}
+.stats, .inlinestats, .inlinetitle {
+  border: 1px solid transparent;
+  color: #0a0;
+}
+.inlinestats {
+  font-size: 90%;
+}
+.nextsmall, .boxed {
+  padding: 0.15em;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  min-width: 1.0em;
+  border: 1px solid #c8c8c8;
+  background-color: transparent;
+  text-align: center;
+}
+.boxed {
+  display: inline-block;
+  height: 100%;
+  padding: 0;
+  text-align: left;
+}
+.nextsmall:after, .nextsmall:before {font-family: 'Lucida Sans Unicode',sans-serif; }
+.nextsmall.inserted, .nextsmall.wrapped {
+  height: 100%;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  border: 0;
+  /*border-right: 1px solid #bbbbbb;*/
+}
+.nextsmall.wrapped {
+  padding: 0;
+}
+
+.empha {font-size:106%; border:1px solid #999; padding:0.4em; background-color:#fff; font-family:'Arial',sans-serif;}
+.empha {text-decoration:none; display:inline-block;}
+
+.open, .next, .prev /*, .titlemenu > div, .menubar > div*/ {
+  display: block;
+  border: 1px solid #aaa;         /*2022-10 EDIT*/
+  color: /*#999*/ #444;           /*2022-10 EDIT*/ 
+  font-size: /*125*/ 110%;        /*2022-10 EDIT*/ 
+  padding: 0em;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  min-width: 1.15em;
+  text-align: center;
+  background-color: rgba(204,204,204,0.7);   /*2022-10 ADD*/
+}
+.titlemenu > div, .open, .next, .prev /*.menubar > div*/ {
+  /*border-right-width: 0;*/
+  margin-bottom: 1.3em;
+  margin-right: /*3*/ 2em;  /*2022-10 EDIT*/
+}
+.open:after, .next:after, .prev:after 
+/*.menubar > div:after, .menubar > div:before*/ {font-family: 'Lucida Sans Unicode',sans-serif; }
+
+/*.open {  2022-10 REM
+  border-top: 0;
+  border-left: 0;
+}
+.next {
+  margin-top: 1.5em;
+  border-left: 0;
+}*/
+
+/*2022-10 ADD*/
+@media (hover: hover) {
+  a:hover {text-decoration: underline;}
+  a.empha:hover {background-color:#dfd;}
+  .close:hover, .open:hover, .next:hover, .prev:hover, .nextsmall:hover, /*.menubar > div:hover,*/ a:hover, .link:hover {
+    cursor: pointer;
+    color: red;
+  }
+  .open:hover, .next:hover, .prev:hover, .nextsmall:hover /*, .titlemenu > div:hover, .menubar > div:hover*/ {
+    background-color: #fff;
+  }
+}
+.close:active, .open:active, .next:active, .prev:active, .nextsmall:active, a:active, .link:active {
+  color: red;
+}
+.open:active, .next:active, .prev:active, .nextsmall:active {
+  background-color: #fff;
+}
+.open, .next, .prev, .nextsmall, input, a {
+  transition: background-color 0.75s, color 0.75s, opacity 0.75s; /*2023-03 ADD opac*/
+}
+.close {
+  transition: color 0.75s;
+}
+/*2022-10 ADD END*/
+
+.nextsmall:disabled {
+  visibility: hidden;
+}
+
+.fold, .running, .open, .openfile {font-weight: bold;}  /*2022-10 ADD, 2023-03 EDIt (fold)*/
+
+.toggled {visibility: visible;}
+.nottoggled {visibility: hidden;}
+.toggledifsmallscreen {display: none;}
+.nottoggledifsmallscreen {display: block;}
+.dispnone {display: none;}
+.gapminabove {margin-top: /*0.5em;*/ 0.2em;}  /*2022-10 EDIT*/
+.gapmedabove {margin-top: 0.5em;}
+.gap, .gapnormabove {margin-top: 1.2em;}
+.gapleft {margin-left: 1em;}
+.gapright {margin-right: 1.5em;}
+.gapleft.g10 {margin-left: 1em;}
+.gapright.g10 {margin-right: 1em;}
+.gapabove {margin-top: 1.5em;}
+.gapmed, .gapmedbelow {margin-bottom: 0.5em;}
+.descr.gap, .gapbelow {margin-bottom: 1.5em;}
+.gapbelow.g25 {margin-bottom: 2.5em;}
+.gapabove.g25 {margin-top: 2.5em;}
+.gapabove.g35 {margin-top: 3.5em;}
+.gapabove.g30 {margin-top: 3em;}
+.gapabove.g07 {margin-top: 0.8em;}
+.gapabove.g10 {margin-top: 1.2em;}
+.gapabove.g15 {margin-top: 1.5em;}
+.gapabove.g05 {margin-top: 0.2em;}
+.gapabove.min {margin-top: 0.2em;}
+.bold { font-weight: bold;}
+.center { text-align: center; width: 100%;}
+
+.json, .list {height: 15em; width: 28em; /*100%*/; color: #555; font-family: 'Courier',serif;}   /*2022-10 EDIT*/
+.json {width: 30em;}   /*2022-10 ADD*/
+.json.long, .list.long {height: /*25*/ 20em;}  /*2022-10 EDIT*/
+
+/* @media all and (max-width:900px) { 2022-11 REM */
+  .controls {font-size: 90%;}
+  /*.hideifsmallscreen {display: none;}
+  .title {white-space: normal; font-size: 115%;}
+  .thumbnail {display: none; height: auto; width: 100%;}
+  .json, .list {min-width: 0;}
+  input {margin-bottom:0.1em;}*/
+/*}*/
+@media all and (orientation:portrait) and (min-width:901px) { /* 2022-11 ADD */
+  .controls {font-size: 100%;}
+}
+/*2022-10 EDIT*/ .thumb {display:block; max-width: /*280px*/ 100%; width: /*280*/ 200px;}
+.thumb.hires {display: none;}
+.thumbcap {display:block; font-size: 75%;}
+.thumbbox {display:block;}
+/*2022-10 ADD titlebug*/ .titlebug > div, .titlebar > div, .titlebug > i > div, .titlebar > i > div {display: block;}
+/*@media all and (max-width:400px) {
+  .controls {font-size: 90%;}
+  .stats {display: block;}
+}*/
+@media all and (orientation:landscape) {
+  .json {min-width: 25em;}
+  .json, .list {font-size: 0.8em;}
+  .maxwid {width: 25em;}
+  /*2022-10 EDIT*/ .pwid {max-width: 37em; /*30em */ }
+  /*2022-10 EDIT*/ .essaywid {max-width: 30em; }
+  /*2022-10 EDIT*/ .essay {width: /*25*/ 24em; font-size:/*100*/ 95%; line-height:125%;}
+  /*2022-10 ADD*/ .titlebug {bottom:0; top:auto;}
+}
+@media all and (min-width:1800px) and (orientation:landscape) {
+  /*2022-10 REM .controls {font-size: 120%;} */
+  /*2022-10 EDIT*/ .thumb {width: 352px; max-width: /*352px*/ 100%;}
+  .thumb.lores {display: none;}
+  .thumb.hires {display: block;}
+  .pwid, .essaywid {max-width: 45em;}
+}
+@media all and (orientation:portrait) {
+  /*2022-10 EDIT*/ body {font-size: /*5vw*/ 1.1em;}
+  .panewrap {width: 100%;}
+  /* 2022-12 REM canvas, .emulatecanvas {height: auto; width: 100%;}*/
+  .controls {border: 0; width:100%;}
+  .controls.center {border: 0; width:100%;}
+  .controlset {padding: 1.25em; padding-top: 2.5em; padding-bottom: 1.5em; font-size: 90%;}
+  .line {white-space: inherit;}
+  /*2022-10 EDIT*/ .thumb {max-width: /*352px*/ 100%; width: /*352*/ 200px;}
+  .thumb.lores {display: none;}
+  .thumb.hires {display: block;}
+  .gapbelow.g25 {margin-bottom: 2em;}
+  .gapabove.g25 {margin-top: 2em;}
+  .gapabove.g35 {margin-top: 3.5em;}
+  .gapabove.g30 {margin-top: 3em;}
+  .menubar, .titlemenu {top: auto; left: auto; bottom: 0; width: 100%; padding-bottom: 2em; text-align: center;}
+  /*2022-10 ADD*/ .menubar {padding-bottom: 3em;}
+  /*2022-10 EDIT*/ .open, .next, .prev {display: inline-block; /*border: 1px solid #999;*/ /*777*/ /*color: #444;*/ /*777*/}
+  .next {margin-left: 1.5em;}
+  .titlebar, .titlemenu, .menubar {left: 0; text-align: center;}
+  /*2022-10 EDIT*/ .titlebar {margin-bottom: /*6em*/ 0;}
+  /*2022-10 ADD*/ .titlebar.pintop {top: 0; bottom: auto;}
+  /*.titlemenu > div, .menubar > div*/ 
+  .open, .next, .prev {display: inline-block; margin: 0; margin-left: 0.4em; margin-right: 0.4em; border-right-width: 1px;}
+  /*2022-10 ADD*/ .menubar>.togglepart {display: inline-block;}
+  .title, .titlesection {white-space: normal; font-size: 120%;}
+  /*2022-10 ADD*/ .title {font-size: 125%;}
+  .titlesection {font-size: 130%;}
+  /*.empha {background-color:#dfd;}*/
+  .pwid, .essay, .inlinetitle {font-size:90%}
+  a.tt {font-size:110%;}
+  .canvtitle {font-size:110%;}
+  input[type=checkbox], input[type=radio] 
+           /*2022-10 EDIT*/ {width: /*4vw*/ 0.95em; height: /*4vw*/ 0.95em; /*transform: scale(1.2);*/}
+  .toggledifsmallscreen {display: block;}
+  /*2022-10 ADD*/ .toggledifsmallscreen.inline {display: inline-block;}
+  .nottoggledifsmallscreen {display: none;}
+  /*2022-10 EDIT*/ textarea {font-size: /*4vw*/ 0.8em;}
+  /*2022-10 EDIT*/ .json {height: /*35*/ 17em;}
+  /*2022-10 EDIT*/ .list {height: /*30*/ 14em;}
+  /*2022-10 EDIT*/ .json.long, .list.long {height: /*50*/ 14em;}
+  /*2022-10 ADD*/ .json, .list {width: 98%; max-width: 98%;}
+}
+
+/*2022-10 ADD*/
+
+/*app framing*/
+      body {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+      .panewrap {position: static;}
+      .back {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+      .controls {overflow-y: auto;}
+      @media all and (orientation:portrait) {
+        .controls {bottom: 0; top: auto; border-top: 1px solid #ccc; max-height:60%;}
+        .controls.maxheight {max-height:85%;}
+        .controls.fullheight {max-height:100%;}
+        .controls.pintop {bottom: auto; top: 0; border-top: 0; border-bottom: 1px solid #ccc;}
+        /* 2022-12 REM
+        canvas, .emulatecanvas {width: 100%;}
+        canvas, .emulatecanvas {display: block; position: absolute; bottom: auto; left: 0; top: 0;}
+        */
+        /* 2022-12 EDIT */
+        canvas.pinbottom, .emulatecanvas.pinbottom {position: absolute; bottom: 0; left: 0; top: auto;}
+        canvas.pinmiddle, .emulatecanvas.pinmiddle {bottom: 0; left: 0; top: auto;}  /*2022-12 ADD*/
+      }
+      @media all and (orientation:landscape) {
+        /* 2022-12 REM
+        canvas, .emulatecanvas {height: 100%; width: auto;}
+        */
+        .controls.fullwidth {width:100%;}
+      }
+
+      canvas, .emulatecanvas {position: absolute;}
+
+      /*2023-03 ADD*/
+      /* responsive sizing/positioning */
+      canvas, .emulatecanvas {
+        margin: auto auto; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        width: auto; max-width: 100%; height: auto; max-height: 100%;
+        transition: top 0.7s, visibility 0.7s;
+      }
+      @media all and (orientation:portrait) {
+        canvas:not(.abscenter), .emulatecanvas:not(.abscenter) {left: 50%; top: 0; transform: translate(-50%, 0);}
+        canvas.centermed, .emulatecanvas.centermed {top: 4%;}
+        canvas.centershort, .emulatecanvas.centershort {top: 6%;}
+        canvas.centertiny, .emulatecanvas.centertiny {top: 10%;}
+      }
+      @media all and (orientation:portrait) and (min-width:750px) {
+        canvas.centerlong, .emulatecanvas.centerlong {top: 2%;}
+      }
+      /* tweaks for drivescroll size controls */
+      .list.thin {margin-bottom: 0;}
+      @media all and (orientation:landscape) {
+        .list.thin {width: 25em;}
+        .popupwid {width: 23em;}
+      }
+      input[type=checkbox], input[type=radio] {cursor: pointer;}
+      input.dulled {opacity: 0.5;}
+      input[type=checkbox].dulled, input[type=radio].dulled {opacity: 0.4;}
+      input.dulled:hover, input[type=checkbox].dulled:hover, input[type=radio].dulled:hover {opacity: 1.0;}
+      input.dulled:focus, input[type=checkbox].dulled:focus, input[type=radio].dulled:focus {opacity: 1.0;}
+      /*END 2023-03 ADD*/
+
+      @media all and (max-width:500px) and (orientation:portrait) {
+        body {font-size: 1.0em;}
+       .list {height: 10em;}
+      }
+
+/*wait box*/
+.wait {
+  position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+  background-color: rgba(80,80,80,0.6);
+  font-size: 120%;
+  text-align: center;
+  padding-top: 6em;
+  color: rgba(250,250,250,0.95);
+  display: none;
+}
+@keyframes blink {
+  10% {color: rgb(255,80,80);}
+  25% {color: white;}
+  40% {color: rgb(255,80,80);}
+  55% {color: white;}
+}
+.waitmsg {
+  padding-left: 1.0em;
+  padding-right: 1.0em;
+  font-size: 120%;
+  color: white;
+  animation-name: blink;
+  animation-delay: 0.1s;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+}
+
+/*transitions*/
+.slider {
+  max-height: 50em;
+  overflow: hidden;
+}
+.slider.em10, .slider.shorthgt {max-height: 10em;}
+.slider.em20, .slider.shortmedhgt {max-height: 20em;}
+.slider.em30, .slider.medhgt {max-height: 30em;}
+.slider.em40, .slider.highmedhgt {max-height: 40em;}
+.slider.opened {
+  transition: max-height 2s ease;
+}
+.slider.closed {
+  max-height: 0;
+  transition: max-height 1.5s ease-out;
+}
+.controls, .menubar, .menubar>.togglepart, .titlebug {
+  opacity: 1.0;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.controls.visible, .menubar.visible, .menubar>.togglepart.visible, .titlebug.visible {
+}
+.controls.hidden, .menubar.hidden, .menubar>.togglepart.hidden, .titlebug.hidden {
+  opacity: 0.0;
+  visibility: hidden;
+}
+/*END 2022-10 ADD*/
+
+
+/*@media all and (max-width:800px) {
+  .menubar {top: auto; left: auto; bottom: 0; width: 100%; padding-bottom: 2em; text-align: center;}
+  .open, .next {display: inline-block; border: 1px solid #777;}
+  .next {margin-left: 1.5em;}
+  .titlebar, .titlemenu, .menubar {left: 0; text-align: center;}
+  .titlemenu > div, .menubar > div {display: inline-block; margin: 0; margin-left: 0.4em; margin-right: 0.4em; border-right-width: 1px;}
+}*/
+@media print {
+  .panewrap, .menubar, .titlebar, .titlebug, .titlemenu {display: none;}  /*2022-10 EDIT add titlebug*/
+
+  /*2023-03 ADD*/
+      canvas, .emulatecanvas {margin: auto auto; left: 50%; top: 50%; transform: translate(-50%, -50%);}
+     .titlebar /*, .titlebug*/ {display: block; font-size: 65%;}
+  /*2023-03 END ADD*/
+
+}
+    </style>
+
+<!--    <script src="../lib/cryptojs/rollups/aes.js"></script>  -->
+    <script>
+/*
+CryptoJS v3.1.2
+code.google.com/p/crypto-js
+(c) 2009-2013 by Jeff Mott. All rights reserved.
+code.google.com/p/crypto-js/wiki/License
+*/
+var CryptoJS=CryptoJS||function(u,p){var d={},l=d.lib={},s=function(){},t=l.Base={extend:function(a){s.prototype=this;var c=new s;a&&c.mixIn(a);c.hasOwnProperty("init")||(c.init=function(){c.$super.init.apply(this,arguments)});c.init.prototype=c;c.$super=this;return c},create:function(){var a=this.extend();a.init.apply(a,arguments);return a},init:function(){},mixIn:function(a){for(var c in a)a.hasOwnProperty(c)&&(this[c]=a[c]);a.hasOwnProperty("toString")&&(this.toString=a.toString)},clone:function(){return this.init.prototype.extend(this)}},
+r=l.WordArray=t.extend({init:function(a,c){a=this.words=a||[];this.sigBytes=c!=p?c:4*a.length},toString:function(a){return(a||v).stringify(this)},concat:function(a){var c=this.words,e=a.words,j=this.sigBytes;a=a.sigBytes;this.clamp();if(j%4)for(var k=0;k<a;k++)c[j+k>>>2]|=(e[k>>>2]>>>24-8*(k%4)&255)<<24-8*((j+k)%4);else if(65535<e.length)for(k=0;k<a;k+=4)c[j+k>>>2]=e[k>>>2];else c.push.apply(c,e);this.sigBytes+=a;return this},clamp:function(){var a=this.words,c=this.sigBytes;a[c>>>2]&=4294967295<<
+32-8*(c%4);a.length=u.ceil(c/4)},clone:function(){var a=t.clone.call(this);a.words=this.words.slice(0);return a},random:function(a){for(var c=[],e=0;e<a;e+=4)c.push(4294967296*u.random()|0);return new r.init(c,a)}}),w=d.enc={},v=w.Hex={stringify:function(a){var c=a.words;a=a.sigBytes;for(var e=[],j=0;j<a;j++){var k=c[j>>>2]>>>24-8*(j%4)&255;e.push((k>>>4).toString(16));e.push((k&15).toString(16))}return e.join("")},parse:function(a){for(var c=a.length,e=[],j=0;j<c;j+=2)e[j>>>3]|=parseInt(a.substr(j,
+2),16)<<24-4*(j%8);return new r.init(e,c/2)}},b=w.Latin1={stringify:function(a){var c=a.words;a=a.sigBytes;for(var e=[],j=0;j<a;j++)e.push(String.fromCharCode(c[j>>>2]>>>24-8*(j%4)&255));return e.join("")},parse:function(a){for(var c=a.length,e=[],j=0;j<c;j++)e[j>>>2]|=(a.charCodeAt(j)&255)<<24-8*(j%4);return new r.init(e,c)}},x=w.Utf8={stringify:function(a){try{return decodeURIComponent(escape(b.stringify(a)))}catch(c){throw Error("Malformed UTF-8 data");}},parse:function(a){return b.parse(unescape(encodeURIComponent(a)))}},
+q=l.BufferedBlockAlgorithm=t.extend({reset:function(){this._data=new r.init;this._nDataBytes=0},_append:function(a){"string"==typeof a&&(a=x.parse(a));this._data.concat(a);this._nDataBytes+=a.sigBytes},_process:function(a){var c=this._data,e=c.words,j=c.sigBytes,k=this.blockSize,b=j/(4*k),b=a?u.ceil(b):u.max((b|0)-this._minBufferSize,0);a=b*k;j=u.min(4*a,j);if(a){for(var q=0;q<a;q+=k)this._doProcessBlock(e,q);q=e.splice(0,a);c.sigBytes-=j}return new r.init(q,j)},clone:function(){var a=t.clone.call(this);
+a._data=this._data.clone();return a},_minBufferSize:0});l.Hasher=q.extend({cfg:t.extend(),init:function(a){this.cfg=this.cfg.extend(a);this.reset()},reset:function(){q.reset.call(this);this._doReset()},update:function(a){this._append(a);this._process();return this},finalize:function(a){a&&this._append(a);return this._doFinalize()},blockSize:16,_createHelper:function(a){return function(b,e){return(new a.init(e)).finalize(b)}},_createHmacHelper:function(a){return function(b,e){return(new n.HMAC.init(a,
+e)).finalize(b)}}});var n=d.algo={};return d}(Math);
+(function(){var u=CryptoJS,p=u.lib.WordArray;u.enc.Base64={stringify:function(d){var l=d.words,p=d.sigBytes,t=this._map;d.clamp();d=[];for(var r=0;r<p;r+=3)for(var w=(l[r>>>2]>>>24-8*(r%4)&255)<<16|(l[r+1>>>2]>>>24-8*((r+1)%4)&255)<<8|l[r+2>>>2]>>>24-8*((r+2)%4)&255,v=0;4>v&&r+0.75*v<p;v++)d.push(t.charAt(w>>>6*(3-v)&63));if(l=t.charAt(64))for(;d.length%4;)d.push(l);return d.join("")},parse:function(d){var l=d.length,s=this._map,t=s.charAt(64);t&&(t=d.indexOf(t),-1!=t&&(l=t));for(var t=[],r=0,w=0;w<
+l;w++)if(w%4){var v=s.indexOf(d.charAt(w-1))<<2*(w%4),b=s.indexOf(d.charAt(w))>>>6-2*(w%4);t[r>>>2]|=(v|b)<<24-8*(r%4);r++}return p.create(t,r)},_map:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="}})();
+(function(u){function p(b,n,a,c,e,j,k){b=b+(n&a|~n&c)+e+k;return(b<<j|b>>>32-j)+n}function d(b,n,a,c,e,j,k){b=b+(n&c|a&~c)+e+k;return(b<<j|b>>>32-j)+n}function l(b,n,a,c,e,j,k){b=b+(n^a^c)+e+k;return(b<<j|b>>>32-j)+n}function s(b,n,a,c,e,j,k){b=b+(a^(n|~c))+e+k;return(b<<j|b>>>32-j)+n}for(var t=CryptoJS,r=t.lib,w=r.WordArray,v=r.Hasher,r=t.algo,b=[],x=0;64>x;x++)b[x]=4294967296*u.abs(u.sin(x+1))|0;r=r.MD5=v.extend({_doReset:function(){this._hash=new w.init([1732584193,4023233417,2562383102,271733878])},
+_doProcessBlock:function(q,n){for(var a=0;16>a;a++){var c=n+a,e=q[c];q[c]=(e<<8|e>>>24)&16711935|(e<<24|e>>>8)&4278255360}var a=this._hash.words,c=q[n+0],e=q[n+1],j=q[n+2],k=q[n+3],z=q[n+4],r=q[n+5],t=q[n+6],w=q[n+7],v=q[n+8],A=q[n+9],B=q[n+10],C=q[n+11],u=q[n+12],D=q[n+13],E=q[n+14],x=q[n+15],f=a[0],m=a[1],g=a[2],h=a[3],f=p(f,m,g,h,c,7,b[0]),h=p(h,f,m,g,e,12,b[1]),g=p(g,h,f,m,j,17,b[2]),m=p(m,g,h,f,k,22,b[3]),f=p(f,m,g,h,z,7,b[4]),h=p(h,f,m,g,r,12,b[5]),g=p(g,h,f,m,t,17,b[6]),m=p(m,g,h,f,w,22,b[7]),
+f=p(f,m,g,h,v,7,b[8]),h=p(h,f,m,g,A,12,b[9]),g=p(g,h,f,m,B,17,b[10]),m=p(m,g,h,f,C,22,b[11]),f=p(f,m,g,h,u,7,b[12]),h=p(h,f,m,g,D,12,b[13]),g=p(g,h,f,m,E,17,b[14]),m=p(m,g,h,f,x,22,b[15]),f=d(f,m,g,h,e,5,b[16]),h=d(h,f,m,g,t,9,b[17]),g=d(g,h,f,m,C,14,b[18]),m=d(m,g,h,f,c,20,b[19]),f=d(f,m,g,h,r,5,b[20]),h=d(h,f,m,g,B,9,b[21]),g=d(g,h,f,m,x,14,b[22]),m=d(m,g,h,f,z,20,b[23]),f=d(f,m,g,h,A,5,b[24]),h=d(h,f,m,g,E,9,b[25]),g=d(g,h,f,m,k,14,b[26]),m=d(m,g,h,f,v,20,b[27]),f=d(f,m,g,h,D,5,b[28]),h=d(h,f,
+m,g,j,9,b[29]),g=d(g,h,f,m,w,14,b[30]),m=d(m,g,h,f,u,20,b[31]),f=l(f,m,g,h,r,4,b[32]),h=l(h,f,m,g,v,11,b[33]),g=l(g,h,f,m,C,16,b[34]),m=l(m,g,h,f,E,23,b[35]),f=l(f,m,g,h,e,4,b[36]),h=l(h,f,m,g,z,11,b[37]),g=l(g,h,f,m,w,16,b[38]),m=l(m,g,h,f,B,23,b[39]),f=l(f,m,g,h,D,4,b[40]),h=l(h,f,m,g,c,11,b[41]),g=l(g,h,f,m,k,16,b[42]),m=l(m,g,h,f,t,23,b[43]),f=l(f,m,g,h,A,4,b[44]),h=l(h,f,m,g,u,11,b[45]),g=l(g,h,f,m,x,16,b[46]),m=l(m,g,h,f,j,23,b[47]),f=s(f,m,g,h,c,6,b[48]),h=s(h,f,m,g,w,10,b[49]),g=s(g,h,f,m,
+E,15,b[50]),m=s(m,g,h,f,r,21,b[51]),f=s(f,m,g,h,u,6,b[52]),h=s(h,f,m,g,k,10,b[53]),g=s(g,h,f,m,B,15,b[54]),m=s(m,g,h,f,e,21,b[55]),f=s(f,m,g,h,v,6,b[56]),h=s(h,f,m,g,x,10,b[57]),g=s(g,h,f,m,t,15,b[58]),m=s(m,g,h,f,D,21,b[59]),f=s(f,m,g,h,z,6,b[60]),h=s(h,f,m,g,C,10,b[61]),g=s(g,h,f,m,j,15,b[62]),m=s(m,g,h,f,A,21,b[63]);a[0]=a[0]+f|0;a[1]=a[1]+m|0;a[2]=a[2]+g|0;a[3]=a[3]+h|0},_doFinalize:function(){var b=this._data,n=b.words,a=8*this._nDataBytes,c=8*b.sigBytes;n[c>>>5]|=128<<24-c%32;var e=u.floor(a/
+4294967296);n[(c+64>>>9<<4)+15]=(e<<8|e>>>24)&16711935|(e<<24|e>>>8)&4278255360;n[(c+64>>>9<<4)+14]=(a<<8|a>>>24)&16711935|(a<<24|a>>>8)&4278255360;b.sigBytes=4*(n.length+1);this._process();b=this._hash;n=b.words;for(a=0;4>a;a++)c=n[a],n[a]=(c<<8|c>>>24)&16711935|(c<<24|c>>>8)&4278255360;return b},clone:function(){var b=v.clone.call(this);b._hash=this._hash.clone();return b}});t.MD5=v._createHelper(r);t.HmacMD5=v._createHmacHelper(r)})(Math);
+(function(){var u=CryptoJS,p=u.lib,d=p.Base,l=p.WordArray,p=u.algo,s=p.EvpKDF=d.extend({cfg:d.extend({keySize:4,hasher:p.MD5,iterations:1}),init:function(d){this.cfg=this.cfg.extend(d)},compute:function(d,r){for(var p=this.cfg,s=p.hasher.create(),b=l.create(),u=b.words,q=p.keySize,p=p.iterations;u.length<q;){n&&s.update(n);var n=s.update(d).finalize(r);s.reset();for(var a=1;a<p;a++)n=s.finalize(n),s.reset();b.concat(n)}b.sigBytes=4*q;return b}});u.EvpKDF=function(d,l,p){return s.create(p).compute(d,
+l)}})();
+CryptoJS.lib.Cipher||function(u){var p=CryptoJS,d=p.lib,l=d.Base,s=d.WordArray,t=d.BufferedBlockAlgorithm,r=p.enc.Base64,w=p.algo.EvpKDF,v=d.Cipher=t.extend({cfg:l.extend(),createEncryptor:function(e,a){return this.create(this._ENC_XFORM_MODE,e,a)},createDecryptor:function(e,a){return this.create(this._DEC_XFORM_MODE,e,a)},init:function(e,a,b){this.cfg=this.cfg.extend(b);this._xformMode=e;this._key=a;this.reset()},reset:function(){t.reset.call(this);this._doReset()},process:function(e){this._append(e);return this._process()},
+finalize:function(e){e&&this._append(e);return this._doFinalize()},keySize:4,ivSize:4,_ENC_XFORM_MODE:1,_DEC_XFORM_MODE:2,_createHelper:function(e){return{encrypt:function(b,k,d){return("string"==typeof k?c:a).encrypt(e,b,k,d)},decrypt:function(b,k,d){return("string"==typeof k?c:a).decrypt(e,b,k,d)}}}});d.StreamCipher=v.extend({_doFinalize:function(){return this._process(!0)},blockSize:1});var b=p.mode={},x=function(e,a,b){var c=this._iv;c?this._iv=u:c=this._prevBlock;for(var d=0;d<b;d++)e[a+d]^=
+c[d]},q=(d.BlockCipherMode=l.extend({createEncryptor:function(e,a){return this.Encryptor.create(e,a)},createDecryptor:function(e,a){return this.Decryptor.create(e,a)},init:function(e,a){this._cipher=e;this._iv=a}})).extend();q.Encryptor=q.extend({processBlock:function(e,a){var b=this._cipher,c=b.blockSize;x.call(this,e,a,c);b.encryptBlock(e,a);this._prevBlock=e.slice(a,a+c)}});q.Decryptor=q.extend({processBlock:function(e,a){var b=this._cipher,c=b.blockSize,d=e.slice(a,a+c);b.decryptBlock(e,a);x.call(this,
+e,a,c);this._prevBlock=d}});b=b.CBC=q;q=(p.pad={}).Pkcs7={pad:function(a,b){for(var c=4*b,c=c-a.sigBytes%c,d=c<<24|c<<16|c<<8|c,l=[],n=0;n<c;n+=4)l.push(d);c=s.create(l,c);a.concat(c)},unpad:function(a){a.sigBytes-=a.words[a.sigBytes-1>>>2]&255}};d.BlockCipher=v.extend({cfg:v.cfg.extend({mode:b,padding:q}),reset:function(){v.reset.call(this);var a=this.cfg,b=a.iv,a=a.mode;if(this._xformMode==this._ENC_XFORM_MODE)var c=a.createEncryptor;else c=a.createDecryptor,this._minBufferSize=1;this._mode=c.call(a,
+this,b&&b.words)},_doProcessBlock:function(a,b){this._mode.processBlock(a,b)},_doFinalize:function(){var a=this.cfg.padding;if(this._xformMode==this._ENC_XFORM_MODE){a.pad(this._data,this.blockSize);var b=this._process(!0)}else b=this._process(!0),a.unpad(b);return b},blockSize:4});var n=d.CipherParams=l.extend({init:function(a){this.mixIn(a)},toString:function(a){return(a||this.formatter).stringify(this)}}),b=(p.format={}).OpenSSL={stringify:function(a){var b=a.ciphertext;a=a.salt;return(a?s.create([1398893684,
+1701076831]).concat(a).concat(b):b).toString(r)},parse:function(a){a=r.parse(a);var b=a.words;if(1398893684==b[0]&&1701076831==b[1]){var c=s.create(b.slice(2,4));b.splice(0,4);a.sigBytes-=16}return n.create({ciphertext:a,salt:c})}},a=d.SerializableCipher=l.extend({cfg:l.extend({format:b}),encrypt:function(a,b,c,d){d=this.cfg.extend(d);var l=a.createEncryptor(c,d);b=l.finalize(b);l=l.cfg;return n.create({ciphertext:b,key:c,iv:l.iv,algorithm:a,mode:l.mode,padding:l.padding,blockSize:a.blockSize,formatter:d.format})},
+decrypt:function(a,b,c,d){d=this.cfg.extend(d);b=this._parse(b,d.format);return a.createDecryptor(c,d).finalize(b.ciphertext)},_parse:function(a,b){return"string"==typeof a?b.parse(a,this):a}}),p=(p.kdf={}).OpenSSL={execute:function(a,b,c,d){d||(d=s.random(8));a=w.create({keySize:b+c}).compute(a,d);c=s.create(a.words.slice(b),4*c);a.sigBytes=4*b;return n.create({key:a,iv:c,salt:d})}},c=d.PasswordBasedCipher=a.extend({cfg:a.cfg.extend({kdf:p}),encrypt:function(b,c,d,l){l=this.cfg.extend(l);d=l.kdf.execute(d,
+b.keySize,b.ivSize);l.iv=d.iv;b=a.encrypt.call(this,b,c,d.key,l);b.mixIn(d);return b},decrypt:function(b,c,d,l){l=this.cfg.extend(l);c=this._parse(c,l.format);d=l.kdf.execute(d,b.keySize,b.ivSize,c.salt);l.iv=d.iv;return a.decrypt.call(this,b,c,d.key,l)}})}();
+(function(){for(var u=CryptoJS,p=u.lib.BlockCipher,d=u.algo,l=[],s=[],t=[],r=[],w=[],v=[],b=[],x=[],q=[],n=[],a=[],c=0;256>c;c++)a[c]=128>c?c<<1:c<<1^283;for(var e=0,j=0,c=0;256>c;c++){var k=j^j<<1^j<<2^j<<3^j<<4,k=k>>>8^k&255^99;l[e]=k;s[k]=e;var z=a[e],F=a[z],G=a[F],y=257*a[k]^16843008*k;t[e]=y<<24|y>>>8;r[e]=y<<16|y>>>16;w[e]=y<<8|y>>>24;v[e]=y;y=16843009*G^65537*F^257*z^16843008*e;b[k]=y<<24|y>>>8;x[k]=y<<16|y>>>16;q[k]=y<<8|y>>>24;n[k]=y;e?(e=z^a[a[a[G^z]]],j^=a[a[j]]):e=j=1}var H=[0,1,2,4,8,
+16,32,64,128,27,54],d=d.AES=p.extend({_doReset:function(){for(var a=this._key,c=a.words,d=a.sigBytes/4,a=4*((this._nRounds=d+6)+1),e=this._keySchedule=[],j=0;j<a;j++)if(j<d)e[j]=c[j];else{var k=e[j-1];j%d?6<d&&4==j%d&&(k=l[k>>>24]<<24|l[k>>>16&255]<<16|l[k>>>8&255]<<8|l[k&255]):(k=k<<8|k>>>24,k=l[k>>>24]<<24|l[k>>>16&255]<<16|l[k>>>8&255]<<8|l[k&255],k^=H[j/d|0]<<24);e[j]=e[j-d]^k}c=this._invKeySchedule=[];for(d=0;d<a;d++)j=a-d,k=d%4?e[j]:e[j-4],c[d]=4>d||4>=j?k:b[l[k>>>24]]^x[l[k>>>16&255]]^q[l[k>>>
+8&255]]^n[l[k&255]]},encryptBlock:function(a,b){this._doCryptBlock(a,b,this._keySchedule,t,r,w,v,l)},decryptBlock:function(a,c){var d=a[c+1];a[c+1]=a[c+3];a[c+3]=d;this._doCryptBlock(a,c,this._invKeySchedule,b,x,q,n,s);d=a[c+1];a[c+1]=a[c+3];a[c+3]=d},_doCryptBlock:function(a,b,c,d,e,j,l,f){for(var m=this._nRounds,g=a[b]^c[0],h=a[b+1]^c[1],k=a[b+2]^c[2],n=a[b+3]^c[3],p=4,r=1;r<m;r++)var q=d[g>>>24]^e[h>>>16&255]^j[k>>>8&255]^l[n&255]^c[p++],s=d[h>>>24]^e[k>>>16&255]^j[n>>>8&255]^l[g&255]^c[p++],t=
+d[k>>>24]^e[n>>>16&255]^j[g>>>8&255]^l[h&255]^c[p++],n=d[n>>>24]^e[g>>>16&255]^j[h>>>8&255]^l[k&255]^c[p++],g=q,h=s,k=t;q=(f[g>>>24]<<24|f[h>>>16&255]<<16|f[k>>>8&255]<<8|f[n&255])^c[p++];s=(f[h>>>24]<<24|f[k>>>16&255]<<16|f[n>>>8&255]<<8|f[g&255])^c[p++];t=(f[k>>>24]<<24|f[n>>>16&255]<<16|f[g>>>8&255]<<8|f[h&255])^c[p++];n=(f[n>>>24]<<24|f[g>>>16&255]<<16|f[h>>>8&255]<<8|f[k&255])^c[p++];a[b]=q;a[b+1]=s;a[b+2]=t;a[b+3]=n},keySize:8});u.AES=p._createHelper(d)})();
+    </script>
+
+<!--    <script src="../lib/cipherimage/cipherimage.js"></script>  -->
+    <script>
+/*
+ *  CipherImage JS Library, copyright (c) 2021 Greg Sidal, inherits CryptoJS licence
+ *    requires {cryptojs}/rollups/aes.js (for BinaryCrypto class)
+ *
+ *  Encrypts/decrypts image data (rasters) with AES 256, opens from PNG files, displays on canvas
+ *
+ *    Create:      var ci = new CipherImage.FileViewer( canvas, notify_callback );
+ *    Open image:  ci.setsrc( filename );
+ *    Detect:      ci.isCipherimg();
+ *    Encrypt:     ci.encrypt( pass );
+ *    Decrypt:     if (!ci.decrypt( pass )) alert( "Wrong key!" );
+ *    Save PNG:    <a href="" onclick="this.href=ci.getBmpDataUrl()" download="cipherimage.png">Save</a>
+ * 
+ *  CipherImage raster: Prefix + IV + Salt + CipherText
+ *    A row padded with random pixels is added to make room for all prefix data
+ *    'Prefix' (constant) is used for CipherImage recognition
+ *
+ *  'CipherText' when decrypted: PrefixPixel + Image raster
+ *    'PrefixPixel' is added to simplify PlainText recognition (correct password used to decrypt)
+ */
+
+
+CipherImage_Prefix = "CrIm";
+CipherImage = {
+  prefix: CipherImage_Prefix,
+  prefixarr: [CipherImage_Prefix.charCodeAt(0), CipherImage_Prefix.charCodeAt(1),
+              CipherImage_Prefix.charCodeAt(2), 255, CipherImage_Prefix.charCodeAt(3)]
+};
+
+
+/*
+ *  image file crypto on canvas
+ */
+CipherImage.FileViewer = function( canv, callback ) {
+  this.encrypt = function( pass ) {
+    var data = this.ifc.getdata();
+    var cipherimage = CipherImage.Data.encrypt( pass, data, CipherImage.prefix, CipherImage.prefixarr );
+    if (cipherimage)
+      this.ifc.setdata( cipherimage );
+  }
+  this.decrypt = function( pass, ignorepixtest ) {
+    var data = this.ifc.getdata();
+    var plainimage = CipherImage.Data.decrypt( pass, data, CipherImage.prefix, CipherImage.prefixarr );
+    if (plainimage)
+      this.ifc.setdata( plainimage );
+    return plainimage;
+  }
+  this.decryptreset = function( pass, plainimg ) {
+    var plain = CipherImage.Data.decryptret( pass, plainimg, CipherImage.prefix, CipherImage.prefixarr );
+    if (plain.imagedata)
+      this.ifc.setdata( plain.imagedata );
+    return plain.isplain;
+  }
+  this.testpass = function( pass ) {
+    var data = this.ifc.getdata();
+    return CipherImage.Data.testpass( pass, data, CipherImage.prefix, CipherImage.prefixarr );
+  }
+  this.setsrc = function( f, u ) {
+    return this.ifc.setsrc( f, u );
+  }
+  this.getviewdata = function() {
+    return this.ifc.getviewdata();
+  }
+  this.getrgbdata = function() {
+    return CipherImage.Data.imgdata2rgb( this.ifc.getdata() );
+  }
+  this.getBmpDataUrl = function() {
+    return this.ifc.getBmpDataUrl();
+  }
+  this.isCipherimg = function() {
+    var d = this.ifc.getdata();
+    return d ? CipherImage.Data.iscipherimg( d, CipherImage.prefixarr ) : false;
+  }
+  this.save2file = function( f ) {
+    return this.ifc.save2file( f );
+  }
+  this.ifc = new ImageViewer.File( canv, callback );
+  this.callback = callback;
+}
+
+
+/*
+ *  ImageData crypto
+ */
+CipherImage.Data = {
+  /* unpack [rgbrgbrgb...] array into imgdata */
+  rgb2imgdata: function( rgb, w, h ) {
+    var idobj = new ImageData( w, h );
+    if (!rgb)
+      return idobj;
+    var imgdata = idobj.data;
+    var imgdatalen = imgdata.length;
+    var rgblen = rgb.length;
+    for( var i=0,j=0; j<rgblen && i<imgdatalen; i+=4,j+=3 )
+      imgdata[i] = rgb[j], imgdata[i+1] = rgb[j+1], imgdata[i+2] = rgb[j+2], imgdata[i+3] = 255;
+    return idobj;
+  },
+  /* pack imgdata into [rgbrgbrgb...] array */
+  imgdata2rgb: function( idobj ) {
+    var imgdata = idobj.data;
+    var imgdatalen = imgdata.length;
+    var binarr = new Uint8Array( (imgdatalen/4) * 3);
+    for( var i=0,j=0; i<imgdatalen; i+=4,j+=3 )
+      binarr[j] = imgdata[i], binarr[j+1] = imgdata[i+1], binarr[j+2] = imgdata[i+2];
+    return binarr;
+  },
+  /* pack ImageData into binary string */
+  imgdata2binstr: function( idobj, prepix ) {
+    var binstr = prepix ? String.fromCharCode(prepix[0],prepix[1],prepix[2]) : "";
+    var imgdata = idobj.data;
+    var imgdatalen = imgdata.length;
+    for( var i=0; i<imgdatalen; i+=4 )
+      binstr += String.fromCharCode( imgdata[i], imgdata[i+1], imgdata[i+2] );
+    return binstr;
+  },
+  /* test decrypted first pixel to validate pass */
+  testprepix: function( binstr, prepix ) {
+    var pp = [binstr.charCodeAt(0), binstr.charCodeAt(1), binstr.charCodeAt(2)];
+    return (prepix[0] == pp[0]) && (prepix[1] == pp[1]) && (prepix[2] == pp[2]);
+  },
+  /* unpack rgbrgbrgb... string into ImageData */
+  binstr2imgdata: function( binstr, w, h, prepix ) {
+    var j = 0;
+    if (prepix) {
+      if (!CipherImage.Data.testprepix( binstr, prepix ))
+        return null;
+      j = 3;
+    }
+    var idobj = new ImageData( w, h );
+    if (!binstr)
+      return idobj;
+    var imgdata = idobj.data;
+    var imgdatalen = imgdata.length;
+    var binstrlen = binstr.length;
+    for( var i=0; j<binstrlen && i<imgdatalen; i+=4,j+=3 ) {
+      imgdata[i] = binstr.charCodeAt( j );
+      imgdata[i+1] = binstr.charCodeAt( j+1 );
+      imgdata[i+2] = binstr.charCodeAt( j+2 );
+      imgdata[i+3] = 255;
+    }
+    for( ; i<imgdatalen; i+=4 )
+      imgdata[i]=Rand.range(0,255), imgdata[i+1]=Rand.range(0,255), imgdata[i+2]=Rand.range(0,255), imgdata[i+3]=255;
+    return idobj;
+  },
+  /* compare piece of image */
+  compare: function( idobj, rgbarr, offset ) {
+    offset = offset ? offset : 0;
+    var imgdata = idobj.data;
+    var len = imgdata.length;
+    for( var i=offset,j=0; i<len && j<rgbarr.length; i++,j++ )
+      if (imgdata[i] != rgbarr[j])
+        return false;
+    return true;
+  },
+  /*  */
+  iscipherimg: function( imgdata, prefixarr ) {
+    return CipherImage.Data.compare( imgdata, prefixarr );
+  },
+  /* unpack ImageData into cipherstr */
+  imgdata2cipherstr: function( imgdata, maxlen ) {
+    return CipherImage.Data.imgdata2binstr( imgdata );
+  },
+  /* pack cipherstr into ImageData */
+  cipherstr2imgdata: function( cipherstr, w, h ) {
+    return CipherImage.Data.binstr2imgdata( cipherstr, w, h+1 );
+  },
+  /* encrypt ImageData buffer, return new ImageData */
+  encrypt: function( pass, imgdata, prefix, prepix ) {
+    var binstr = CipherImage.Data.imgdata2binstr( imgdata, prepix );
+    var cipherstr = BinaryCrypto.encrypt( pass, binstr, prefix );
+    return CipherImage.Data.cipherstr2imgdata( cipherstr, imgdata.width, imgdata.height );
+  },
+  /* decrypt ImageData buffer */
+  decrypt: function( pass, imgdata, prefix, prepix ) {
+    var cipherstr = CipherImage.Data.imgdata2cipherstr( imgdata );
+    var plainstr = BinaryCrypto.decrypt( pass, cipherstr, prefix );
+    return CipherImage.Data.binstr2imgdata( plainstr, imgdata.width, imgdata.height-1, prepix );
+  },
+  /* decrypt ImageData buffer, return imgdata even if it fails prepix test */
+  decryptret: function( pass, imgdata, prefix, prepix ) {
+    var cipherstr = CipherImage.Data.imgdata2cipherstr( imgdata );
+    var plainstr = BinaryCrypto.decrypt( pass, cipherstr, prefix );
+    var im = CipherImage.Data.binstr2imgdata( plainstr, imgdata.width, imgdata.height-1 );
+    return {imagedata:im,isplain:CipherImage.Data.testprepix(plainstr,prepix)};
+  },
+  /* decrypt part of ImageData buffer to test if pass correct */
+  testpass: function( pass, imgdata, prefix, prepix ) {
+    var cipherstr = BinaryCrypto.arr2str( imgdata.data, 
+                        BinaryCrypto.hdrlength(prefix)+(BinaryCrypto.blklength()*2) );
+    var plainstr = BinaryCrypto.decrypt( pass, cipherstr, prefix );
+    return CipherImage.Data.testprepix( plainstr, prepix );
+  }
+};
+
+
+ImageViewer = {};
+/*
+ *  image data on canvas
+ */
+ImageViewer.Data = function( canv ) {
+  this.drawimg = function() {
+    if (!this.src.data) {
+      this.view.context.fillStyle = 'rgb(255,255,255)';
+      this.view.context.fillRect( 0, 0, this.view.canvas.width, this.view.canvas.height );
+      return false;
+    }
+    this.view.canvas.width = this.src.data.width, this.view.canvas.height = this.src.data.height;
+    this.view.context.putImageData( this.src.data, 0, 0 );
+    return true;
+  }
+  this.setdata = function( data ) {
+    this.src.data = data;
+    return this.drawimg();
+  }
+  this.setimgdata = function( img ) {
+    this.view.canvas.width = img.width, this.view.canvas.height = img.height;
+    this.view.context.drawImage( img, 0, 0 );
+    this.src.data = this.getviewdata();
+  }
+  this.getdata = function() {
+    return this.src.data;
+  }
+  this.getcanvas = function() {
+    return this.view.canvas;
+  }
+  this.getviewdata = function() {
+    return this.view.context.getImageData( 0, 0, this.view.canvas.width, this.view.canvas.height );
+  }
+  this.view = {canvas:canv,context:canv.getContext('2d')};
+  this.src = {data:null/*,prevdata:null*/};
+}
+
+
+/*
+ *  image file on canvas
+ */
+ImageViewer.File = function( canv, callback ) {
+  this.setdata = function( data ) {
+    return this.idc.setdata( data );
+  }
+  this.getdata = function() {
+    return this.idc.getdata();
+  }
+  this.getviewdata = function() {
+    return this.idc.getviewdata();
+  }
+  this.drawimg = function() {
+    return this.idc.drawimg();
+  }
+  this.setimgdata = function( img ) {
+    this.idc.setimgdata( img );
+  }
+  this.loadfiledata = function() {
+    var this_ = this;
+    var callbacks = {
+      onloaded: function(d) {this_.loadinprogress=false; this_.setimgdata(d); this_.onnotify();},
+      onloaderror: function(m) {this_.loadinprogress=false; this_.onnotify(m);},
+      onloadnotify: function(m) {this_.onnotify(m);}
+    }
+    this.loadinprogress = true;
+    if (this.src.file)
+      FileHandler.loadimgfile( callbacks, this.src.file );
+    else
+      FileHandler.loadimgurl( callbacks, this.src.url );
+  }
+  this.save2file = function( f ) {
+  }
+  this.onnotify = function( msg ) {
+    if (this.callback)
+      this.callback( msg );
+  }
+  this.getmetadata = function() {
+    return this.metadata;
+  }
+  this.setmetadata = function( part, md ) {
+    if (part)
+      this.metadata[part] = md;
+  }
+  this.setsrc = function( f, u ) {
+    this.src.file = f;
+    this.src.url = u;
+    return this.loadfiledata();
+  }
+  this.getBmpDataUrl = function() {
+    return this.idc.getcanvas().toDataURL( 'image/png', 1.0 );
+  }
+  this.idc = new ImageViewer.Data( canv );
+  this.src = {file:null, url:null};
+  this.callback = callback;
+  this.metadata = {};
+}
+
+
+/*
+ *  binary data crypto package
+ */
+var BinaryCrypto = {
+  /* return length of blocks in ciphers */
+  blklength: function() {
+    return 16;
+  },
+  /* return length of header that is prepended to ciphers */
+  hdrlength: function( prefix ) {
+    return prefix.length + 16 + 8;
+  },
+  /* take byte array, return byte string */
+  arr2str: function( arr, maxlen ) {
+    var str = "";
+    var arrlen = maxlen ? (maxlen<arr.length?maxlen:arr.length): arr.length;
+    for( var i=0; i<arrlen; i++ )
+      str += String.fromCharCode( arr[i] );
+    return str;
+  },
+  /* take byte string, return byte array */
+  str2arr: function( str ) {
+    var arr = new Uint8Array();
+    var strlen = str.length;
+    for( var i=0; i<strlen; i++ ) 
+      arr[i] = str.charCodeAt( i );
+    return arr;
+  },
+  /* take plainy as byte string, return "prefix+iv+salt+ciphertext" as byte string */
+  encrypt: function( pass, plainstr, prefix ) {
+    var plain = CryptoJS.enc.Latin1.parse( plainstr );
+    var cipher = CryptoJS.AES.encrypt( plain, pass );
+    var cipherstr = prefix ? prefix : "";
+    cipherstr += cipher.iv.toString( CryptoJS.enc.Latin1 );
+    cipherstr += cipher.salt.toString( CryptoJS.enc.Latin1 );
+    return cipherstr + cipher.ciphertext.toString( CryptoJS.enc.Latin1 );
+  },
+  /* parse cipherstr into CipherParams */
+  parsecipherstr: function( cipherstr, prefix ) {
+    var prelen = prefix ? prefix.length : 0;
+    var ct = cipherstr.slice(24+prelen);
+    //alert( ct.length );
+    ct = CryptoJS.enc.Latin1.parse( cipherstr.slice(24+prelen) );
+    var c = CryptoJS.lib.CipherParams.create( {ciphertext:ct} );
+    c.iv = CryptoJS.enc.Latin1.parse( cipherstr.slice(prelen,16+prelen) );
+    c.salt = CryptoJS.enc.Latin1.parse( cipherstr.slice(16+prelen,24+prelen) );
+    return c;
+  },
+  /* take "prefix+iv+salt+ciphertext" as byte string, return plainy as byte string */
+  decrypt: function( pass, cipherstr, prefix ) {
+    var c = BinaryCrypto.parsecipherstr( cipherstr, prefix );
+    var plain = CryptoJS.AES.decrypt( c, pass ); //, {format:{parse:BinaryCrypto.parsecipherstr}}
+    var plainstr = plain.toString( CryptoJS.enc.Latin1 );
+    return plainstr;
+  }
+};
+
+
+/*
+ *  file handler
+ */
+var FileHandler = {
+  /* Fetch image file from local drive */
+  loadimgfile: function( callbacks, file ) {
+    var reader = new FileReader();
+    reader.onerror = function( e ) {callbacks.onloaderror('ERROR: file read failed');}
+    reader.onload = function( e ) {
+      var img = new Image();
+      img.onload = function() {callbacks.onloadnotify(file.name); callbacks.onloaded(img);}
+      img.onerror = function() {callbacks.onloaderror('ERROR: '+file.name+' not a supported image file type');}
+      img.src = e.target.result;
+    }
+    reader.readAsDataURL( file );
+  },
+  /* Fetch image file from web */
+  loadimgurl: function( callbacks, url ) {
+    function err( m ) {callbacks.onloaderror(m);}
+    function notify( m ) {
+      if (m.slice(0,5) != 'data:')
+        callbacks.onloadnotify( m );
+    }
+    var img = new Image();
+    img.onerror = function() {callbacks.onloaderror('ERROR: '+file.name+' could not be loaded, or not a supported image file type');}
+    img.onload = function() {
+      notify( url );
+      callbacks.onloaded( img );
+    }
+    try {
+      img.src = url;
+    }
+    catch( e ) {
+      err( "ERROR: " + url );
+    }
+  },
+  /* Fetch binary file from web */
+  loadurlbinary: function( callbacks, url ) {
+    function progress( e ) {
+      callbacks.onloadnotify( url + !e.lengthComputable || e.loaded==e.total ?
+                                    '' : ' (loading '+((e.loaded*100)/e.total)+'%)' );
+    }
+    function complete( e ) {
+      callbacks.onloadnotify( url );
+      callbacks.onloaded(new Uint8Array(this.response));
+    }
+    function err( m ) {callbacks.onloaderror(m);}
+    function failed() {err(this.status==404 ? "URL not found" : "Server busy");}
+    function canceled( e ) {err( "Canceled" );}
+    callbacks.onloadnotify( url );
+    try {
+      var req = new XMLHttpRequest();
+      req.addEventListener( "progress", progress, false );
+      req.addEventListener( "load", complete, false );
+      req.addEventListener( "error", failed, false );
+      req.addEventListener( "abort", canceled, false );
+      req.open( "GET", url, true );
+      req.responseType = "arraybuffer";
+      req.send();
+    }
+    catch( e ) {
+      err( "ERROR: " + url );
+    }
+  }
+}
+
+
+/*
+ *  random vals and infinite integers (expanding byte array integers)
+ */
+var Rand = {
+  r: function( ) {
+    var r = 0;
+    if (window.crypto && window.crypto.getRandomValues) {
+      var array = new Uint32Array( 2 );
+      window.crypto.getRandomValues( array );
+      array[1] = 0xffffffff;
+      r = array[0] / array[1];
+    }
+    else
+      r = Math.random();
+    return r;
+  },
+  range: function( min, max ) {
+    var r = Rand.r();
+    return min + Math.round( r * (max-min) );
+  },
+  bytearray: function( len ) {
+    var ra = new Uint8Array( len );
+    for( var i=0; i<len; i++ )
+      ra[i] = Rand.range( 0, 255 );
+    return ra;
+  },
+  bytes2hexstr: function( ra ) {
+    var hex = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+    var str = "", tmp=0;
+    for( var i=0; i<ra.length; i++ )
+      str += hex[Math.floor(ra[i]/16)] + hex[ra[i]%16];
+    return str;
+  },
+  initbytes: function( len ) {
+    var b = [];
+    for( var i=0; i<len; i++ )
+      b[i] = 0;
+    return b;
+  },
+  incbytes: function( b ) {
+    var len = b.length;
+    for( var i=len-1; i>=0; i-- ) {
+      b[i]++;
+      if (b[i] < 256)
+        break;
+      b[i] = 0;
+    }
+    if (i < 0)
+      b[len] = 0;
+    return b;
+  }
+};
+    </script>
+
+<!--    <script src="cipherimage_ui.js"></script>  -->
+    <script>
+/*
+ *  CipherImage UI Support 2021, Greg Sidal, MIT licence
+ */
+
+
+/*
+ *  UI main
+ */
+var CI = {open:false,views:[],fresh:true,default:0,opencallback:function(id){},filename:""};
+CI.waitsize = 1600000;         /*2022-12 ADD min img size for wait prompt*/
+CI.forcedisallowcanvasdata = false; //true: simulate Tor Browser for testing
+
+CI.setup = function( id, srcu, srcname ) {
+  function notify( msg, img ) {
+    if (msg) {
+      if (msg.slice(0,6) == 'ERROR:')
+        alert( msg );
+      else
+        UI.puts( id+'_stats', msg );
+        CI.filename = msg;
+    }
+    else
+      if (CI.views[id]) {
+        CI.open=true, CI.fresh=true, CI.default++;
+        CI.setupctrls( id, CI.views[id].isCipherimg() );
+        CI.resize( id );  /*2022-12 ADD*/
+        CI.opencallback( id );
+      }
+  }
+  CI.views[id] = new CipherImage.FileViewer( UI.el(id+'_canv'), notify );
+  if (srcu) {
+    setTimeout( "CI.drawimg('"+id+"',null,'"+srcu+"')", 100 );
+    notify( srcname ? srcname : srcu );
+  }
+  else {
+    CI.default = 1;
+    CI.resize( id );  /*2023-03 ADD*/
+  }
+  //UI.setstyle( id+'_canvasdata', 'display', CI.forcedisallowcanvasdata?'block':'none' );
+}
+CI.clickback = function( id ) {
+  //if (UI.style( id+'_isimgopen', 'display' ) == 'none')
+  if (CI.open)
+    UI.toggle( 'menubar', 'controlpane' );
+  else
+    CI.clickopen( id );
+}
+CI.clickopen = function( id ) {
+  if (CI.testcanvas( id ))
+    UI.el( id+'_file' ).click();
+}
+CI.togglecanvasdata = function() {CI.forcedisallowcanvasdata = !CI.forcedisallowcanvasdata;}
+/*2022-12 ADD*/ CI.canvasdatamsg =  
+'Web browser is blocking use of canvas data.\n\n' +
+'Some privacy-oriented browsers such as Tor do this by default to prevent an ' + 
+'exploit used by "ad" (surveillance) networks to uniquely identify users.\n\n' + 
+'Browser may have a setting that allows canvas data, ' + 
+'or the offline version of this page can be downloaded and run locally ' + 
+"(select 'Self-contained downloadable' to download, then open HTML file " + 
+"from prompt or from downloads folder using device's file manager).";
+CI.testcanvas = function( id ) {
+  try {
+    var c = document.createElement( 'canvas' );
+    c.width = c.height = 1;
+    var cx = c.getContext( '2d' );
+    var i = cx.getImageData( 0, 0, 1, 1 );
+    i.data[0] = 10, i.data[1] = 20, i.data[2] = 30, i.data[3] = 255;
+    cx.putImageData( i, 0, 0 );
+    i = cx.getImageData( 0, 0, 1, 1 );
+    if (CI.forcedisallowcanvasdata)
+      i.data[0] = 255;
+    if (i.data[0] == 10 && i.data[1] == 20 && i.data[2] == 30 && i.data[3] == 255)
+      return true;
+    alert( CI.canvasdatamsg );
+  }
+  catch( e ) {
+    alert( "Browser lacks full support for canvas" );
+  }
+  return false;
+}
+CI.drawimg = function( id, f, u ) {
+  CI.views[id].setsrc( f, u );
+  //CI.testcanvas( id );
+}
+CI.setsrc = function( id, f, u ) {
+  if (f || u)
+    CI.views[id].setsrc( f, u );
+}
+CI.resize = function( id, chg ) {  /*2022-12 ADD*/
+  UI.center( id+'_canv' );
+}
+CI.resize_NOTUSED = function( id, chg ) {
+  CI.setsizectrls( id, chg );
+  if (CI.views[id])
+    CI.views[id].resize( UI.int(id+'_wid',10,10000,900), UI.int(id+'_hgt',10,10000,800) );
+}
+CI.save = function( id ) {
+  if (CI.views[id]) {
+    /*var bin = CI.views[id].getrgbdata();
+    var blob = new Blob( [bin] );
+    var url = URL.createObjectURL( blob ); */
+
+    if (CI.default <= 1)
+      alert( "Demo image can not be saved (Chrome security policy).  Images opened locally can be saved." );
+    else {
+      var url = CI.views[id].getBmpDataUrl();
+      UI.el(id+'_save').href = url;
+      UI.el(id+'_save').download = UI.v( id+'_savefilename', "cipherimage.png" );  /*2022-10 ADD*/
+      UI.el(id+'_save').click();
+    }
+
+    //URL.revokeObjectURL( url );
+  }
+}
+CI.setupctrls = function( id, iscry ) {
+  UI.setstyle( id+'_wait', 'display', 'none' );      /*2022-10 ADD*/
+  UI.setstyle( id+'_isimgopen', 'display', 'block' );
+  UI.setstyle( id+'_encryptbtn', 'display', iscry?'none':'inline-block' );
+  UI.setstyle( id+'_randpass', 'display', iscry?'none':'block' );
+  UI.setstyle( id+'_decryptbtn', 'display', iscry?'inline-block':'none' );
+  UI.setstyle( id+'_iscipherimg', 'display', iscry?'block':'none' );
+  UI.setstyle( id+'_savebtn', 'display', CI.fresh?'none':'inline-block' );
+  UI.setstyle( id+'_savectrls', 'display', CI.fresh?'none':'block' );   /*2022-10 ADD*/
+  //UI.el(id+'_save').disabled = iscry;
+  var canv = UI.el( id+'_canv' );
+  if (canv && CI.filename)
+    UI.puts( id+'_subtitle', CI.filename+" ("+canv.width+"x"+canv.height+")" );
+  else
+    UI.puts( id+'_subtitle', "" );
+}
+CI.showpass = function( id, pass ) {
+  UI.putv( id+'_pass', pass );
+  UI.puts( id+'_title', pass );
+}
+CI.randpass = function( id, numbytes ) {
+  if (!window.crypto || !window.crypto.getRandomValues)   /*2022-10 ADD*/
+    return alert( "Browser lacks support for secure random number generation" );
+  numbytes = numbytes ? numbytes : UI.int(id+'_randbytes',1,32);
+  var ra = Rand.bytearray( numbytes );
+  var pass = Rand.bytes2hexstr( ra );
+  CI.showpass( id, pass );
+  UI.putv( id+'_numbytes', numbytes );
+}
+CI.wait = function( id, act ) {     /*2022-10 ADD*/
+  if (!CI.testcanvas( id ))
+    return;
+  var canv = UI.el( id+'_canv' );
+  if (!canv)
+    return;
+  if ((canv.width*canv.height) > CI.waitsize)
+    UI.setstyle( id+'_wait', 'display', 'block' );
+  setTimeout( "CI._" + act + "('" + id + "')", 10 );
+}
+
+/*2022-10 ADD*/
+CI._encrypt = function( id ) {
+  CI.views[id].encrypt( UI.v(id+'_pass') );
+  CI.fresh = false;
+  CI.setupctrls( id, true );
+}
+CI._decrypt = function( id ) {
+  var plain = CI.views[id].decrypt( UI.v(id+'_pass') );
+  if (!plain)
+    alert( "Wrong key!!!" );
+  CI.setupctrls( id, plain?false:true );
+}
+/*2022-10 END ADD*/
+
+CI.encrypt = function( id ) {   /*2022-10 EDIT*/
+  CI.wait( id, 'encrypt' );
+}
+CI.decrypt = function( id ) {    /*2022-10 EDIT*/
+  CI.wait( id, 'decrypt' );
+}
+
+
+/*
+ *  miner
+ */
+CI.miner = {
+  key: [0],
+  paused: true,
+  keylen: 0,
+  setupctrls: function( id ) {
+    UI.setstyle( id+'_minebtn', 'display', CI.miner.paused?'inline-block':'none' );
+    UI.setstyle( id+'_pausebtn', 'display', CI.miner.paused?'none':'inline-block' );
+    UI.setstyle( id+'_passvw', 'display', UI.v(id+'_pass')?'inline-block':'none' );
+    UI.el(id+'_randbytes').disabled = !CI.miner.paused;
+  },
+  inckey: function() {
+    CI.miner.key = Rand.incbytes( CI.miner.key );
+    return CI.miner.key.length <= (CI.miner.keylen ? CI.miner.keylen : 32);
+  },
+  trynextkey: function( id ) {
+    if (CI.miner.paused)
+      return;
+    if (!CI.miner.origimgdata)
+      CI.miner.origimgdata = CI.views[id].getviewdata();
+    var pass = Rand.bytes2hexstr( CI.miner.key );
+    CI.showpass( id, pass );
+    var plain = CI.views[id].decryptreset( pass, CI.miner.origimgdata );
+    if (plain) {
+      CI.miner.pause( id );
+      CI.setupctrls( id, false );
+      alert( "Found key!!!" );
+    }
+    else {
+      if (CI.miner.inckey())
+        setTimeout( "CI.miner.trynextkey('"+id+"')", 10 );
+      else {
+        CI.miner.pause( id );
+        CI.setupctrls( id, true );
+        CI.miner.setupctrls( id );
+        CI.miner.keylen = 0;
+        CI.miner.key = [0];
+      }
+    }
+  },
+  start: function( id ) {
+    if (!CI.testcanvas( id ))
+      return;
+    if (!CI.miner.paused)
+      if (!CI.views[id].isCipherimg())
+        return alert( "Open a CipherImage first" );
+    var keylen = UI.int( id+'_randbytes', 0, 32, 0 );
+    if (keylen != CI.miner.keylen) {
+      CI.miner.keylen = keylen;
+      CI.miner.key = keylen ? Rand.initbytes( keylen ) : [0];
+    }
+    if (!CI.miner.keylen)
+      UI.putv( id+'_randbytes', "" );
+    CI.miner.paused = false;
+    CI.showpass( id, Rand.bytes2hexstr(CI.miner.key) );
+    CI.miner.setupctrls( id );
+    CI.miner.trynextkey( id );
+  },
+  pause: function( id ) {
+    CI.miner.paused = true;
+    CI.miner.setupctrls( id );
+  },
+  setup: function( id ) {
+    CI.opencallback = CI.miner.setup;
+    CI.miner.origimgdata = null;
+    CI.miner.paused = true;
+    CI.miner.keylen = 0;
+    CI.miner.key = [0];
+    CI.showpass( id, "" );
+    CI.miner.setupctrls( id );
+    if (CI.default > 0)
+      if (!CI.views[id].isCipherimg())
+        return alert( "Not a CipherImage" );
+  },
+  init: function( id ) {
+    CI.opencallback = CI.miner.setup;
+    CI.miner.origimgdata = null;
+    CI.miner.paused = true;
+    CI.miner.key = [0];
+  }
+}
+
+
+/*
+ *  UI utils
+ */
+var UI = {
+  el: function( id ) {
+    var e;
+    if (id && id instanceof HTMLElement)
+      e = id;
+    else
+      e = document.getElementById( id );
+    return e;
+  },
+  setstyle: function( id, s, v ) {
+    var e = UI.el( id );
+    if (e) e.style[s] = v;
+  },
+  style: function( id, prop ) {
+    var e = UI.el( id );
+    if (!e) return;
+    return window.getComputedStyle( e ).getPropertyValue( prop );
+  },
+  swapstyle: function( id1, id2, prop, iseq ) {
+    var e1 = UI.el( id1 );
+    var e2 = UI.el( id2 );
+    if (e1 && e2) {
+      var s1 = UI.style( e1, prop );
+      var s2 = UI.style( e2, prop );
+      if (s1 || s2)
+        if (!iseq || s1 == iseq)
+          UI.setstyle( e1, prop, s2 ),
+          UI.setstyle( e2, prop, s1 );
+    }
+  },
+  ischk: function( id, def ) {
+    var e = UI.el( id );
+    if (!e) return def;
+    return e.checked;
+  },
+  chk: function( id, v ) {
+    var e = UI.el( id );
+    e.checked = v;
+  },
+  en: function( id, on ) {
+    var e = UI.el( id );
+    e.disabled = !on;
+  },
+  clipnum: function( n, min, max ) {
+    n = isFinite(n) ? n : 0;
+    if (min != undefined)
+      n = n < min ? min : n;
+    if (max != undefined)
+      n = n > max ? max : n;
+    return n;
+  },
+  v: function( id, def ) {
+    var e = UI.el( id );
+    if (!e) return def;
+    if (!e.value && def) return def+"";
+    return e.value;
+  },
+  putv: function( id, vn ) {
+    var e = UI.el( id );
+    if (e) e.value = vn;
+  },
+  puts: function( id, s ) {
+    var e = UI.el( id );
+    if (e) e.innerHTML = s ? s : "";
+  },
+  gets: function( id ) {
+    var e = UI.el( id );
+    return e ? e.innerHTML : "";
+  },
+  putin: function( id, i ) {
+    UI.puts( id, i, i?i.toString():"" );
+  },
+  num: function( id, min, max, def ) {
+    var n = parseFloat( UI.v(id,def) );
+    n = UI.clipnum( n, min, max );
+    UI.putv( id, n );
+    return n;
+  },
+  int: function( id, min, max, def ) {
+    var n = parseInt( UI.v(id,def) );
+    n = UI.clipnum( n, min, max );
+    UI.putv( id, n );
+    return n;
+  } 
+  /*  2022-10 REM,
+  toggle: function( idbtn, id ) {
+    UI.swapstyle( idbtn, id, 'visibility' );
+  },
+  unfold: function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+    UI.setstyle( idunfoldbtn, 'display', 'none' );
+    UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+    UI.setstyle( idfoldpane, 'display', 'block' );
+  },
+  fold: function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+    UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+    UI.setstyle( idfoldbtn, 'display', 'none' );
+    UI.setstyle( idfoldpane, 'display', 'none' );
+  }*/
+};
+
+/*2022-10 ADD*/
+UI.replaceclass = function( id, cls1, cls2 ) {
+  var e = UI.el( id );  /*2022-12 EDIT*/
+  if (e) {
+    e.classList.remove( cls1 );
+    e.classList.add( cls2 );
+  }
+}
+UI.swapclass = function( id, cls1, cls2 ) {
+  var e = UI.el( id );  /*2022-12 EDIT*/
+  if (e)
+    if (e.classList.contains( cls1 ))
+      UI.replaceclass( id, cls1, cls2 );
+    else
+      if (e.classList.contains( cls2 ))
+        UI.replaceclass( id, cls2, cls1 );
+      else
+        e.classList.add( cls2 );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.replaceclass( idfoldpane, 'closed', 'opened' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.replaceclass( idfoldpane, 'opened', 'closed' );
+}
+UI.toggle = function( id1, id2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  UI.swapclass( id2, 'visible', 'hidden' );
+}
+UI.toggleall = function( id1, ids2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  for( var i=0; i<ids2.length; i++ )
+    UI.swapclass( ids2[i], 'visible', 'hidden' );
+}
+/*END 2022-10 ADD*/
+
+
+
+/*2023-03 ADD*/
+UI.remclass = function( id, cls ) {
+  var e = UI.el( id );
+  if (e)
+    e.classList.remove( cls );
+}
+UI.addclass = function( id, cls ) {
+  var e = UI.el( id );
+  if (e)
+    e.classList.add( cls );
+}
+UI.center = function( id, idcontainer, centervert ) {return UI.view.center(id,idcontainer);}
+//UI.el = UI.gete;
+UI.view = {
+  getparent: function( id ) {
+    var e = UI.el( id );
+    return (e && e.parentElement) ? e.parentElement : null;
+  },
+  getcontainer: function( id, idcontainer ) {
+    return idcontainer ? idcontainer : UI.view.getparent( id );
+  },
+  evp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    if ((e instanceof HTMLImageElement) && e.naturalWidth)
+      vp = {wid: e.naturalWidth, hgt: e.naturalHeight};
+    else
+      if (e.width)
+        vp = {wid: e.width, hgt: e.height};
+    return vp;
+  },
+  cvp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    return vp;
+  },
+  center: function( id, idcontainer ) {
+    idcontainer = UI.view.getcontainer( id, idcontainer );
+    var ed = UI.view.evp( id, idcontainer );
+    var cd = UI.view.cvp( idcontainer );
+    var asp = {e: ed.wid / ed.hgt, c: cd.wid / cd.hgt};
+    if (asp.e < asp.c)
+      UI.replaceclass( id, 'respcenterhgt', 'respcenterwid' );  // too tall for vp
+    else
+      UI.replaceclass( id, 'respcenterwid', 'respcenterhgt' );  // too wide for vp
+    var eh = ed.hgt;
+    if (cd.wid > ed.wid && cd.hgt > ed.hgt)
+      UI.addclass( id, 'centersmall' );
+    else {
+      UI.remclass( id, 'centersmall' );
+      eh = ed.hgt * (cd.wid / ed.wid);
+    }
+    UI.remclass( id, 'centertiny' );
+    UI.remclass( id, 'centershort' );
+    UI.remclass( id, 'centermed' );
+    UI.remclass( id, 'centerlong' );
+    if (cd.hgt > (eh*3.4))
+      UI.addclass( id, 'centertiny' );
+    else
+      if (cd.hgt > (eh*2.7))
+        UI.addclass( id, 'centershort' );
+      else
+        if (cd.hgt > (eh*2.2))
+          UI.addclass( id, 'centermed' );
+        else
+          if (cd.hgt > (eh*1.7))
+            UI.addclass( id, 'centerlong' );
+  }
+}
+/*END 2023-03 ADD*/
+    </script>
+
+    <script>
+      CI.defaultname = "(open an image)";
+      CI.defaulturl = "";
+    </script>
+  </head>
+  <body onload="CI.setup('ci',CI.defaulturl,CI.defaultname);" onresize="CI.resize('ci');" id="ci_back"> <!--2022-12 EDIT (onresize)-->
+
+    <div class="back" onclick="CI.clickback('ci');">
+      <canvas id="ci_canv" width="800" height="950" class="centeradjust">   <!--2022-10 EDIT 2023-03--> 
+        <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/>
+                 Browser released after 2015 recommended (testing performed on Firefox and Chrome)</div>
+      </canvas>
+    </div>
+
+    <div class="menubar hidden" id="menubar">  <!--2022-10 EDIT add hidden--> 
+      <div class="open" id="controlbtn" onclick="UI.toggle('menubar','controlpane')"></div>
+    </div>
+
+    <div class="titlebar" id="titlebar">
+      <!--<div><div id="ci_title" class="tt titlesection big"></div></div>-->
+      <div class="descr" id="ci_subtitle"></div>
+    </div>
+
+    <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
+      <div class="corner">
+        <div class="close" id="controlbtn" onclick="UI.toggle('menubar','controlpane')"></div>
+      </div>
+      <div class="title">
+        Cipher-Image Utility
+      </div>
+      <div class="descr">
+        Encrypt/decrypt image raster with key (AES)
+      </div>
+
+      <div class="line gapabove g25">
+        <div tabindex=1 class="nextsmall openfile" id="ci_openfile" onclick="CI.clickopen('ci')"></div>
+        <input type="file" class="dispnone" accept="image/*" id="ci_file" onchange="CI.setsrc('ci',this.files[0]);"/>
+        <div class="inlinestats" id="ci_stats"> &nbsp; (open an image)</div>
+      </div>
+
+    <div class="dispnone" id="ci_isimgopen">
+
+      <div class="line gap">
+        Key: <input tabindex=2 class="inplong" id="ci_pass" value="key or password"></input>
+      </div>
+      <div class="line gap">   <!--2022-10 EDIT rearrange-->
+        <div class="nextsmall unfold" id="ci_unfoldbtn" tabindex=3
+                     onclick="UI.unfold('ci_unfoldbtn','ci_foldbtn','ci_foldpane')"></div>
+        <div class="nextsmall dispnone fold" id="ci_foldbtn" tabindex=4
+                     onclick="UI.fold('ci_unfoldbtn','ci_foldbtn','ci_foldpane')"></div>
+        <div tabindex=5 class="nextsmall fwd" id="ci_encryptbtn" onclick="CI.encrypt('ci')">Encrypt</div>
+        <div tabindex=6 class="nextsmall dispnone rev" id="ci_decryptbtn" onclick="CI.decrypt('ci')">Decrypt</div>
+      </div>
+
+      <div class="gapabove g25 dispnone" id="ci_iscipherimg">
+        <div class="inlinestats" id="ci_msg"></i>Image raster is cipher</i></div>
+        <div tabindex=7 class="nextsmall" id="ci_savebtn" onclick="CI.save('ci')">Save</div>
+                                 <a href="" download="cipherimage.png" class="dispnone" id="ci_save"></a>
+        <div class="line gap dispnone" id="ci_savectrls">    <!--2022-10 ADD-->
+          File name: <input class="inplong" id="ci_savefilename" value="cipherimage.png"></input>
+        </div>
+      </div>
+
+      <div id="ci_foldpane" class="slider shortmedhgt closed">  <!--2022-10 EDIT add slider-->
+      <div class="gapabove g25">  <!--2022-10 ADD-->
+
+        <div class="">
+          <div class="descr i">
+                 Files open in browser (not uploaded).
+            <br/>PNG files saved to preserve intact ciphers.
+            <br/>Saving JPEG not possible (lossy compression).
+            <br/>Ciphers in PNGs are auto-recognized.
+            <br/>
+            <br/>Last updated March 2023 (version 0.62).
+            <br/>Beta: Firefox/Chrome browsers tested.
+          </div>
+        </div>
+
+        <div class="gapabove g25 line" id="ci_randpass">
+          <div class="nextsmall rand" id="ci_randbtn" onclick="CI.randpass('ci')">Random key</div>
+          <!--2022-12 EDIT (add oninput)-->
+          &nbsp;(# bytes:<input class="inpshort inpbox" id="ci_randbytes" value="12" 
+              oninput="if (this.value) CI.randpass('ci')"></input>)
+        </div>
+
+      </div>
+      </div>  <!--2022-10 ADD-->
+
+    </div>
+
+      <div class="gapabove g25">
+        <div class="descr">
+          2021-2023 Greg Sidal cc-by-nc
+          <!--2022-10 EDIT (2022), 2023-03 (2023)-->
+          <br/>Self-contained downloadable (March 2023)
+          <div id="ci_canvasdata" class="gapabove g25 dispnone">
+            <div class="nextsmall" onclick="CI.togglecanvasdata()">Toggle allow canvas data</div>
+          </div>
+        </div>
+      </div>
+
+    </div></div></div>
+
+    <!--2022-10 ADD-->
+    <div id="ci_wait" class="wait">
+      w o r k i n g . . .
+    </div>
+
+  </body>
+</html>
+

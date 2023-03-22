@@ -7,7 +7,7 @@
  *  UI main
  */
 var CI = {open:false,views:[],fresh:true,default:0,opencallback:function(id){},filename:""};
-CI.waitsize = 1600000;         /*2022-10 ADD min img size for wait prompt*/
+CI.waitsize = 1600000;         /*2022-12 ADD min img size for wait prompt*/
 CI.forcedisallowcanvasdata = false; //true: simulate Tor Browser for testing
 
 CI.setup = function( id, srcu, srcname ) {
@@ -23,6 +23,7 @@ CI.setup = function( id, srcu, srcname ) {
       if (CI.views[id]) {
         CI.open=true, CI.fresh=true, CI.default++;
         CI.setupctrls( id, CI.views[id].isCipherimg() );
+        CI.resize( id );  /*2022-12 ADD*/
         CI.opencallback( id );
       }
   }
@@ -31,8 +32,10 @@ CI.setup = function( id, srcu, srcname ) {
     setTimeout( "CI.drawimg('"+id+"',null,'"+srcu+"')", 100 );
     notify( srcname ? srcname : srcu );
   }
-  else
+  else {
     CI.default = 1;
+    CI.resize( id );  /*2023-03 ADD*/
+  }
   //UI.setstyle( id+'_canvasdata', 'display', CI.forcedisallowcanvasdata?'block':'none' );
 }
 CI.clickback = function( id ) {
@@ -47,6 +50,14 @@ CI.clickopen = function( id ) {
     UI.el( id+'_file' ).click();
 }
 CI.togglecanvasdata = function() {CI.forcedisallowcanvasdata = !CI.forcedisallowcanvasdata;}
+/*2022-12 ADD*/ CI.canvasdatamsg =  
+'Web browser is blocking use of canvas data.\n\n' +
+'Some privacy-oriented browsers such as Tor do this by default to prevent an ' + 
+'exploit used by "ad" (surveillance) networks to uniquely identify users.\n\n' + 
+'Browser may have a setting that allows canvas data, ' + 
+'or the offline version of this page can be downloaded and run locally ' + 
+"(select 'Self-contained downloadable' to download, then open HTML file " + 
+"from prompt or from downloads folder using device's file manager).";
 CI.testcanvas = function( id ) {
   try {
     var c = document.createElement( 'canvas' );
@@ -60,7 +71,7 @@ CI.testcanvas = function( id ) {
       i.data[0] = 255;
     if (i.data[0] == 10 && i.data[1] == 20 && i.data[2] == 30 && i.data[3] == 255)
       return true;
-    alert( "Canvas data must be enabled for this browser" );
+    alert( CI.canvasdatamsg );
   }
   catch( e ) {
     alert( "Browser lacks full support for canvas" );
@@ -75,7 +86,10 @@ CI.setsrc = function( id, f, u ) {
   if (f || u)
     CI.views[id].setsrc( f, u );
 }
-CI.resize = function( id, chg ) {
+CI.resize = function( id, chg ) {  /*2022-12 ADD*/
+  UI.center( id+'_canv' );
+}
+CI.resize_NOTUSED = function( id, chg ) {
   CI.setsizectrls( id, chg );
   if (CI.views[id])
     CI.views[id].resize( UI.int(id+'_wid',10,10000,900), UI.int(id+'_hgt',10,10000,800) );
@@ -350,14 +364,14 @@ var UI = {
 
 /*2022-10 ADD*/
 UI.replaceclass = function( id, cls1, cls2 ) {
-  var e = document.getElementById( id );
+  var e = UI.el( id );  /*2022-12 EDIT*/
   if (e) {
     e.classList.remove( cls1 );
     e.classList.add( cls2 );
   }
 }
 UI.swapclass = function( id, cls1, cls2 ) {
-  var e = document.getElementById( id );
+  var e = UI.el( id );  /*2022-12 EDIT*/
   if (e)
     if (e.classList.contains( cls1 ))
       UI.replaceclass( id, cls1, cls2 );
@@ -387,3 +401,78 @@ UI.toggleall = function( id1, ids2 ) {
     UI.swapclass( ids2[i], 'visible', 'hidden' );
 }
 /*END 2022-10 ADD*/
+
+
+
+/*2023-03 ADD*/
+UI.remclass = function( id, cls ) {
+  var e = UI.el( id );
+  if (e)
+    e.classList.remove( cls );
+}
+UI.addclass = function( id, cls ) {
+  var e = UI.el( id );
+  if (e)
+    e.classList.add( cls );
+}
+UI.center = function( id, idcontainer, centervert ) {return UI.view.center(id,idcontainer);}
+//UI.el = UI.gete;
+UI.view = {
+  getparent: function( id ) {
+    var e = UI.el( id );
+    return (e && e.parentElement) ? e.parentElement : null;
+  },
+  getcontainer: function( id, idcontainer ) {
+    return idcontainer ? idcontainer : UI.view.getparent( id );
+  },
+  evp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    if ((e instanceof HTMLImageElement) && e.naturalWidth)
+      vp = {wid: e.naturalWidth, hgt: e.naturalHeight};
+    else
+      if (e.width)
+        vp = {wid: e.width, hgt: e.height};
+    return vp;
+  },
+  cvp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    return vp;
+  },
+  center: function( id, idcontainer ) {
+    idcontainer = UI.view.getcontainer( id, idcontainer );
+    var ed = UI.view.evp( id, idcontainer );
+    var cd = UI.view.cvp( idcontainer );
+    var asp = {e: ed.wid / ed.hgt, c: cd.wid / cd.hgt};
+    if (asp.e < asp.c)
+      UI.replaceclass( id, 'respcenterhgt', 'respcenterwid' );  // too tall for vp
+    else
+      UI.replaceclass( id, 'respcenterwid', 'respcenterhgt' );  // too wide for vp
+    var eh = ed.hgt;
+    if (cd.wid > ed.wid && cd.hgt > ed.hgt)
+      UI.addclass( id, 'centersmall' );
+    else {
+      UI.remclass( id, 'centersmall' );
+      eh = ed.hgt * (cd.wid / ed.wid);
+    }
+    UI.remclass( id, 'centertiny' );
+    UI.remclass( id, 'centershort' );
+    UI.remclass( id, 'centermed' );
+    UI.remclass( id, 'centerlong' );
+    if (cd.hgt > (eh*3.4))
+      UI.addclass( id, 'centertiny' );
+    else
+      if (cd.hgt > (eh*2.7))
+        UI.addclass( id, 'centershort' );
+      else
+        if (cd.hgt > (eh*2.2))
+          UI.addclass( id, 'centermed' );
+        else
+          if (cd.hgt > (eh*1.7))
+            UI.addclass( id, 'centerlong' );
+  }
+}
+/*END 2023-03 ADD*/
