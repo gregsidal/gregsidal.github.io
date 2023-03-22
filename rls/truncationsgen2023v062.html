@@ -1,0 +1,2124 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   <!--END 2022-10 ADD-->
+    <title>Random Line Studies: Truncations Generator</title>
+    <meta content="Random Line Studies: Truncations Generator" name="description">
+    <meta content="Greg Sidal" name="author">
+
+<!--    <link rel="stylesheet" type="text/css" href="../ui.css"> -->
+  <style>
+body {
+  margin: 0px;
+  padding: 0px;
+  background-color: #ccc;
+  font-family: 'Arial', sans-serif;
+  font-size: 0.90em;
+  color: #444;
+}
+div, .panewrap {
+  position: relative;
+  margin: 0px;
+  padding: 0px;
+}
+.panewrap {
+  display: block;
+}
+@media all and (orientation:landscape) {
+  body {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+  .panewrap {position: static;}
+  .smallerfont {font-size: 0.85em;}
+}
+
+.floatright {
+  float: right;
+}
+.floatleft {
+  float: left;
+}
+a, p, .descr, .canvtitle, .i, .in {
+  display: inline-block;
+}
+a {
+  color: rgb(20,40,160);
+}
+a:visited {
+  color: inherit;
+}
+.i, .canvtitle {
+  font-style: italic;
+}
+.canvtitle {font-size:117%;}
+.canvtitle2 {font-size:110%;}
+.canvtitle:empty, .titlesection.big:empty {display:none;}  /*2022-10 ADD*/
+.indent {margin-left:1.2em; margin-right:1.2em;}
+.tt {font-family: 'Courier',serif; font-size:105%;}
+a.tt {text-decoration:none; font-size:105%;}
+a.tt.bigger {text-decoration:none; font-size:115%;}
+
+input {
+  border: 1px solid #ddd;
+  background-color: transparent;
+  font-size: 105%;
+}
+input {font-family:'Courier',serif; font-size:110%;}
+input:hover, input:focus, textarea, button, .btn {
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+input:disabled, textarea:disabled, button:disabled, .btn:disabled {  /*2022-10 EDIT*/
+  border: 1px solid #ddd;  /*ccc*/
+  background-color: rgba(235,235,235,0.95);  /*230*/
+}
+textarea {
+  margin-bottom: 0.2em;
+  /*font-size: 1em;*/
+  /*font-family: inherit;
+  font-size: inherit;*/
+}
+/*textarea:empty {
+  display: none;
+}
+textarea.vis:empty {
+  display: inherit;
+}*/
+input[type="checkbox"], input[type="radio"] {
+  border: 0;
+}
+.inpshort {
+  width: 2em;
+}
+.inp {
+  width: 3em;
+}
+.inp.float {  /*2022-10 ADD*/
+  width: 6em;
+}
+.inplong {
+  width: 15em;
+}
+.inpplain {
+  border-color: transparent;
+}
+.inpbox, .inpbox:hover, .inpbox:focus {
+  border: 0;
+  /*background-color: transparent;*/
+}
+
+.back {
+  background-color: #ccc;
+}
+.back.cover {
+  background-color: rgba(255,255,255,0.01);
+}
+@media all and (orientation:landscape) {
+  .back {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+}
+
+canvas, .emulatecanvas {
+  display: block;
+  margin: auto auto;
+  width: 100%; height: auto;
+  padding: 0; border: 0;
+  background-color: #fff;
+}
+@media all and (orientation:landscape) {
+  canvas, .emulatecanvas {height: 100%; width: auto;}
+}
+
+.thumbnail {
+  display: inline-block;
+  margin: 0; margin-right: 1em;
+  height: 15em;
+}
+
+.title, .titleline {
+  font-size: 120%;
+  padding-bottom: 0.25em;
+  /*white-space: nowrap;*/
+}
+.titlesection {
+  font-weight: bold;
+  font-size: 125%;
+}
+.titlesection.big {
+  font-size: 150%;
+}
+/*.title > a {display: block;}*/
+.hd3 {
+  font-size: 70%;
+}
+.hd, .hd2 {
+  font-size: 115%;
+  padding-top: 2.3em;
+  padding-bottom: 0.25em;
+}
+.hd2 {
+  padding-top: 0.5em;
+}
+.descr, .little {
+  font-size: 85%;
+}
+.littler {font-size: 90%;}
+.bigger {font-size: 110%;}
+.scrollable {
+  overflow: auto;
+}
+.collapsible:empty {
+  display: none;
+}
+
+/*.control {
+  display: block;
+  margin-bottom: 0.2em;
+}
+.control:first-child {
+  min-width: 10em;
+}*/
+
+.line {white-space: nowrap;}
+/*.br, .line {display: block;}*/
+
+.menubar, .controls, .titlebar, .titlebug, .titlemenu {    /*2022-10 ADD titlebug*/ 
+  display: block;
+  position: absolute;
+}
+.controls {
+  top: 0; left: 0;
+}
+.controls.center {
+  left: auto;
+}
+.titlebug, .titlebar, .titlemenu, .menubar {    /*2022-10 ADD titlebug*/
+  right: 0;
+  text-align: right;
+  background-color: transparent;
+}
+.titlebug, .titlebar {    /*2022-10 ADD titlebug*/ 
+  bottom: 0;
+  margin: /*1em*/ 0;  /*2022-10 EDIT*/ 
+  padding: 0.2em;     /*2022-10 ADD*/
+  background-color: rgba(204,204,204,0.65);   /*2022-10 ADD*/
+  font-size: 95%;
+}
+
+.titlebug {top: 0; bottom: auto; /*color: #ddd; background-color: rgba(180,180,180,0.6);*/}   /*2022-10 ADD*/ 
+
+.titlebug div, .titlebar div {     /*2022-10 ADD titlebug*/ 
+  display: inline-block;
+}
+.titlebug > i > div, .titlebar > i > div {   /*2022-10 ADD titlebug*/ 
+  font-size: 90%;
+}
+.titlebug > div, .titlebar > div {    /*2022-10 ADD titlebug*/ 
+  font-size: 75%;
+}
+.titlemenu, .menubar {
+  bottom: 5em;
+  margin: 0;
+}
+.menubar {
+  visibility: hidden;
+}
+.controls {
+  max-height: 100%;
+  border-right: 1px solid #bbb;
+  border-bottom: 1px solid #bbb;
+  background-color: transparent;
+}
+@media all and (orientation:landscape) {
+  .controls {overflow-y: auto;}
+}
+.controlset {
+  padding: 2.5em;
+  padding-top: 3em;
+  padding-bottom: 2.5em;
+  background-color: rgba(245,245,245,0.95);
+  text-align: left;
+}
+
+.corner {
+  position: absolute; top: 0; right: 0;
+}
+
+.close {
+  display: inline-block; font-size: 70%;
+  padding: 1.5em; padding-right: 1.5em;
+}
+
+.menubar.toggled {visibility: visible;}
+/*.menubar > .ctrlbtn {visibility: hidden;} 2022-10 REM*/
+
+.open:after, .openfile:before {content: '\22EF' ;} /*&ctdot; 22ef*/
+.close:after {content: '\2716' ;}  /*&Close; 274e 2716 2573*/
+.prev:after {content: '\25C2' ;}   /*&lt; \003C  \25C2  25B5 21E6 */
+.next:after {content: '\25B8' ;}   /*&gt; \003E 25b8 25B7  25B9 279E 27AD 21E8*/
+.fold:after {content: '\2af6' ;}   /*22ee 25b4 2259 225A 2227  2023-03 EDIT (2af6)*/
+.unfold:after {content: '\2af6' ;} /*2999(vert dots 4) 2982(dots 2) 22ee(vert dots) 25be(down arrow)*/
+a, .link {text-decoration: underline; color:rgb(20,50,150);}
+.app {} /**/
+/*.app:before {content: '\2699  ' ;} /**/
+.new:before {content: '\25B8  ' ;}   /*b8 littler*/
+.fwd:after {content: '  \25B8 ' ;}   /**/
+.rev:before {content: '\25C2  ' ;}   /*c2 littler*/
+.stop:before {content: '\2981  ' ;}   /*2297(cirled x) 2716(big x) 2981(bold dot)*/  /*2022-10 EDIT (dot)*/
+.rand:after {content: '  \21BB ' ;}   /*21bb 2682 27ff*/
+.archive:before {content: '\2707  ' ;}   /*2707(tape) 1F4BE(floppy) 1F33B(sunflower)*/
+.swap:after {content: '  \27F7 ' ;}   /*2194 2b80 21c4 21b6 21b7*/
+.swap2:after {content: '  \2B80 ' ;}   /*2b0c 2b64*/
+
+.nextsmall, .stats, .inlinestats, .inlinetitle, .inlinetag {
+  display: inline-block;
+  position: relative;
+}
+.stats, .inlinestats, .inlinetitle {
+  border: 1px solid transparent;
+  color: #0a0;
+}
+.inlinestats {
+  font-size: 90%;
+}
+.nextsmall, .boxed {
+  padding: 0.15em;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  min-width: 1.0em;
+  border: 1px solid #c8c8c8;
+  background-color: transparent;
+  text-align: center;
+}
+.boxed {
+  display: inline-block;
+  height: 100%;
+  padding: 0;
+  text-align: left;
+}
+.nextsmall:after, .nextsmall:before {font-family: 'Lucida Sans Unicode',sans-serif; }
+.nextsmall.inserted, .nextsmall.wrapped {
+  height: 100%;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  border: 0;
+  /*border-right: 1px solid #bbbbbb;*/
+}
+.nextsmall.wrapped {
+  padding: 0;
+}
+
+.empha {font-size:106%; border:1px solid #999; padding:0.4em; background-color:#fff; font-family:'Arial',sans-serif;}
+.empha {text-decoration:none; display:inline-block;}
+
+.open, .next, .prev /*, .titlemenu > div, .menubar > div*/ {
+  display: block;
+  border: 1px solid #aaa;         /*2022-10 EDIT*/
+  color: /*#999*/ #444;           /*2022-10 EDIT*/ 
+  font-size: /*125*/ 110%;        /*2022-10 EDIT*/ 
+  padding: 0em;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  min-width: 1.15em;
+  text-align: center;
+  background-color: rgba(204,204,204,0.7);   /*2022-10 ADD*/
+}
+.titlemenu > div, .open, .next, .prev /*.menubar > div*/ {
+  /*border-right-width: 0;*/
+  margin-bottom: 1.3em;
+  margin-right: /*3*/ 2em;  /*2022-10 EDIT*/
+}
+.open:after, .next:after, .prev:after 
+/*.menubar > div:after, .menubar > div:before*/ {font-family: 'Lucida Sans Unicode',sans-serif; }
+
+/*.open {  2022-10 REM
+  border-top: 0;
+  border-left: 0;
+}
+.next {
+  margin-top: 1.5em;
+  border-left: 0;
+}*/
+
+/*2022-10 ADD*/
+@media (hover: hover) {
+  a:hover {text-decoration: underline;}
+  a.empha:hover {background-color:#dfd;}
+  .close:hover, .open:hover, .next:hover, .prev:hover, .nextsmall:hover, /*.menubar > div:hover,*/ a:hover, .link:hover {
+    cursor: pointer;
+    color: red;
+  }
+  .open:hover, .next:hover, .prev:hover, .nextsmall:hover /*, .titlemenu > div:hover, .menubar > div:hover*/ {
+    background-color: #fff;
+  }
+}
+.close:active, .open:active, .next:active, .prev:active, .nextsmall:active, a:active, .link:active {
+  color: red;
+}
+.open:active, .next:active, .prev:active, .nextsmall:active {
+  background-color: #fff;
+}
+.open, .next, .prev, .nextsmall, input, a {
+  transition: background-color 0.75s, color 0.75s, opacity 0.75s; /*2023-03 ADD opac*/
+}
+.close {
+  transition: color 0.75s;
+}
+/*2022-10 ADD END*/
+
+.nextsmall:disabled {
+  visibility: hidden;
+}
+
+.fold, .running, .open, .openfile {font-weight: bold;}  /*2022-10 ADD, 2023-03 EDIt (fold)*/
+
+.toggled {visibility: visible;}
+.nottoggled {visibility: hidden;}
+.toggledifsmallscreen {display: none;}
+.nottoggledifsmallscreen {display: block;}
+.dispnone {display: none;}
+.gapminabove {margin-top: /*0.5em;*/ 0.2em;}  /*2022-10 EDIT*/
+.gapmedabove {margin-top: 0.5em;}
+.gap, .gapnormabove {margin-top: 1.2em;}
+.gapleft {margin-left: 1em;}
+.gapright {margin-right: 1.5em;}
+.gapleft.g10 {margin-left: 1em;}
+.gapright.g10 {margin-right: 1em;}
+.gapabove {margin-top: 1.5em;}
+.gapmed, .gapmedbelow {margin-bottom: 0.5em;}
+.descr.gap, .gapbelow {margin-bottom: 1.5em;}
+.gapbelow.g25 {margin-bottom: 2.5em;}
+.gapabove.g25 {margin-top: 2.5em;}
+.gapabove.g35 {margin-top: 3.5em;}
+.gapabove.g30 {margin-top: 3em;}
+.gapabove.g07 {margin-top: 0.8em;}
+.gapabove.g10 {margin-top: 1.2em;}
+.gapabove.g15 {margin-top: 1.5em;}
+.gapabove.g05 {margin-top: 0.2em;}
+.gapabove.min {margin-top: 0.2em;}
+.bold { font-weight: bold;}
+.center { text-align: center; width: 100%;}
+
+.json, .list {height: 15em; width: 28em; /*100%*/; color: #555; font-family: 'Courier',serif;}   /*2022-10 EDIT*/
+.json {width: 30em;}   /*2022-10 ADD*/
+.json.long, .list.long {height: /*25*/ 20em;}  /*2022-10 EDIT*/
+
+/* @media all and (max-width:900px) { 2022-11 REM */
+  .controls {font-size: 90%;}
+  /*.hideifsmallscreen {display: none;}
+  .title {white-space: normal; font-size: 115%;}
+  .thumbnail {display: none; height: auto; width: 100%;}
+  .json, .list {min-width: 0;}
+  input {margin-bottom:0.1em;}*/
+/*}*/
+@media all and (orientation:portrait) and (min-width:901px) { /* 2022-11 ADD */
+  .controls {font-size: 100%;}
+}
+/*2022-10 EDIT*/ .thumb {display:block; max-width: /*280px*/ 100%; width: /*280*/ 200px;}
+.thumb.hires {display: none;}
+.thumbcap {display:block; font-size: 75%;}
+.thumbbox {display:block;}
+/*2022-10 ADD titlebug*/ .titlebug > div, .titlebar > div, .titlebug > i > div, .titlebar > i > div {display: block;}
+/*@media all and (max-width:400px) {
+  .controls {font-size: 90%;}
+  .stats {display: block;}
+}*/
+@media all and (orientation:landscape) {
+  .json {min-width: 25em;}
+  .json, .list {font-size: 0.8em;}
+  .maxwid {width: 25em;}
+  /*2022-10 EDIT*/ .pwid {max-width: 37em; /*30em */ }
+  /*2022-10 EDIT*/ .essaywid {max-width: 30em; }
+  /*2022-10 EDIT*/ .essay {width: /*25*/ 24em; font-size:/*100*/ 95%; line-height:125%;}
+  /*2022-10 ADD*/ .titlebug {bottom:0; top:auto;}
+}
+@media all and (min-width:1800px) and (orientation:landscape) {
+  /*2022-10 REM .controls {font-size: 120%;} */
+  /*2022-10 EDIT*/ .thumb {width: 352px; max-width: /*352px*/ 100%;}
+  .thumb.lores {display: none;}
+  .thumb.hires {display: block;}
+  .pwid, .essaywid {max-width: 45em;}
+}
+@media all and (orientation:portrait) {
+  /*2022-10 EDIT*/ body {font-size: /*5vw*/ 1.1em;}
+  .panewrap {width: 100%;}
+  /* 2022-12 REM canvas, .emulatecanvas {height: auto; width: 100%;}*/
+  .controls {border: 0; width:100%;}
+  .controls.center {border: 0; width:100%;}
+  .controlset {padding: 1.25em; padding-top: 2.5em; padding-bottom: 1.5em; font-size: 90%;}
+  .line {white-space: inherit;}
+  /*2022-10 EDIT*/ .thumb {max-width: /*352px*/ 100%; width: /*352*/ 200px;}
+  .thumb.lores {display: none;}
+  .thumb.hires {display: block;}
+  .gapbelow.g25 {margin-bottom: 2em;}
+  .gapabove.g25 {margin-top: 2em;}
+  .gapabove.g35 {margin-top: 3.5em;}
+  .gapabove.g30 {margin-top: 3em;}
+  .menubar, .titlemenu {top: auto; left: auto; bottom: 0; width: 100%; padding-bottom: 2em; text-align: center;}
+  /*2022-10 ADD*/ .menubar {padding-bottom: 3em;}
+  /*2022-10 EDIT*/ .open, .next, .prev {display: inline-block; /*border: 1px solid #999;*/ /*777*/ /*color: #444;*/ /*777*/}
+  .next {margin-left: 1.5em;}
+  .titlebar, .titlemenu, .menubar {left: 0; text-align: center;}
+  /*2022-10 EDIT*/ .titlebar {margin-bottom: /*6em*/ 0;}
+  /*2022-10 ADD*/ .titlebar.pintop {top: 0; bottom: auto;}
+  /*.titlemenu > div, .menubar > div*/ 
+  .open, .next, .prev {display: inline-block; margin: 0; margin-left: 0.4em; margin-right: 0.4em; border-right-width: 1px;}
+  /*2022-10 ADD*/ .menubar>.togglepart {display: inline-block;}
+  .title, .titlesection {white-space: normal; font-size: 120%;}
+  /*2022-10 ADD*/ .title {font-size: 125%;}
+  .titlesection {font-size: 130%;}
+  /*.empha {background-color:#dfd;}*/
+  .pwid, .essay, .inlinetitle {font-size:90%}
+  a.tt {font-size:110%;}
+  .canvtitle {font-size:110%;}
+  input[type=checkbox], input[type=radio] 
+           /*2022-10 EDIT*/ {width: /*4vw*/ 0.95em; height: /*4vw*/ 0.95em; /*transform: scale(1.2);*/}
+  .toggledifsmallscreen {display: block;}
+  /*2022-10 ADD*/ .toggledifsmallscreen.inline {display: inline-block;}
+  .nottoggledifsmallscreen {display: none;}
+  /*2022-10 EDIT*/ textarea {font-size: /*4vw*/ 0.8em;}
+  /*2022-10 EDIT*/ .json {height: /*35*/ 17em;}
+  /*2022-10 EDIT*/ .list {height: /*30*/ 14em;}
+  /*2022-10 EDIT*/ .json.long, .list.long {height: /*50*/ 14em;}
+  /*2022-10 ADD*/ .json, .list {width: 98%; max-width: 98%;}
+}
+
+/*2022-10 ADD*/
+
+/*app framing*/
+      body {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+      .panewrap {position: static;}
+      .back {position: fixed; left: 0; top: 0; right: 0; bottom: 0;}
+      .controls {overflow-y: auto;}
+      @media all and (orientation:portrait) {
+        .controls {bottom: 0; top: auto; border-top: 1px solid #ccc; max-height:60%;}
+        .controls.maxheight {max-height:85%;}
+        .controls.fullheight {max-height:100%;}
+        .controls.pintop {bottom: auto; top: 0; border-top: 0; border-bottom: 1px solid #ccc;}
+        /* 2022-12 REM
+        canvas, .emulatecanvas {width: 100%;}
+        canvas, .emulatecanvas {display: block; position: absolute; bottom: auto; left: 0; top: 0;}
+        */
+        /* 2022-12 EDIT */
+        canvas.pinbottom, .emulatecanvas.pinbottom {position: absolute; bottom: 0; left: 0; top: auto;}
+        canvas.pinmiddle, .emulatecanvas.pinmiddle {bottom: 0; left: 0; top: auto;}  /*2022-12 ADD*/
+      }
+      @media all and (orientation:landscape) {
+        /* 2022-12 REM
+        canvas, .emulatecanvas {height: 100%; width: auto;}
+        */
+        .controls.fullwidth {width:100%;}
+      }
+
+      canvas, .emulatecanvas {position: absolute;}
+
+      /*2023-03 ADD*/
+      /* responsive sizing/positioning */
+      canvas, .emulatecanvas {
+        margin: auto auto; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        width: auto; max-width: 100%; height: auto; max-height: 100%;
+        transition: top 0.7s, visibility 0.7s;
+      }
+      @media all and (orientation:portrait) {
+        canvas:not(.abscenter), .emulatecanvas:not(.abscenter) {left: 50%; top: 0; transform: translate(-50%, 0);}
+        canvas.centermed, .emulatecanvas.centermed {top: 4%;}
+        canvas.centershort, .emulatecanvas.centershort {top: 6%;}
+        canvas.centertiny, .emulatecanvas.centertiny {top: 10%;}
+      }
+      @media all and (orientation:portrait) and (min-width:750px) {
+        canvas.centerlong, .emulatecanvas.centerlong {top: 2%;}
+      }
+      /* tweaks for drivescroll size controls */
+      .list.thin {margin-bottom: 0;}
+      @media all and (orientation:landscape) {
+        .list.thin {width: 25em;}
+        .popupwid {width: 23em;}
+      }
+      input[type=checkbox], input[type=radio] {cursor: pointer;}
+      input.dulled {opacity: 0.5;}
+      input[type=checkbox].dulled, input[type=radio].dulled {opacity: 0.4;}
+      input.dulled:hover, input[type=checkbox].dulled:hover, input[type=radio].dulled:hover {opacity: 1.0;}
+      input.dulled:focus, input[type=checkbox].dulled:focus, input[type=radio].dulled:focus {opacity: 1.0;}
+      /*END 2023-03 ADD*/
+
+      @media all and (max-width:500px) and (orientation:portrait) {
+        body {font-size: 1.0em;}
+       .list {height: 10em;}
+      }
+
+/*wait box*/
+.wait {
+  position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+  background-color: rgba(80,80,80,0.6);
+  font-size: 120%;
+  text-align: center;
+  padding-top: 6em;
+  color: rgba(250,250,250,0.95);
+  display: none;
+}
+@keyframes blink {
+  10% {color: rgb(255,80,80);}
+  25% {color: white;}
+  40% {color: rgb(255,80,80);}
+  55% {color: white;}
+}
+.waitmsg {
+  padding-left: 1.0em;
+  padding-right: 1.0em;
+  font-size: 120%;
+  color: white;
+  animation-name: blink;
+  animation-delay: 0.1s;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+}
+
+/*transitions*/
+.slider {
+  max-height: 50em;
+  overflow: hidden;
+}
+.slider.em10, .slider.shorthgt {max-height: 10em;}
+.slider.em20, .slider.shortmedhgt {max-height: 20em;}
+.slider.em30, .slider.medhgt {max-height: 30em;}
+.slider.em40, .slider.highmedhgt {max-height: 40em;}
+.slider.opened {
+  transition: max-height 2s ease;
+}
+.slider.closed {
+  max-height: 0;
+  transition: max-height 1.5s ease-out;
+}
+.controls, .menubar, .menubar>.togglepart, .titlebug {
+  opacity: 1.0;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.controls.visible, .menubar.visible, .menubar>.togglepart.visible, .titlebug.visible {
+}
+.controls.hidden, .menubar.hidden, .menubar>.togglepart.hidden, .titlebug.hidden {
+  opacity: 0.0;
+  visibility: hidden;
+}
+/*END 2022-10 ADD*/
+
+
+/*@media all and (max-width:800px) {
+  .menubar {top: auto; left: auto; bottom: 0; width: 100%; padding-bottom: 2em; text-align: center;}
+  .open, .next {display: inline-block; border: 1px solid #777;}
+  .next {margin-left: 1.5em;}
+  .titlebar, .titlemenu, .menubar {left: 0; text-align: center;}
+  .titlemenu > div, .menubar > div {display: inline-block; margin: 0; margin-left: 0.4em; margin-right: 0.4em; border-right-width: 1px;}
+}*/
+@media print {
+  .panewrap, .menubar, .titlebar, .titlebug, .titlemenu {display: none;}  /*2022-10 EDIT add titlebug*/
+
+  /*2023-03 ADD*/
+      canvas, .emulatecanvas {margin: auto auto; left: 50%; top: 50%; transform: translate(-50%, -50%);}
+     .titlebar /*, .titlebug*/ {display: block; font-size: 65%;}
+  /*2023-03 END ADD*/
+
+}
+  </style>
+
+<!--    <script src="../ui.js"></script> -->
+  <script>
+/*
+ *  Greg Sidal 2015-2023, Source code MIT Licence
+ */
+
+
+/*
+ *  UI control
+ */
+var UI = { };
+UI.onload = function( drawpic, id ) {
+  /* 2023-03 REM 
+  var ua = navigator.userAgent.toLowerCase();
+  UI.displayasimg = ua.indexOf( "msie" ) >= 0;
+  if (UI.displayasimg)
+    UI.swapstyle( 'canv', 'canvimg', 'display' );
+  */
+  if (drawpic) drawpic( id );
+}
+UI.resize = function( canvid ) {  /*2022-12 ADD*/
+  UI.center( canvid );
+}
+UI.canvtoimg = function( canvas ) {
+  if (UI.displayasimg) {
+    var img = UI.gete( canvas.id+'img' );
+    if (img) {
+      img.width = canvas.width;
+      img.height = canvas.height;
+      img.src = canvas.toDataURL();
+    }
+  }
+}
+UI.mkid = function( id, sub ) {
+  return id.split('_')[0] + sub;
+}
+UI.showtitle = function( canvid, title ) {
+  if (!title) title = {main:"",sub:""}; /*2022-10 EDIT*/
+  UI.putin( UI.mkid(canvid,'_title'), title.main );
+  UI.putin( UI.mkid(canvid,'_subtitle'), title.sub );
+  UI.putin( UI.mkid(canvid,'_title2'), title.main );   /*2022-10 ADD*/
+  UI.putin( UI.mkid(canvid,'_subtitle2'), title.sub ); /*2022-10 ADD*/
+}
+UI.notify = function( act, i, count, id, canvas, pic ) { /*2022-10 REPLACE*/
+  if (count < 0)
+    return;
+  var statselem = UI.gete( id+'_stats' );
+  var stopelem = UI.gete( id+'_stopbtn' );
+  var restartelem = UI.gete( id+'_nextbtn' );
+  var msg = "";
+  if (i < count)
+    msg = i ? act + " " + (i+1) + " of " + count + " lines" : act;
+  else
+    msg = count + " lines drawn";
+  if (statselem)
+    statselem.innerHTML = msg;
+  if (i <= 0) {
+    UI.swapstyle( stopelem, restartelem, 'display', 'none' );
+    UI.resize( canvas );  /*2022-12 ADD*/
+  }
+  if (i >= 0 && i < count && pic)
+    UI.showtitle( canvas.id, {main:"",sub:msg} );
+  if (i >= count) {
+    UI.swapstyle( restartelem, stopelem, 'display', 'none' );
+    if (pic)
+      UI.showtitle( canvas.id, pic.getmetadata().title );
+  }
+  if (i >= count && canvas)
+    UI.canvtoimg( canvas );
+}
+/* 
+2022-10 REM
+UI.notify = function( act, i, count, id, canvas, pic ) {
+  if (count < 0)
+    return;
+  var statselem = UI.gete( id+'_stats' );
+  var stopelem = UI.gete( id+'_stopbtn' );
+  var restartelem = UI.gete( id+'_nextbtn' );
+  if (statselem)
+    if (i < count)
+      statselem.innerHTML = i ? act + " " + (i+1) + " of " + count + " lines" : act;
+    else
+      statselem.innerHTML = count + " lines drawn";
+  if (i <= 0) {
+    UI.swapstyle( stopelem, restartelem, 'display', 'none' );
+    if (pic)
+      UI.showtitle( canvas.id, pic.getmetadata().title );
+  }
+  if (i >= count)
+    UI.swapstyle( restartelem, stopelem, 'display', 'none' );
+  if (i >= count && canvas)
+    UI.canvtoimg( canvas );
+}
+*/
+UI.drawpic = function( pic, canvas, id ) {
+  function drawcallback( i, count ) {UI.notify('drawing',i,count,id,canvas,pic);}
+  pic.draw( canvas, drawcallback );
+}
+UI.drawjsonpicscale = function( canvid, jsonid, id, scale ) {
+  var json = UI.getv( jsonid );
+  var pic = new UI.Pic();
+  canvas = pic.fromjson( UI.gete(canvid), json, scale );
+  UI.drawpic( pic, canvas, id );
+  return pic;
+}
+UI.drawjsonpic = function( canvid, id, n ) {
+  if (n == undefined) n = "";
+  return UI.drawjsonpicscale( canvid, id+'_json'+n, id, UI.getnum(id+'_scale',0.001,100000,1.0) );
+}
+UI.drawjsonpics = function( id, count, scale ) {
+  if (!scale) scale = 0.1;
+  for( var i=0; i<count; i++ )
+    UI.drawjsonpicscale( id+'_'+i, id+'_json'+i, id, scale );
+}
+UI.drawjsondirectscale = function( canvid, json, id, scale ) {
+  var pic = new UI.Pic();
+  canvas = pic.fromjson( UI.gete(canvid), json, scale );
+  UI.drawpic( pic, canvas, id );
+  return pic;
+}
+UI.drawjsondirect = function( canvid, id, json ) {
+  return UI.drawjsondirectscale( canvid, json, id, UI.getnum(id+'_scale',0.001,100000,1.0) );
+}
+
+UI.slideshow = {n:-1, count:1, curpic:null, imgloading:false};  /*2022-12 EDIT (add imgloading)*/
+UI.slideshow.step = function( draw, dir, id, count ) {
+  if (UI.slideshow.imgloading)  /*2022-12 ADD*/
+    return;
+  if (id) UI.slideshow.id = id;
+  if (count) UI.slideshow.count = count;
+  UI.slideshow.n += dir ? dir : 1;
+  if (UI.slideshow.n >= UI.slideshow.count)
+    UI.slideshow.n = 0;
+  if (UI.slideshow.n < 0)
+    UI.slideshow.n = UI.slideshow.count - 1;
+  UI.drawstop();
+  draw( UI.slideshow.id, UI.slideshow.n );
+}
+UI.jsonslideshow = function( dir, id, count ) {
+  function draw( id, n ) {
+    UI.slideshow.curpic = UI.drawjsonpic( 'canv', id, n );
+  }
+  UI.slideshow.step( draw, dir, id, count );
+}
+UI.jsonslideshowarray = function( dir, id, jsonpics ) {
+  if (jsonpics) UI.slideshow.array = jsonpics;
+  function drawimg( id, n, i ) {
+    UI.setstyle( 'canv', 'display', 'none' );
+    UI.setstyle( 'canvimg', 'visibility', 'hidden' ); //2023-03 ADD
+    UI.setstyle( 'canvimg', 'display', 'block' );
+    UI.gete( 'canvimg' ).src = i.image;
+    /*2022-12 ADD*/
+    function onimgloaded() {
+      UI.slideshow.imgloading = false;
+      var t = i.metadata ? i.metadata.title : {main:"",sub:""};
+      t.main = t.main ? t.main : "";
+      t.sub = t.sub ? t.sub : "";
+      UI.remclass( UI.mkid('canv','_subtitle'), 'waitmsg' );
+      UI.remclass( UI.mkid('canv','_subtitle2'), 'waitmsg' );
+      UI.showtitle( "canv", t );
+      UI.resize( 'canvimg' );
+      UI.setstyle( 'canvimg', 'visibility', 'visible' ); //2023-03 ADD
+    }
+    function onwait() {
+      if (!UI.slideshow.imgloading)
+        return;
+      UI.addclass( UI.mkid('canv','_subtitle'), 'waitmsg' );
+      UI.addclass( UI.mkid('canv','_subtitle2'), 'waitmsg' );
+      UI.showtitle( "canv", {main:"", sub:"l o a d i n g . . ."} );
+    }
+    UI.slideshow.imgloading = true;
+    UI.gete( 'canvimg' ).onload = onimgloaded;
+    //(debug) setTimeout( onimgloaded, 10000 );
+    setTimeout( onwait, 500 );
+    /*2022-12 END ADD*/
+  }
+  function drawpic( id, n ) {
+    UI.setstyle( 'canvimg', 'display', 'none' );
+    UI.setstyle( 'canv', 'display', 'block' );
+    var m = UI.slideshow.array[n].metadata;
+    if (!m.title)
+      UI.slideshow.array[n].metadata.title = { main:"Untitled #"+n, sub:"" }; /*2022-10 EDIT 'untitled'*/
+    if (m.client && m.client.name)
+      UI.slideshow.array[n].metadata.title.sub = m.client.name;
+    if (m.client && m.client.function) {
+      if (m.client.function == "trunc")
+        UI.slideshow.array[n].metadata.title.sub = "from Truncations Generator";
+      else
+        if (m.client.function == "nocross")
+          UI.slideshow.array[n].metadata.title.sub = "from No Crossings Generator";
+        else
+          if (m.client.function == "rand")
+            UI.slideshow.array[n].metadata.title.sub = "from AE Generator";
+    }
+    var j = JSON.stringify( UI.slideshow.array[n] );
+    UI.slideshow.curpic = UI.drawjsondirect( 'canv', id, j );
+  }
+  function draw( id, n ) {
+    if (UI.slideshow.array[n].image)
+      drawimg( id, n, UI.slideshow.array[n] );
+    else
+      drawpic( id, n, UI.slideshow.array[n] );
+  }
+  UI.slideshow.step( draw, dir, id, UI.slideshow.array.length );
+}
+UI.imgslideshow = function( dir, id, imgs ) {
+  if (imgs) UI.slideshow.imgs = imgs;
+  function draw( id, n ) {
+    UI.gete( 'canvimg' ).src = UI.slideshow.imgs[n].image;
+    var t = UI.slideshow.imgs[n].metadata ? UI.slideshow.imgs[n].metadata.title : {main:"",sub:""};
+    t.main = t.main ? t.main : "";
+    t.sub = t.sub ? t.sub : "";
+    UI.showtitle( "canv", t );
+  }
+  UI.swapstyle( 'canvimg', 'canv', 'display', 'none' );
+  UI.slideshow.step( draw, dir, id, UI.slideshow.imgs.length );
+}
+UI.drawstop = function() {
+  if (UI.slideshow.curpic) UI.slideshow.curpic.stop();
+}
+
+
+/*
+ *  vrctor pic renderer
+ */
+UI.Pic = function( w, h ) {
+  this.moveto = function( context, pt ) {
+    context.moveTo( (pt.x + this.pic.margin.left) * this.scale.x, 
+                    (pt.y + this.pic.margin.top) * this.scale.y );
+  }
+  this.lineto = function( context, pt ) {
+    context.lineTo( (pt.x + this.pic.margin.left) * this.scale.x, 
+                    (pt.y + this.pic.margin.top) * this.scale.y );
+  }
+  this.drawpath = function( context, line ) {
+    var pts = line.shape ? line.shape : line.pts;
+    context.beginPath();
+    this.moveto( context, pts[0] );
+    for( var i=1; i<pts.length; i++ )
+      this.lineto( context, pts[i] );
+    context.closePath();
+    if (i == 2 || line.linecol) {
+      context.lineWidth = (line.linewid ? line.linewid : line.wid) * this.scale.x;
+      context.strokeStyle = line.linecol ? line.linecol : line.col;
+      context.stroke();
+    }
+    if (i > 2 || line.fillcol) {
+      context.fillStyle = line.fillcol ? line.fillcol : line.col;
+      context.fill();
+    }
+  }
+  this.drawline = function( context, line ) {
+    this.drawpath( context, line );
+    if (line.debug && line.debug.length)
+      for( var i=0; i<line.debug.length; i++ )
+        this.drawpath( context, line.debug[i] );
+  }
+  this.drawlines = function( context, lines, noanim ) {
+    if (noanim) {
+      for( var i=0; i<lines.length; i++ )
+        this.drawline( context, lines[i] );
+    }
+    else {
+      this.context = context;
+      this.lines = lines;
+      var count = lines.length; /*2022-10 ADD*/
+      this.procid = UI.Processes.start( count, this, count>100?(count>300?15:60):150 );  /*2022-10 EDIT*/
+    }
+  }
+  this.onnotify = function( i, linecount ) {
+    if (this.callback)
+      this.callback( i, linecount );
+  }
+  this.onstop = function() {
+    this.procid = null;
+  }
+  this.stop = function() {
+    UI.Processes.stop( this.procid );
+  }
+  this.onstep = function( i, linecount ) {
+    var batch = linecount > 500 ? 20 : this.batch;   /*2022-10 ADD*/
+    for( var j=0; j<batch && i<linecount; i++, j++ )
+      this.drawline( this.context, this.lines[i] );
+    return i;
+  }
+  this.setup = function( canv, callback ) {
+    if (canv) this.canvas = canv;
+    this.context = this.canvas.getContext( '2d' );
+    //this.context.clearRect( 0, 0, this.canvas.width, this.canvas.height );
+    this.context.fillStyle = 'rgb(255,255,255)';
+    this.context.fillRect( 0, 0, this.canvas.width, this.canvas.height );
+    this.pic.wid = this.pic.wid ? this.pic.wid : canv.width;
+    this.pic.hgt = this.pic.hgt ? this.pic.hgt : canv.height;
+    this.callback = callback;
+  }
+  this.draw = function( canv, callback, lines ) {
+    this.setup( canv, callback );
+    lines = lines ? lines : this.pic.lines;
+    this.drawlines( this.context, lines );
+  }
+  this.addline = function( line, render ) {
+    if (line) {
+      this.pic.lines.push( line );
+      if (render && this.context)
+        this.drawline( this.context, line );
+    }
+  }
+  this.wid = function( ) {
+    return this.pic.wid;
+  }
+  this.hgt = function( ) {
+    return this.pic.hgt;
+  }
+  this.linecount = function( ) {
+    return this.pic.lines.length;
+  }
+  this.line = function( i ) {
+    return this.pic.lines[i];
+  }
+  this.lines = function( ) {
+    return this.pic.lines;
+  }
+  this.setscale = function( scalex, scaley ) { 
+    if (scalex == undefined) scalex = 1;
+    if (scaley == undefined) scaley = scalex;
+    this.scale = {x: scalex, y: scaley};
+  }
+  this.setmargin = function( margin ) { 
+    this.pic.margin = margin ? margin : {left:0, top:0, right:0, bottom:0};
+  }
+  this.getmetadata = function( ) {
+    return this.pic.metadata;
+  }
+  this.setmetadata = function( part, md ) {
+    if (!this.pic.metadata) this.pic.metadata = {};
+    if (part)
+      this.pic.metadata[part] = md;
+  }
+  this.tojson = function( ) {
+    this.pic.numlines = this.pic.lines.length;
+    return JSON.stringify( this.pic, null, 2 );
+  }
+  this.fromjson = function( canvas, json, scale ) {
+    try {this.pic = JSON.parse( json );} catch(e) {this.pic = null;}
+    if (!this.pic || !this.pic.wid) this.pic = {wid:1000,hgt:1000,lines:[]};
+    this.setmetadata();
+    this.setmargin( this.pic.margin );
+    if (scale && this.pic.scale)
+      this.setscale( scale * this.pic.scale );
+    else
+      this.setscale( this.pic.scale ? this.pic.scale : scale );
+    canvas.width = (this.pic.margin.left+this.pic.margin.right+this.pic.wid) * this.scale.x;
+    canvas.height = (this.pic.margin.top+this.pic.margin.bottom+this.pic.hgt) * this.scale.y;
+    return canvas;
+  }
+  this.batch = 10;  /*2022-10 ADD*/
+  this.pic = {metadata:{}, wid:w, hgt:h, lines:[]};
+  this.setscale();
+  this.setmargin();
+}
+
+  
+/*
+ *  process
+ */
+UI.Process = function( id, count, service, delay ) {
+  this.timeout = function() {    /*2022-10 ADD*/
+    var curtime = (new Date()).getTime();
+    var deadtime = this.prevtime ? (this.prevtime+this.delay) : 0;
+    var yes = curtime >= deadtime;
+    if (yes)
+      this.prevtime = curtime;
+    /*else 
+      if (UI.debug)
+        console.log( "Not enough time elapsed: "+(deadtime-curtime) );*/
+    return yes;
+  }
+  this.step = function() {
+    if (this.paused)
+      return;
+    if (this.i < this.count) {     /*2022-10 EDIT*/  /*|| this.count == undefined*/
+      if (!this.timeout()) {       /*2022-10 ADD*/
+        //setTimeout( 'UI.Processes.step("'+this.id+'")', 25 );
+        window.requestAnimationFrame( UI.Processes.stepall );
+        return;
+      }
+      if (this.service.onnotify)
+        this.service.onnotify( this.i, this.count );
+      var n = this.service.onstep( this.i, this.count );
+      if (n == undefined)
+        this.i++;
+      else
+        this.i = n;
+      //setTimeout( 'UI.Processes.step("'+this.id+'")', this.delay );
+      window.requestAnimationFrame( UI.Processes.stepall );
+      return;
+    }
+    if (this.service.onnotify)
+      this.service.onnotify( this.i, this.i );
+    if (this.service.onstop)
+      this.service.onstop( this.i, this.count );
+    UI.Processes.del( this.id );
+  }
+  this.stop = function() {
+    this.count = this.i;
+    this.paused = false;
+    this.step();
+  }
+  this.pause = function() {
+    this.paused = !this.paused;
+    this.step();
+  }
+  this.setdelay = function( delay ) {
+    this.delay = delay ? delay : 10;
+  }
+  this.i = 0;
+  this.id = id;
+  this.count = count;
+  this.service = service;
+  this.paused = false;
+  this.setdelay( delay );
+  this.step();
+}
+
+UI.Processes = {
+  nextid: 1,
+  current: {},
+  start: function( count, service, delay ) {
+    var id = 'proc' + UI.Processes.nextid;
+    UI.Processes.nextid++;
+    UI.Processes.stop( id );
+    UI.Processes.current[id] = new UI.Process( id, count, service, delay );
+    return id;
+  },
+  del: function( id ) { if (id && UI.Processes.current[id]) delete UI.Processes.current[id]; },
+  step: function( id ) { if (id && UI.Processes.current[id]) UI.Processes.current[id].step(); },
+  stop: function( id ) { if (id && UI.Processes.current[id]) UI.Processes.current[id].stop(); },
+  pause: function( id ) { if (id && UI.Processes.current[id]) UI.Processes.current[id].pause(); },
+  setdelay: function( id, delay ) { if (id && UI.Processes.current[id]) UI.Processes.current[id].setdelay(delay); },
+  stopall: function( ) { for (var id in UI.Processes.current) UI.Processes.stop(id); },
+  stepall: function( ) { for (var id in UI.Processes.current) UI.Processes.step(id); }  /*2022-10 ADD*/
+}
+
+
+/*
+ *  support
+ */
+UI.gete = function( id ) {
+  var e;
+  if (id && id instanceof HTMLElement)
+    e = id;
+  else
+    e = document.getElementById( id );
+  return e;
+}
+UI.setstyle = function( id, s, v ) {
+  var e = UI.gete( id );
+  if (e) e.style[s] = v;
+}
+UI.getstyle = function( id, prop ) {
+  var e = UI.gete( id );
+  if (!e) return;
+  return window.getComputedStyle( e ).getPropertyValue( prop );
+}
+UI.swapstyle = function( id1, id2, prop, iseq ) {
+  var e1 = UI.gete( id1 );
+  var e2 = UI.gete( id2 );
+  if (e1 && e2) {
+    var s1 = UI.getstyle( e1, prop );
+    var s2 = UI.getstyle( e2, prop );
+    if (s1 || s2)
+      if (!iseq || s1 == iseq)
+        UI.setstyle( e1, prop, s2 ),
+        UI.setstyle( e2, prop, s1 );
+  }
+}
+UI.ischk = function( id, def ) {
+  var e = UI.gete( id );
+  if (!e) return def;
+  return e.checked;
+}
+UI.chk = function( id, v ) {
+  var e = UI.gete( id );
+  e.checked = v;
+}
+UI.en = function( id, on ) {
+  var e = UI.gete( id );
+  e.disabled = !on;
+}
+UI.clipnum = function( n, min, max ) {
+  n = isFinite(n) ? n : 0;
+  if (min != undefined)
+    n = n < min ? min : n;
+  if (max != undefined)
+    n = n > max ? max : n;
+  return n;
+}
+UI.getv = function( id, def ) {
+  var e = UI.gete( id );
+  if (!e) return def;
+  if (!e.value && def) return def+"";
+  return e.value;
+}
+UI.putv = function( id, vn ) {
+  var e = UI.gete( id );
+  if (e) e.value = vn;
+}
+UI.putin = function( id, i ) {
+  var e = UI.gete( id );
+  if (e) e.innerHTML = i ? i.toString() : "";
+}
+UI.getnum = function( id, min, max, def ) {
+  var n = parseFloat( UI.getv(id,def) );
+  n = UI.clipnum( n, min, max );
+  UI.putv( id, n );
+  return n;
+}
+UI.getint = function( id, min, max, def ) {
+  var n = parseInt( UI.getv(id,def) );
+  n = UI.clipnum( n, min, max );
+  UI.putv( id, n );
+  return n;
+}
+
+/*2022-10 ADD*/
+UI.addclass = function( id, cls ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e) e.classList.add( cls );
+}
+UI.remclass = function( id, cls ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e) e.classList.remove( cls );
+}
+UI.replaceclass = function( id, cls1, cls2 ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e) {
+    e.classList.remove( cls1 );
+    e.classList.add( cls2 );
+  }
+}
+UI.swapclass = function( id, cls1, cls2 ) {
+  //2022-12 REM var e = document.getElementById( id );
+  var e = UI.gete( id );
+  if (e)
+    if (e.classList.contains( cls1 ))
+      UI.replaceclass( id, cls1, cls2 );
+    else
+      if (e.classList.contains( cls2 ))
+        UI.replaceclass( id, cls2, cls1 );
+      else
+        e.classList.add( cls2 );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.replaceclass( idfoldpane, 'closed', 'opened' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.replaceclass( idfoldpane, 'opened', 'closed' );
+}
+UI.toggle = function( id1, id2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  UI.swapclass( id2, 'visible', 'hidden' );
+}
+UI.toggleall = function( id1, ids2 ) {
+  UI.swapclass( id1, 'hidden', 'visible' );
+  for( var i=0; i<ids2.length; i++ )
+    UI.swapclass( ids2[i], 'visible', 'hidden' );
+}
+/*END 2022-10 ADD*/
+
+/*2022-10 REM
+UI.toggle = function( idbtn, id ) {
+  UI.swapstyle( idbtn, id, 'visibility' );
+}
+UI.unfold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldpane, 'display', 'block' );
+}
+UI.fold = function( idunfoldbtn, idfoldbtn, idfoldpane ) {
+  UI.setstyle( idunfoldbtn, 'display', 'inline-block' );
+  UI.setstyle( idfoldbtn, 'display', 'none' );
+  UI.setstyle( idfoldpane, 'display', 'none' );
+}
+*/
+
+UI.unroll = function( id ) {
+  UI.setstyle( id+'_unfoldbtn', 'display', 'none' );
+  UI.setstyle( id+'_foldbtn', 'display', 'inline-block' );
+  UI.setstyle( id+'_foldpane', 'display', 'block' );
+}
+UI.rollup = function( id ) {
+  UI.setstyle( id+'_unfoldbtn', 'display', 'inline-block' );
+  UI.setstyle( id+'_foldbtn', 'display', 'none' );
+  UI.setstyle( id+'_foldpane', 'display', 'none' );
+}
+
+
+/*2023-03 ADD*/
+UI.center = function( id, idcontainer, centervert ) {return UI.view.center(id,idcontainer);}
+UI.el = UI.gete;
+UI.view = {
+  getparent: function( id ) {
+    var e = UI.el( id );
+    return (e && e.parentElement) ? e.parentElement : null;
+  },
+  getcontainer: function( id, idcontainer ) {
+    return idcontainer ? idcontainer : UI.view.getparent( id );
+  },
+  evp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    if ((e instanceof HTMLImageElement) && e.naturalWidth)
+      vp = {wid: e.naturalWidth, hgt: e.naturalHeight};
+    else
+      if (e.width)
+        vp = {wid: e.width, hgt: e.height};
+    return vp;
+  },
+  cvp: function( id ) {
+    var e = UI.el( id );
+    var vp = {wid: (e && e.clientWidth) ? e.clientWidth : window.innerWidth,
+              hgt: (e && e.clientHeight) ? e.clientHeight : window.innerHeight};
+    return vp;
+  },
+  center: function( id, idcontainer ) {
+    idcontainer = UI.view.getcontainer( id, idcontainer );
+    var ed = UI.view.evp( id, idcontainer );
+    var cd = UI.view.cvp( idcontainer );
+    var asp = {e: ed.wid / ed.hgt, c: cd.wid / cd.hgt};
+    if (asp.e < asp.c)
+      UI.replaceclass( id, 'respcenterhgt', 'respcenterwid' );  // too tall for vp
+    else
+      UI.replaceclass( id, 'respcenterwid', 'respcenterhgt' );  // too wide for vp
+    var eh = ed.hgt;
+    if (cd.wid > ed.wid && cd.hgt > ed.hgt)
+      UI.addclass( id, 'centersmall' );
+    else {
+      UI.remclass( id, 'centersmall' );
+      eh = ed.hgt * (cd.wid / ed.wid);
+    }
+    UI.remclass( id, 'centertiny' );
+    UI.remclass( id, 'centershort' );
+    UI.remclass( id, 'centermed' );
+    UI.remclass( id, 'centerlong' );
+    if (cd.hgt > (eh*3.4))
+      UI.addclass( id, 'centertiny' );
+    else
+      if (cd.hgt > (eh*2.7))
+        UI.addclass( id, 'centershort' );
+      else
+        if (cd.hgt > (eh*2.2))
+          UI.addclass( id, 'centermed' );
+        else
+          if (cd.hgt > (eh*1.7))
+            UI.addclass( id, 'centerlong' );
+  }
+}
+/*END 2023-03 ADD*/
+  </script>
+
+<!--    <script src="rls.js"></script> -->
+  <script>
+/*
+ *  AE Generators ("Random Line Studies"), Greg Sidal 2015-2021, source code MIT Licence
+ */
+
+
+/*
+ *  simple rand generator
+ */
+function drawrandpic( id ) {
+  gendrawpic( id ? id : "rand" );
+}
+
+
+/*
+ *  no crossings generator
+ */
+function gennocrossfilter( pic, line, opts ) {
+  for( var j=pic.linecount()-1, res; j>=0; j-- ) {
+    if (opts.nearness != undefined)
+      res = Geo.Poly.overlap( Geo.Line.segtorect(line.pts,line.wid),
+                              Geo.Line.segtorect(pic.line(j).pts,pic.line(j).wid), 
+                              opts.nearness );
+    else
+      res = Geo.Line.intersectsegs( pic.line(j).pts, line.pts );
+    if (res)
+      return;
+  }
+  return line;
+}
+function drawnocrosspic( id ) {
+  gendrawpic( id ? id : "nocross", gennocrossfilter );
+}
+
+
+/*
+ *  truncations generator
+ */
+var test_mode = false;
+function gentruncfilter( pic, line, opts ) {
+  if (!pic.debug)
+    pic.debug = {abutments:{}};
+  var debug = pic.debug;
+  function doend( j, dir, pic, line ) {
+    var res = Geo.Poly.abut( line.shape, pic.line(j).shape, dir );
+    if (res.err) {
+      if (test_mode) {
+        if (debug.abutments[res.msg] == undefined)
+          debug.abutments[res.msg] = 0;
+        debug.abutments[res.msg]++;
+        pic.setmetadata( 'beta_debug', debug );
+        /*
+        if (res.msg == 'inside' || res.msg == 'far_inside' || res.msg == 'all_inside') {
+          line.shape = res.poly;
+          if (!line.debug) line.debug = [];
+          line.debug.push( {shape: res.poly, linewid: 15,
+                            linecol: 'rgb(0,0,0)', fillcol: 'transparent'} );
+          if (res.msg == 'all_inside')
+            res.err = null;
+        }*/
+      }
+    }
+    if (!res.err)
+      line.shape = res.poly;
+    return res;
+  }
+  line.shape = Geo.Line.segtorect( line.pts, line.wid );
+  var trunc = [false, false];
+  for( var j=pic.linecount()-1, dir, res; j>=0; j-- ) { // truncate to nearest crosses
+    dir = Rand.range( 0, 1 );
+    res = doend( j, dir, pic, line );
+    if (!res.err)
+      trunc[dir] = true;
+    else
+      if (res.err == 'complex') {
+        res = doend( j, 1-dir, pic, line );
+        if (!res.err)
+          trunc[1-dir] = true;
+        else
+          if (res.err == 'complex')
+            return;
+      }
+  }
+  if (trunc[0] != trunc[1])
+    if (opts.bothends)
+      return;
+  return line;
+}
+function drawtruncpic( id ) {
+  gendrawpic( id ? id : "trunc", gentruncfilter );
+}
+
+
+/*
+ *  test generator
+ */
+function gentestfilter( pic, line, opts ) {
+  if (!pic.n) pic.n = 0;
+  pic.n++; 
+  var n = pic.n;
+  var crosses = 0;
+  line.debug = [];
+  if (n == 11) {
+    line.pts = Geo.Line.tmpseg( 0, {x:1,y:pic.hgt()/2}, pic.wid()-2 ); // horiz
+  }
+  if (n == 10) {
+    line.pts = Geo.Line.tmpseg( undefined, {x:pic.wid()/2,y:1}, pic.hgt()-2 ); // vert
+  }
+  for( var j=pic.linecount()-1, pt; j>=0; j-- ) {
+    pt = Geo.Line.intersectsegs( pic.line(j).pts, line.pts );
+    if (pt)
+      line.pts[Rand.range(0,1)] = pt,
+      pt = Geo.Line.intersectsegs( pic.line(j).pts, line.pts );
+    if (pt) {
+      line.shape = Geo.Line.segtorect( line.pts, line.wid );
+      line.debug.push( {shape: Geo.Pt.torect(pt,50,50), linewid: 15,
+                        linecol: 'rgb(255,0,0)', fillcol: 'transparent'} );
+      crosses++;
+    }
+  }
+  if (!pic.linecount() || crosses) return line;
+}
+function drawtestpic( id ) {
+  gendrawpic( id ? id : "test", gentestfilter );
+}
+
+
+/*
+ *  generator control
+ */
+function toggle( idbtn, id ) {
+  UI.toggle( idbtn, id );
+}
+function setupcanv( canvid, w, h ) {
+  var canvas = UI.gete( canvid );
+  canvas.width = w;
+  canvas.height = h;
+  return canvas;
+}
+function loadopts( id ) {
+  var opts = { };
+
+  /*2022-10 ADD*/
+  opts.title = {main:"Untitled"};
+  opts.title.sub = id == 'trunc' ? "from Truncations Generator" : 
+                                   (id == 'nocross' ? "from No Crossings Generator" : 
+                                                      (id == 'rand' ? "from AE Generator" : ""));
+  opts.batch = id == 'trunc' ? 7 : (id == 'nocross' ? 1 : 10);
+  /*END 2022-10 ADD*/
+
+  opts.wid = UI.getint( id+"_wid", 100, 100000, 3000 );
+  opts.hgt = UI.getint( id+"_hgt", 100, 100000, 2800 );
+  opts.line = { count:{}, wid:{}, len:{} };
+  opts.line.count.min = UI.getint( id+"_minlines", 1, 100000, 1 );
+  opts.line.count.max = UI.getint( id+"_maxlines", opts.line.count.min, 100000, 2000 );
+  if (!UI.getv(  id+"_minlines" ))
+    opts.line.count.min = opts.line.count.max;
+  opts.line.wid.min = UI.getnum( id+"_minlinewid", 0.001, opts.wid, 20 );
+  opts.line.wid.max = UI.getnum( id+"_maxlinewid", 0.001, opts.wid, 20 );
+  opts.line.len.min = UI.getnum( id+"_minlinelen", 1, opts.wid*2, 0 );
+  opts.line.len.max = UI.getnum( id+"_maxlinelen", opts.line.len.min, opts.wid*2, 100000 );
+  if (UI.gete( id+"_inview" ))
+    opts.outview = !UI.ischk( id+"_inview", true );
+  else
+    opts.outview = UI.ischk( id+"_outview", false );
+  opts.palette = {};
+  if (UI.ischk( id+"_mono" ))
+    opts.palette.mono = true;
+  if (UI.ischk( id+"_gray" ))
+    opts.palette.gray = true;
+  if (UI.ischk( id+"_col" ))
+    opts.palette.allcols = true;
+  if (UI.ischk( id+"_coltbl" ))
+    opts.palette.maxcols = UI.getint( id+"_maxcols", 1, 10000, 10 );
+  if (UI.ischk( id+"_cullnear" ))
+    opts.nearness = UI.getnum( id+"_nearness", 0, Geo.Util.min(opts.wid,opts.hgt)/10, 0 );
+  if (UI.gete( id+"_bothends" ))
+    opts.bothends = UI.ischk( id+"_bothends", false );
+  if (!UI.ischk( id+"_margin" ))
+    opts.margin = { x:0.001, y:0.001 };
+  if (UI.gete( id+"_scale" ))
+    opts.scale = UI.getnum( id+"_scale", 0.001, 100000, 1.0 );
+  if (UI.gete( id+"_minlineangle" ))
+    opts.line.angle = { min: UI.getnum( id+"_minlineangle", -180, 180, -180 ),
+                        max: UI.getnum( id+"_maxlineangle", -180, 180, 180 ) };
+  return opts;
+}
+function setup( id ) {
+  var opts = loadopts( id );
+  opts.canvas = setupcanv( "canv", opts.wid, opts.hgt );
+  return opts;
+}
+function colchk( e ) {
+  var id = e.id.split( '_' )[0];
+  UI.chk( id+'_mono', e.id==id+'_mono' );
+  UI.chk( id+'_gray', e.id==id+'_gray' );
+  UI.chk( id+'_col', e.id==id+'_col' );
+  UI.chk( id+'_coltbl', e.id==id+'_coltbl' );
+  UI.en( id+'_maxcols', e.id==id+'_coltbl' );
+}
+function nearchk( e ) {
+  var id = e.id.split( '_' )[0];
+  UI.en( id+'_nearness', UI.ischk(id+'_cullnear') );
+}
+function genpic( id, opts, genfilter ) {
+  function notifycallback( i, count, pic ) {
+    if (count < 0) {
+      var client = {
+        name: 'Random Line Studies',
+        function: id
+      };
+
+      /*2022-10 ADD*/
+      pic.setmetadata( 'title', opts.title );
+      
+      pic.setmetadata( 'client', client );
+      pic.setmetadata( 'time', (new Date()).toString() );
+      pic.setmetadata( 'options', loadopts(id) );
+      UI.putin( id+"_json", pic.tojson() );
+      UI.notify( '', pic.lines().length, pic.lines().length, id, opts.canvas, pic );
+    }
+    else
+      UI.notify( 'generating', i, count, id, opts.canvas, pic );  /*2022-10 EDIT*/
+  }
+  UI.putin( id+'_json', " " );
+  var pic = new RandLinePic( genfilter, notifycallback );
+  if (pic)
+    return pic.gen( opts.canvas.width, opts.canvas.height, opts, opts.canvas );
+}
+function gendrawpic( id, genfilter ) {
+  genstop();
+  var opts = setup( id );
+  genpic( id, opts, genfilter );
+  //setTimeout( function(){genpic(id,opts,genfilter)}, 1 );
+}
+function genstop() {
+  UI.Processes.stopall();
+}
+
+
+/*
+ *  random line generator
+ */
+function RandLinePic( filtercallback, notifycallback ) {
+  this.backgroundcol = [255, 255, 255];
+  this.randpt = function( w, h, edgedist ) {
+    var mx = edgedist.x, my = edgedist.y;
+    return { x:Rand.range(w*mx,w-(w*mx)), y:Rand.range(h*my,h-(h*my)) };
+  }
+  this.randpts = function( w, h, edgedist ) {
+    return [ this.randpt(w,h,edgedist), this.randpt(w,h,edgedist) ];
+  }
+  this.randcol = function( ) {
+    var col;
+    do {
+      col = [ Rand.range(0,255), Rand.range(0,255), Rand.range(0,255) ];
+    }
+    while (col[0]>225 && col[1]>225 && col[2]>225);
+    return 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+  }
+  this.selcol = function( opts, coltbl ) {
+    if (opts.palette.mono)
+      return 'rgb(0,0,0)';
+    if (opts.palette.gray) {
+      var c = Rand.range( 0, 255 );
+      return 'rgb(' + c + ',' + c + ',' + c + ')';
+    }
+    if (opts.palette.maxcols) {
+      var i = Rand.range( 0, coltbl.length-1 );
+      return coltbl[i];
+    }
+    return this.randcol();
+  }
+  this.genptsfield = function( w, h, minlen, maxlen, edgedist ) {
+    pts = this.randpts( w, h, edgedist );
+    var len = Geo.Line.len( pts );
+    if (len >= minlen && len <= maxlen)
+      return pts;
+  }
+  this.genptsdist = function( w, h, minlen, maxlen, minangle, maxangle, edgedist ) {
+    var M = Geo.Line.angletoM( Rand.range(minangle,maxangle) );
+    var len = Rand.range( minlen, maxlen );
+    var pt = this.randpt( w, h, edgedist );
+    return Geo.Line.frommidpt( M, pt, len );
+  }
+  this.islinein = function( pts, wid, w, h, edgedist ) {
+    var wo = w * edgedist.x, ho = h * edgedist.y;
+    return Geo.Pt.allinbox( Geo.Line.segtorect(pts,wid), [{x:wo,y:ho},{x:w-wo,y:h-ho}] );
+  }
+  this.genpts = function( w, h, opts, linewid ) {
+    opts = opts ? opts : {};
+    var edgedist = opts.margin;
+    if (edgedist == undefined) edgedist = {x:0.0,y:0.0};
+    var minlen = UI.clipnum( opts.line.len.min, 1, Geo.Util.max(w,h)*2 );
+    var maxlen = UI.clipnum( opts.line.len.max, minlen, Geo.Util.max(w,h)*2 );
+    var field = Geo.Util.min( w - (2*edgedist.x), h - (2*edgedist.y) );
+    var lendist = (maxlen - minlen) < (field / 5);
+    lendist = lendist || ((maxlen - minlen) > field);
+    var minangle = UI.clipnum( opts.line.angle.min, -180, 180 );
+    var maxangle = UI.clipnum( opts.line.angle.max, -180, 180 );
+    lendist = lendist || (minangle != -180 && maxangle != 180);
+    var pts;
+    for( var i=0; !pts && i<100; i++ ) {
+      if (opts.outview || lendist)
+        pts = this.genptsdist( w, h, minlen, maxlen, minangle, maxangle, edgedist );
+      else
+        pts = this.genptsfield( w, h, minlen, maxlen, edgedist );
+      if (pts && !opts.outview)
+        if (!this.islinein( pts, linewid, w, h, edgedist ))
+          pts = null;
+    }
+    return pts;
+  }
+  this.genline = function( pic, w, h, opts, cols ) {
+    opts = opts ? opts : {};
+    var line;
+    for( var i=0; !line && i<10; i++ ) {
+      line = { wid: Rand.range( opts.line.wid.min, opts.line.wid.max ) };
+      line.col = this.selcol( opts, cols );
+      line.pts = this.genpts( w, h, opts, line.wid );
+      if (line.pts)
+        line = this.filtercallback ? this.filtercallback(pic,line,opts) : line;
+      else
+        line = null;
+    }
+    return line;
+  }
+  this.gencoltbl = function( opts ) {
+    var cols = [];
+    if (opts.palette.maxcols)
+      for( var i=0; i<opts.palette.maxcols; i++ )
+        cols.push( this.randcol() );
+    return cols;
+  }
+  this.gennextlines = function( pic, w, h, opts, cols, count ) {
+    for( var i=0, gen=0, line; i<count; i++ ) {
+      line = this.genline( pic, w, h, opts, cols );
+      if (line)
+        pic.addline( line, true ), gen++;
+    }
+    return gen;
+  }
+  this.genlines = function( pic, w, h, opts ) {
+    var cols = this.gencoltbl( opts );
+    var count = Rand.range( opts.line.count.min?opts.line.count.min:10, 
+                            opts.line.count.max?opts.line.count.max:5000 );
+    this.genpack = null;
+    if (!this.noanim) {
+      this.genpack = { 'pic': pic, 'w': w, 'h': h, 'opts': opts, 'cols': cols };
+      //this.procid = UI.Processes.start( count, this );
+      this.procid = UI.Processes.start( count, this, count<100 ? 150 : (count<300?40:15) );  /*2022-10 EDIT*/
+    }
+    else
+      this.gennextlines( pic, w, h, opts, cols, count );
+    return pic;
+  }
+  this.gen = function( w, h, opts, canv ) {
+    var pic = new UI.Pic( w, h );
+    if (canv)
+      pic.setup( canv );
+    this.workpic = pic;
+    return this.genlines( pic, w, h, opts );
+  }
+  this.onnotify = function( i, maxlines ) {
+    if (this.genpack && this.notifycallback)
+      this.notifycallback( i, maxlines, this.workpic );
+  }
+  this.onstop = function() {
+    if (this.notifycallback && this.workpic)
+      this.notifycallback( -1, -1, this.workpic );
+  }
+  this.onstep = function( i, maxlines ) {
+    var gp = this.genpack;
+    var batch = gp.opts.batch;  //(maxlines>1000) ? 15 : ((maxlines>100) ? 7 : 2);     //40;  /*2022-10 ADD*/
+    for( var j=0, gen; !gen && (j<200) && (i<maxlines); j+=batch, i+=batch )
+      gen = this.gennextlines( gp.pic, gp.w, gp.h, gp.opts, gp.cols, 
+                               (maxlines-i) > batch ? batch : (maxlines-i) );
+    return i;
+  }
+  this.filtercallback = filtercallback;
+  this.notifycallback = notifycallback;
+}
+
+
+/*
+ *  random vals
+ */
+var Rand = {
+  r: function( ) {
+    var r = 0;
+    if (window.crypto && window.crypto.getRandomValues) {
+      var array = new Uint32Array( 2 );
+      window.crypto.getRandomValues( array );
+      array[1] = 0xffffffff;
+      r = array[0] / array[1];
+    }
+    else
+      r = Math.random();
+    return r;
+  },
+  range: function( min, max ) {
+    var r = Rand.r();
+    return min + Math.round( r * (max-min) );
+  }
+}
+
+
+/*
+ *  geometry
+ */
+var Geo = {
+  Util: {
+    epsilon: 0.000001,
+    is0: function( d, epsilon ) {
+      if (epsilon == undefined) epsilon = Geo.Util.epsilon;
+      return (d < epsilon) && (d > -epsilon);
+    },
+    iseq: function( v1, v2, epsilon ) {
+      if (v1 == undefined && v2 == undefined)
+        return true;
+      if (isNaN( v1 ) && isNaN( v2 ))
+        return true;
+      if (v1 == Number.POSITIVE_INFINITY && v2 == Number.POSITIVE_INFINITY)
+        return true;
+      if (v1 == Number.NEGATIVE_INFINITY && v2 == Number.NEGATIVE_INFINITY)
+        return true;
+      return Geo.Util.is0( v1 - v2, epsilon );
+    },
+    min: function( v1, v2 ) {
+      return v1 < v2 ? v1 : v2;
+    },
+    max: function( v1, v2 ) {
+      return v1 > v2 ? v1 : v2;
+    },
+    clip: function( v, vmin, vmax ) {
+      if (v < vmin) v = vmin;
+      if (v > vmax) v = vmax;
+      return vmax;
+    },
+    radtodeg: function( rad ) {
+      return rad / (Math.PI / 180);
+    },
+    degtorad: function( deg ) {
+      return deg * Math.PI / 180;
+    }
+  },
+  Pt: {
+    iseq: function( p1, p2, epsilon ) {
+      return ( Geo.Util.iseq(p1.x,p2.x,epsilon) && Geo.Util.iseq(p1.y,p2.y,epsilon) );
+    },
+    isinbox: function( p, corners, epsilon ) {
+      if (epsilon == undefined) epsilon = Geo.Util.epsilon;
+      return (p.x >= (Geo.Util.min( corners[0].x, corners[1].x ) - epsilon)) && 
+             (p.x <= (Geo.Util.max( corners[0].x, corners[1].x ) + epsilon)) &&
+             (p.y >= (Geo.Util.min( corners[0].y, corners[1].y ) - epsilon)) &&
+             (p.y <= (Geo.Util.max( corners[0].y, corners[1].y ) + epsilon));
+    },
+    allinbox: function( pts, corners, epsilon ) {
+      for( var i=0; i<pts.length; i++ )
+        if (!Geo.Pt.isinbox( pts[i], corners, epsilon ))
+          return false;
+      return true;
+    },
+    offset: function( pt, dx, dy ) {
+      return { x: pt.x+dx, y: pt.y+dy };
+    },
+    offsets: function( pts, dx, dy ) {
+      var pts2 = [];
+      for( var i=0; i<pts.length; i++ )
+        pts2.push( Geo.Pt.offset(pts[i],dx,dy) );
+      return pts2;
+    },
+    has: function( pt, list, epsilon ) {
+      for( var i=0; i<list.length; i++ )
+        if (Geo.Pt.iseq( list[i], pt, epsilon ))
+          return true;
+    },
+    torect: function( p, wid, hgt ) {
+      wid = wid / 2, hgt = hgt / 2;
+      return [ {x:p.x-wid, y:p.y-hgt}, {x:p.x+wid, y:p.y-hgt}, 
+               {x:p.x+wid, y:p.y+hgt}, {x:p.x-wid, y:p.y+hgt} ];
+    }
+  },
+  Line: {
+    dx: function( l ) {
+      return l[1].x - l[0].x;
+    },
+    dy: function( l ) {
+      return l[1].y - l[0].y;
+    },
+    M: function( pts ) {
+      if (Geo.Util.iseq( pts[1].x, pts[0].x )) return;
+      return (pts[1].y - pts[0].y) / (pts[1].x - pts[0].x);
+    },
+    B: function( pts ) {
+      // y = m(x-Px) + Py
+      // yIntercept = -m(Px) + Py
+      var m = Geo.Line.M( pts );
+      return pts[0].y - (m * pts[0].x);
+    },
+    angle: function( pts ) {
+      // angle = arctan(m)
+      return Geo.Util.radtodeg( Math.atan(Geo.Line.M(pts)) );
+    },
+    angletoM: function( ang ) {
+      // m = tan(angle)
+      return Math.tan( Geo.Util.degtorad(ang) );
+    },
+    tmpseg: function( M, pt, d ) {
+      // B = -m(Px) + Py
+      if (!d) d = 1000;
+      if (M == undefined) 
+        return [ {x:pt.x,y:pt.y}, {x:pt.x,y:pt.y+d} ];
+      var B = pt.y - (M * pt.x);
+      return [ {x:pt.x,y:pt.y}, {x:pt.x+d, y:(M*(pt.x+d))+B} ];
+    },
+    pt2: function( pt1, dx, dy ) {
+      return { x: pt1.x + dx, y: pt1.y + dy };
+    },
+    pt3: function( l, dist ) {
+      // P3 = P1 + (newlen/len(L))(P2 - P1)
+      var ratio = dist / Geo.Line.len( l );
+      return { x: l[0].x + (ratio * Geo.Line.dx(l)), 
+               y: l[0].y + (ratio * Geo.Line.dy(l)) };
+    },
+    frommidpt: function( M, pt, dist ) {
+      var l = Geo.Line.tmpseg( M, pt );
+      dist = dist / 2;
+      return [Geo.Line.pt3(l,dist), Geo.Line.pt3(l,-dist)];
+    },
+    midpt: function( l ) {
+      return Geo.Line.pt3( l, Geo.Line.len(l)/2 );
+    },
+    len: function( l ) {
+      return Math.sqrt( Math.pow(Geo.Line.dx(l),2) + Math.pow(Geo.Line.dy(l),2) );
+    },
+    isconnected: function( l1, l2 ) {
+      return Geo.Pt.has( l1[0], l2 ) || Geo.Pt.has( l1[1], l2 );
+    },
+    intersect: function( l1, l2 ) {
+      var M1 = Geo.Line.M( l1 );
+      var M2 = Geo.Line.M( l2 );
+      var B1 = Geo.Line.B( l1 );
+      var B2 = Geo.Line.B( l2 );
+      // y = M(x) + B, x = (y - B) / M
+      // M2(x) + B2 = M1(x) + B1
+      // (M2 - M1)x = B1 - B2
+      // x = (B1 - B2) / (M2 - M1)
+      if (Geo.Util.iseq( M2, M1 ))
+        return null;
+      var pt = {};
+      if (M1 == undefined)
+        pt.x = l1[0].x, pt.y = (M2 * pt.x) + B2;
+      else
+        if (M2 == undefined)
+          pt.x = l2[0].x, pt.y = (M1 * pt.x) + B1;
+        else
+          pt.x = (B1 - B2) / (M2 - M1), pt.y = (M1 * pt.x) + B1;
+      return pt;
+    },
+    intersectseg: function( seg, line, epsilon ) {
+      var pt = Geo.Line.intersect( seg, line );
+      if (pt && Geo.Pt.isinbox( pt, seg, epsilon ))
+        return pt;
+    },
+    intersectsegs: function( l1, l2, epsilon ) {
+      var pt = Geo.Line.intersect( l1, l2 );
+      if (pt && Geo.Pt.isinbox( pt, l1, epsilon ) && Geo.Pt.isinbox( pt, l2, epsilon ))
+        return pt;
+    },
+    anycross: function( l, crosses, epsilon, noconnections ) {
+      for( var i=0, pt; i<crosses.length; i++ )
+        if (noconnections || !Geo.Line.isconnected( l, crosses[i] )) {
+          pt = Geo.Line.intersectsegs( l, crosses[i], epsilon );
+          if (pt) return pt;
+        }
+    },
+    perpendpt: function( l, pt, len ) {
+      // M2 = - (1 / M)
+      var M = Geo.Line.M( l );
+      var M2;
+      if (M == undefined)
+        M2 = 0;
+      else
+        if (Geo.Util.is0( M ))
+          M2 = undefined;
+        else
+          M2 = 0 - (1 / M);
+      return Geo.Line.pt3( Geo.Line.tmpseg(M2,pt), len );
+    },
+    nearest: function( l, crosses ) {
+      var l2 = [ l[0], l[1] ], termpt, minlen, nearest;
+      for( var j=crosses.length-1, len; j>=0; j-- ) {
+        termpt = Geo.Line.intersectseg( crosses[j], l2  );
+        if (termpt) {
+          len = Geo.Line.len( [l2[0], termpt] );
+          if (minlen == undefined || len < minlen)
+            minlen = len, l2[1] = termpt, nearest = j;
+        }
+      }
+      return nearest;
+    },
+    segtorect: function( l, wid ) {
+      wid = wid / 2;
+      return [ Geo.Line.perpendpt( l, l[0], wid ),
+               Geo.Line.perpendpt( l, l[0], -wid ),
+               Geo.Line.perpendpt( l, l[1], -wid ),
+               Geo.Line.perpendpt( l, l[1], wid ) ];
+    }
+  },
+  Poly: {
+    iseq: function( p1, p2, epsilon ) { 
+      if (p1.length != p2.length) 
+        return false;
+      function test( p1, p2 ) {
+        for( var i=0; i<p1.length; i++ )
+          if (!Geo.Pt.iseq( p1[i], p2[i], epsilon ))
+            return false;
+        return true;
+      }
+      return test( p1, p2 ) || test( p1, Geo.Poly.flip(p2) );
+    },
+    area: function( vertices ) { 
+      var area = 0;
+      for( var i=0; i<vertices.length; i++ ) {
+        j = (i + 1) % vertices.length;
+        area += vertices[i].x * vertices[j].y;
+        area -= vertices[j].x * vertices[i].y;
+      }
+      return area / 2;
+    },
+    isclockwise: function( vertices ) {
+      return Geo.Poly.area( vertices ) < 0;
+    },
+    flipdir: function( vertices ) {
+      var v2 = [];
+      for( var i=vertices.length-1; i>=0; i-- )
+        v2.push( vertices[i] );
+      return v2;
+    },
+    isptinside: function( vertices, pt, isedgeinside, epsilon ) {
+      var sides = Geo.Poly.sides( vertices ), hits = 0, tmp = "";
+      var testray = Geo.Line.tmpseg( 0, pt );
+      for( var i=0, pt2; i<sides.length; i++ ) {
+        pt2 = Geo.Line.intersectseg( sides[i], testray );
+        if (pt2) {
+          if (Geo.Pt.iseq( pt, pt2, epsilon )) // pt on edge
+            return isedgeinside;
+          if (pt2.x > pt.x)
+            hits++;
+        }
+      }
+      return hits % 2;
+    },
+    anyptinside: function( vertices, pts, isedgeinside, epsilon ) {
+      for( var i=pts.length-1; i>=0; i-- )
+        if (Geo.Poly.isptinside( vertices, pts[i], isedgeinside, epsilon ))
+          return true;
+      return false;
+    },
+    allptsinside: function( vertices, pts, isedgeinside, epsilon ) {
+      for( var i=pts.length-1; i>=0; i-- )
+        if (!Geo.Poly.isptinside( vertices, pts[i], isedgeinside, epsilon ))
+          return false;
+      return true;
+    },
+    sides: function( vertices ) {
+      var sides = [];
+      for( var i=1; i<vertices.length; i++ )
+        sides.push( [vertices[i-1], vertices[i]] );
+      sides.push( [vertices[vertices.length-1], vertices[0]] );
+      return sides;
+    },
+    hascrossover: function( vertices ) { 
+      var sides = Geo.Poly.sides( vertices );
+      for( var i=0; i<sides.length; i++ )
+        if (Geo.Line.anycross( sides[i], sides ))
+          return true;
+      return false;
+    },
+    overlap: function( p1, p2, epsilon ) { 
+      var sides = Geo.Poly.sides( p1 );
+      var sides2 = Geo.Poly.sides( p2 );
+      for( var i=0; i<sides.length; i++ )
+        if (Geo.Line.anycross( sides[i], sides2, epsilon, true ))
+          return true;
+      return Geo.Poly.anyptinside( p2, p1, true, epsilon ); // all inside
+    },
+    // simple abutment truncation of 4 sided p to convex poly p2, complex cases fail
+    abut: function( p, p2, dir ) { 
+      var crosses = Geo.Poly.sides( p2 );
+      var side1 = dir ? [p[2],p[1]] : [p[1],p[2]];
+      var side2 = dir ? [p[3],p[0]] : [p[0],p[3]];
+      var near1 = Geo.Line.nearest( side1, crosses );
+      var near2 = Geo.Line.nearest( side2, crosses );
+      if (near1 == undefined && near2 == undefined) // no intersections
+        return { err: 'range', msg:'bypassed', poly: p };
+      if (near1 == undefined || near2 == undefined)  // one side bypasses target poly
+        return { err: 'complex', msg:'corner_ding', poly: p };
+      if (near1 != near2)  // each side hits different sides of target poly
+        return { err: 'complex', msg:'corner_collide', poly: p };
+      var trunc1 = Geo.Line.intersectsegs( side1, crosses[near1] );
+      var trunc2 = Geo.Line.intersectsegs( side2, crosses[near1] );
+      if (!trunc1 && !trunc2) { // neither side reaches target line
+        //if (Geo.Line.anycross( side1, crosses ))
+        if (Geo.Poly.anyptinside( p2, p )) {
+          if (Geo.Poly.allptsinside( p2, p ))
+            return { err: 'complex', msg:'all_inside', poly: p };
+          return { err: 'complex', msg:'far_inside', poly: p };
+        }
+        return { err: 'range', msg:'doesnt_reach', poly: p };
+      }
+      // extend one or other side to meet target line
+      if (!trunc1)
+        trunc1 = Geo.Line.intersect( crosses[near1], side1 );
+      if (!trunc2)
+        trunc2 = Geo.Line.intersect( crosses[near1], side2 );
+      p = dir ? [ trunc1, trunc2, p[3], p[2] ] : [ p[0], p[1], trunc1, trunc2 ];
+      if (Geo.Poly.hascrossover( p ))
+        return { err: 'complex', msg: 'sides_crossed', poly: p };
+      if (Geo.Poly.anyptinside( p2, p ))
+        return { err: 'complex', msg: 'inside', poly: p };
+      return { err: null, poly: p };
+    }
+  }
+}
+  </script>
+
+  </head>
+
+  <body onload="UI.onload();setTimeout('drawtruncpic()',100)" onresize="UI.resize('canv')"> <!--2022-12 EDIT (add onresize)-->
+    <div class="back" onclick="toggle('menubar','controlpane')">
+      <canvas id="canv" width="2000" height="2400">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>  <!--2022-10 EDIT-->
+      <img src="" id="canvimg" width=100 height=100 class="dispnone" />
+    </div>
+
+    <div class="menubar hidden" id="menubar">  <!--2022-10 EDIT hidden-->
+      <div class="open" id="controlbtn" onclick="toggle('menubar','controlpane')"></div>
+      <div class="next" id="nextbtn" onclick="drawtruncpic()"></div>
+    </div>
+
+    <div class="titlebar" id="titlebar">  <!--END 2022-10 ADD-->
+      <i><div id="canv_title"></div></i>
+      <div class="descr collapsible" id="canv_subtitle"></div>
+    </div>
+
+    <div class="panewrap"><div id="controlpane" class="controls"><div class="controlset">
+      <div class="corner">
+        <div class="close" id="controlbtn" onclick="toggle('menubar','controlpane')"></div>
+      </div>
+
+      <div class="title">
+        Truncations Generator
+      </div>
+      <div class="descr gapbelow">
+        Lines truncated where crossing previously drawn lines
+      </div>
+
+      <div class="line">  <!--2022-10 EDIT rearrage-->
+        <div class="nextsmall gap unfold" id="trunc_unfoldbtn" 
+                     onclick="UI.unfold('trunc_unfoldbtn','trunc_foldbtn','trunc_foldpane')"></div>
+        <div class="nextsmall gap dispnone fold" id="trunc_foldbtn" 
+                     onclick="UI.fold('trunc_unfoldbtn','trunc_foldbtn','trunc_foldpane')"></div>
+        <div class="nextsmall gap new" id="trunc_nextbtn" onclick="drawtruncpic()">Generate New</div>
+        <div class="nextsmall gap dispnone stop" id="trunc_stopbtn" onclick="genstop()">Stop</div>
+        <br/><div class="stats" id="trunc_stats">&nbsp;</div>
+      </div>
+
+      <div id="trunc_foldpane" class="slider closed">  <!--2022-10 EDIT add slider class-->
+        <div class="gapabove g25">                    <!--2022-10 ADD move gap from above-->
+          <div class="gapmed line">
+            Image width: <input class="inp" id="trunc_wid" value="2400"></input>
+            height: <input class="inp" id="trunc_hgt" value="2100"></input>
+          </div>
+          <div class="gapmed line">
+            Line length min: <input class="inp" id="trunc_minlinelen" value="1500"></input>
+            max: <input class="inp" id="trunc_maxlinelen" value="2500"></input>
+          </div>
+          <div class="gapmed line">
+            Line width min: <input class="inp" id="trunc_minlinewid" value="10"></input>
+            max: <input class="inp" id="trunc_maxlinewid" value="150"></input>
+          </div>
+          <div class="gapmed line">
+            Line angle min: <input class="inp" id="trunc_minlineangle" value="-180"></input>
+            max: <input class="inp" id="trunc_maxlineangle" value="180"></input>
+          </div>
+          <div class="gap line">
+            Max lines: <input class="inp" id="trunc_maxlines" value="70"></input>
+            <input type="checkbox" checked id="trunc_inview"> in field of view</input>
+          </div>
+          <div class="gap line">
+            <input type="checkbox" checked id="trunc_bothends"> cull single end truncations</input>
+          </div>
+          <div class="gap line">
+            Color palette:
+          </div>
+          <div class="line">
+            <input type="radio" id="trunc_mono" onclick="colchk(this);"> monochrome</input>
+          </div>
+          <div class="line">
+            <input type="radio" id="trunc_gray" onclick="colchk(this);"> grayscale</input>
+          </div>
+          <div class="line">
+            <input checked type="radio" id="trunc_col" onclick="colchk(this);"> all</input>
+          </div>
+          <div class="line">
+            <input type="radio" id="trunc_coltbl" onclick="colchk(this);"> limited to:</input>
+            <input class="inp" id="trunc_maxcols" value="10" disabled></input>
+          </div>
+          <div class="gap">
+            JSON output:
+          </div>
+          <div class="br">
+            <textarea class="json" id="trunc_json" readonly></textarea>
+          </div>
+<!--
+          <div class="descr gapmedabove">
+            <a href="redraw.html" class="link">JSON Redraw Utility</a> 
+          </div>
+-->
+        </div>
+      </div>
+
+      <div class="descr gapabove g25">
+        cc-by-nc 2015-2023 Greg Sidal 
+        <br/>Self-contained downloadable (March 2023)
+      </div>
+
+    </div></div></div>
+  </body>
+</html>
+
+

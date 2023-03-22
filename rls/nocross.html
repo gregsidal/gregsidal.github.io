@@ -10,7 +10,7 @@
     <script src="../ui.js"></script>
     <script src="rls.js"></script>
   </head>
-  <body onload="UI.onload();UI.Processes.setdelay('nocross',1);drawnocrosspic();">
+  <body onload="UI.onload();UI.Processes.setdelay('nocross',1);drawnocrosspic()" onresize="UI.resize('canv')"> <!--2022-12 EDIT (add onresize)-->
 
     <div class="back" onclick="toggle('menubar','controlpane')">
       <canvas id="canv" width="2000" height="2400">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>  <!--2022-10 EDIT size-->

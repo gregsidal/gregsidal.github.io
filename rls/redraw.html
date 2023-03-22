@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../ui.css">
     <script src="../ui.js"></script>
   </head>
-  <body onload="UI.onload()">
+  <body onload="UI.onload()" onresize="UI.resize('canv')"> <!--2022-12 EDIT (add onresize)-->
     <div class="back" onclick="UI.toggle('menubar','controlpane')">
       <!--2022-10 EDIT--><canvas id="canv" width="1000" height="1200"></canvas>
       <img src="" id="canvimg" width=100 height=100 class="dispnone" />

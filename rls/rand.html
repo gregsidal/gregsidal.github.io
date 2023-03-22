@@ -10,7 +10,7 @@
     <script src="../ui.js"></script>
     <script src="rls.js"></script>
   </head>
-  <body onload="UI.onload();drawrandpic();">
+  <body onload="UI.onload();drawrandpic()" onresize="UI.resize('canv')"> <!--2022-12 EDIT (add onresize)-->
 
     <div class="back" onclick="toggle('menubar','controlpane')">
       <!--2022-10 EDIT--> <canvas id="canv" width="2000" height="2400">NO VECTOR GRAPHICS SUPPORT IN BROWSER</canvas>
