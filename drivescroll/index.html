@@ -74,7 +74,7 @@
         DS.forcedisallowcanvasdata = false; //true: simulate Tor Browser for testing
         UI.setstyle( 'ds_canvasdata', 'display', DS.forcedisallowcanvasdata?'block':'none' );
         DS.setup( 'ds' );
-        DS.resize( 'ds' );
+        //DS.resize( 'ds' );
         setTimeout( 'DS.onload2()', 100 );
       }
     </script>
@@ -102,9 +102,9 @@
   <body onload="DS.onload()" onresize="DS.resize('ds');" id="ds_back">
 
     <div class="back fix" onclick="DS.toggle()">
-      <canvas class="pinbottom" id="ds_canv" width="400" height="500">  <!--2022-10 EDIT (pin)-->
+      <canvas class="abscenter" id="ds_canv" width="400" height="500">  <!--2023-03 EDIT (abscenter)-->
         <div class="title center">NO CANVAS SUPPORT IN BROWSER <br/>
-                 Browser released after 2015 recommended (testing performed on Firefox and Chrome)</div>
+                 Full-featured web browser such as Firefox or Chrome required</div>
       </canvas>
     </div>
 
@@ -135,7 +135,7 @@
       <div id="ds_foldpane" class="slider closed">  <!--2022-10 EDIT add slider class-->
       <div class="gapabove g25">                    <!--2022-10 ADD move gapabove g25-->
 
-        <div tabindex=1 class="nextsmall" id="ds_openfile" 
+        <div class="nextsmall" id="ds_openfile" 
                  onclick="UI.el('ds_file').click()">Build drive by adding local files</div>
         <input type="file" multiple class="dispnone" accept="*" id="ds_file" 
                  onchange="DS.addfiles('ds',this.files);"/>
@@ -145,27 +145,43 @@
             Contents of drive:
           </div>
           <div class="br">
-            <textarea class="list" readonly id="ds_drive"></textarea>
+            <textarea class="list thin" readonly id="ds_drive"></textarea>
           </div>
         </div>
 
+        <!--2023-03 ADD-->
         <div class="line gap gapabove g25">
-          <input type="checkbox" checked id="ds_autosize" onclick="DS.setsizectrls('ds')"></input>  <!--2022-10 EDIT (setszctrls)--> 
-          <!--2022-10 DEL <div class="inlinetag" id="ds_size1msg">height</div>: 100%,
-                          <div class="inlinetag" id="ds_size2msg">width</div> -->
-          <input class="inp" id="ds_autoperc" value="40"></input>%  <!--2022-10 EDIT (40%)--> 
-          of width/height  <!--2022-10 ADD--> 
+          <div class="line" id="ds_relsize">
+            <input type="checkbox" checked id="ds_autosize" onclick="DS.resetsize('ds',this)"></input>Fit:
+            <input class="inp" id="ds_autoperc" value="40" 
+                    onchange="DS.resetsize('ds',this)" oninput="DS.userespsize('ds',this)"></input>% of
+            <input type="checkbox" checked id="ds_autosizewid" onclick="DS.resetsize('ds',this)"></input>width or
+            <input type="checkbox" id="ds_autosizehgt" onclick="DS.resetsize('ds',this)"></input>height
+          </div>
+          <div class="line gapminabove" id="ds_abssize">
+            Width: <input class="inp" id="ds_wid" value="400" 
+                          onchange="DS.resetsize('ds')" oninput="DS.usecustomsize('ds',this)"></input>
+            height: <input class="inp" id="ds_hgt" value="500" 
+                           onchange="DS.resetsize('ds')" oninput="DS.usecustomsize('ds',this)"></input>
+          </div>
+        </div>
+
+        <!--2023-03 REM
+        <div class="line gapminabove">
+          <input type="checkbox" id="ds_autosizehgt" onclick="DS.resetsize('ds',this)"></input>
+          <input class="inp" id="ds_autoperchgt" value="100"></input>% of height
         </div>
         <div class="line dispnone gapminabove" id="ds_sizebox">
           Width pixels: <input class="inp" id="ds_wid" value="800"></input>
           height: <input class="inp" id="ds_hgt" value="900"></input>
-        </div>
+        </div>-->
 
         <!--2022-10 ADD-->
         <div class="line gapminabove">
           Pixel ratio 
-          (<input type="checkbox" checked id="ds_devicepixelratio" onclick="DS.setsizectrls('ds')"></input>device):
-          <input class="inp float" id="ds_pixelratio" value="1.0" disabled></input>
+          (<input type="checkbox" checked id="ds_devicepixelratio" onclick="DS.resetpixelratio('ds',this)"></input>device):
+          <input class="inp float dulled" id="ds_pixelratio" value="1.0" 
+                 oninput="DS.usecustompixelratio('ds',this)" onchange="DS.resetpixelratio('ds',this)"></input>
         </div>
         <!--END 2022-10 ADD-->
 
@@ -177,22 +193,22 @@
         <!--<div class="nextsmall dispnone" id="ds_savebtn" onclick="DS.save('ds')">Save image</div>
           <a href="" download="drivescroll.png" class="dispnone" id="ds_save"></a>-->
 
-        <div class="gapabove g25"><div class="descr i maxwid">
-          Files open in browser (not uploaded to a server).
-          If image flickers, reduce size or use faster computer.
-          Brave/Firefox/Chrome browsers tested.  Last updated Nov 2022.
+        <div class="gapabove g25"><div class="descr i popupwid">
+          Files open in browser (not uploaded).
+          <br/>If image flickers, reduce size or use faster device.
+          <br/>Last updated March 2023 (version 0.93).
+          <br/>Firefox/Chrome browsers tested.
         </div></div>
 
       </div>  <!--2022-10 ADD-->
       </div>
 
       <div class="gapabove g25">
-        <div class="descr">  <!--2022-10 EDIT (2022)-->
+        <div class="descr">  <!--2022-10 EDIT (2022) 2023-03-->
           2001-2021 <a href="../index.html" class="link">Greg Sidal</a> cc-by-nc (no derivative NFTs)
-          <br/><a href="drivescroll2022v092.html" download="drivescroll2022v092.html" 
-                  class="link" target="_blank">Self-contained downloadable</a>  
+          <br/><a href="drivescroll2023v093.html" download="drivescroll2023v093.html" 
+                  class="link" target="_blank">Self-contained downloadable for offline use</a>  
           <br/><a href="../archive.html#ds">2001 screen-saver</a>  <!--2022-10 EDIT (rem div)-->
-          <!--<br/><div class="i">Last updated November 2022</div>     2022-10 ADD-->
           <div id="ds_canvasdata" class="gap dispnone">
             <div class="nextsmall" onclick="DS.togglecanvasdata()">Toggle allow canvas data</div>
           </div>

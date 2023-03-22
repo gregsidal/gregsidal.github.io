@@ -15,16 +15,36 @@ DS.setup = function( id ) {
   /*if (window.innerWidth < window.innerHeight)
     if (UI.ischk( id+'_autosize', true ))
       UI.putv( id+'_autoperc', 100 );*/
-  DS.setsizectrls( id );
-  DS.anims[id] = new DS.Animator( UI.int(id+'_wid',10,10000,900), 
-                                  UI.int(id+'_hgt',10,10000,800), 
+
+  /*2023-03 ADD*/
+  UI.putv( id+'_autoperc', window.innerWidth<window.innerHeight?100:40 );
+  UI.chk( id+'_autosizewid', window.innerWidth>=window.innerHeight );
+  UI.chk( id+'_autosizehgt', window.innerWidth<window.innerHeight );
+  var sizetoel = window.innerWidth >= window.innerHeight ? UI.el( id+'_autosizewid' ) :
+                                                           UI.el( id+'_autosizehgt' );
+  DS.resetsize( id, sizetoel );
+  var w = UI.num( id+'_wid' );
+  var h = UI.num( id+'_hgt' );
+  var pixelratio = UI.num( id+'_pixelratio' );
+  /*2023-03 END ADD*/
+
+  DS.anims[id] = new DS.Animator( Math.floor(w*pixelratio), Math.floor(h*pixelratio), /*2023-03 EDIT*/
                                   UI.el(id+'_canv'), 
                                   UI.int(id+'_delay',1,100000,25), 
                                   UI.int(id+'_steplines',1,10000,3), notify );
+
   DS.addurls( id, DS.defaulturls );
 }
 DS.forcedisallowcanvasdata = false; //true: simulate Tor Browser for testing
 DS.togglecanvasdata = function() {DS.forcedisallowcanvasdata = !DS.forcedisallowcanvasdata;}
+/*2022-12 ADD*/ DS.canvasdatamsg =  
+'Web browser is blocking use of canvas data. ' +
+'Some privacy-oriented browsers such as Tor do this by default to prevent ' + 
+'identification exploits used by surveillance ("ad") networks.\n\n' + 
+'Browser may have a setting that allows canvas data. ' + 
+'Alternatively, the offline version of this program can be downloaded and run locally ' + 
+"(select 'Self-contained downloadable' to download, then open file " + 
+"from prompt or from downloads folder using device's file manager).";
 DS.testcanvas = function( id ) {
   try {
     var c = document.createElement( 'canvas' );
@@ -38,7 +58,7 @@ DS.testcanvas = function( id ) {
       i.data[0] = 255;
     if (i.data[0] == 10 && i.data[1] == 20 && i.data[2] == 30 && i.data[3] == 255)
       return true;
-    alert( "Canvas data must be enabled for this browser" );
+    alert( DS.canvasdatamsg );
   }
   catch( e ) {
     alert( "Browser lacks full support for canvas" );
@@ -71,55 +91,94 @@ DS.pause = function( id ) {
 DS.ispaused = function( id ) {
   return DS.anims[id].ispaused();
 }
-DS.setsizectrls = function( id, chg ) {
-  var chk = UI.ischk( id+'_autosize', true );
-
-  var pw = DS.prev.w;
-  var ph = DS.prev.h;
-
-  /*2022-10 ADD*/
-  var usedpr = UI.ischk( id+'_devicepixelratio', true );
-  var pixelratio = UI.num( id+'_pixelratio', 0.01, 20.0, 1.0 );
-  if (usedpr)
-    pixelratio = window.devicePixelRatio;
-  if (usedpr)
-    UI.el(id+'_pixelratio').value = pixelratio;
-  UI.el(id+'_pixelratio').disabled = usedpr;
-  /*END 2022-10 ADD*/
-
-  var w = Math.floor( window.innerWidth*pixelratio );   /*2022-10 EDIT add pr*/
-  var h = Math.floor( window.innerHeight*pixelratio );  /*2022-10 EDIT add pr*/
-
-  if (w < h && pw == 0 && ph == 0)  /*2022-10 EDIT*/
-    if (UI.ischk( id+'_autosize', true ))
-      UI.putv( id+'_autoperc', 100 );
-
-  DS.prev.w = w;
-  DS.prev.h = h;
-
-  UI.setstyle( id+'_sizebox', 'display', chk?'none':'block' );
-  UI.el(id+'_autoperc').disabled = !chk;
-  var perc = UI.num( id+'_autoperc', 1, 100, 50 );
-  //var w = parseFloat( UI.style(id+'_back','width') );
-  //var h = parseFloat( UI.style(id+'_back','height') );
-
-  /*2022-10 DEL*/
-  /*UI.el(id+'_size2msg').innerHTML = w>h ? 'width' : 'height';
-  UI.el(id+'_size1msg').innerHTML = w>h ? 'height' : 'width';*/
-
-  if (w > h)
-    w = Math.floor( w*perc/100 );
+DS.resetsizectrls = function( id, e ) { /*2023-03 ADD*/
+  if (e) {
+    if (e.id == id+'_autosizewid' || e.id == id+'_autosizehgt') {
+      UI.chk( id+'_autosizewid', e.id == id+'_autosizewid' );
+      UI.chk( id+'_autosizehgt', e.id == id+'_autosizehgt' );
+      UI.chk( id+'_autosize', true );
+    }
+    else
+      if (e.id == id+'_autoperc')
+        UI.chk( id+'_autosize', true );
+  }
   else
-    h = Math.floor( h*perc/100 );
-  if (chk || chg) {
-    UI.el(id+'_wid').value = w;
-    UI.el(id+'_hgt').value = h;
+    UI.chk( id+'_autosize', false );
+  if (UI.ischk( id+'_autosize' )) {
+    UI.replaceclass( id+'_autosize', 'dulled', 'bright' );
+    UI.replaceclass( id+'_autosizewid', 'dulled', 'bright' );
+    UI.replaceclass( id+'_autosizehgt', 'dulled', 'bright' );
+    UI.replaceclass( id+'_autoperc', 'dulled', 'bright' );
+    UI.replaceclass( id+'_wid', 'bright', 'dulled' );
+    UI.replaceclass( id+'_hgt', 'bright', 'dulled' );
+  }
+  else {
+    UI.replaceclass( id+'_autosize', 'bright', 'dulled' );
+    UI.replaceclass( id+'_autosizewid', 'bright', 'dulled' );
+    UI.replaceclass( id+'_autosizehgt', 'bright', 'dulled' );
+    UI.replaceclass( id+'_autoperc', 'bright', 'dulled' );
+    UI.replaceclass( id+'_wid', 'dulled', 'bright' );
+    UI.replaceclass( id+'_hgt', 'dulled', 'bright' );
   }
 }
-DS.resize = function( id, chg ) {
-  DS.setsizectrls( id, chg );
+DS.userespsize = function( id, e ) { /*2023-03 ADD*/
+  DS.resetsizectrls( id, e );
+}
+DS.usecustomsize = function( id, e ) { /*2023-03 ADD*/
+  DS.resetsizectrls( id );
+}
+DS.resetsize = function( id, e ) { /*2023-03 ADD*/
+  DS.resetsizectrls( id, e );
+  DS.resize( id );
+}
+DS.usecustompixelratio = function( id, e ) { /*2023-03 ADD*/
+  UI.chk( id+'_devicepixelratio', false );
+}
+DS.resetpixelratio = function( id, e ) { /*2023-03 ADD*/
+  if (e && e.id == id+'_pixelratio')
+    DS.usecustompixelratio( id, e );
+  if (UI.ischk( id+'_devicepixelratio' )) {
+    UI.replaceclass( id+'_devicepixelratio', 'dulled', 'bright' );
+    UI.replaceclass( id+'_pixelratio', 'bright', 'dulled' );
+  }
+  else {
+    UI.replaceclass( id+'_devicepixelratio', 'bright', 'dulled' );
+    UI.replaceclass( id+'_pixelratio', 'dulled', 'bright' );
+  }
+  DS.resize( id );
+}
+DS.resize = function( id ) { /*2023-03 ADD*/
+  /* w, h */
+  var w = window.innerWidth;
+  var h = window.innerHeight;
+  var autosz = UI.ischk( id+'_autosize' );
+  if (autosz) {
+    var perc = UI.num( id+'_autoperc', 1, 100, 50 );
+    if (UI.ischk( id+'_autosizewid' ))
+      w = Math.floor( w*perc/100 );
+    else
+      h = Math.floor( h*perc/100 );
+  }
+  else {
+    w = UI.num( id+'_wid', 10, w, w );
+    h = UI.num( id+'_hgt', 10, h, h );
+  }
+  /* resize vp */
+  w = UI.clipnum( w, 10, 10000, 400 );
+  h = UI.clipnum( h, 10, 10000, 500 );
+  UI.setstyle( id+'_canv', 'width', Math.floor(w)+'px' );
+  UI.setstyle( id+'_canv', 'height', Math.floor(h)+'px' );
+  UI.el(id+'_wid').value = w;
+  UI.el(id+'_hgt').value = h;
+  /* pixel ratio */
+  var usedpr = UI.ischk( id+'_devicepixelratio', true );
+  var pixelratio = UI.num( id+'_pixelratio', 0.05, 10.0, 1.0 );
+  if (usedpr)
+    pixelratio = window.devicePixelRatio;
+  UI.el(id+'_pixelratio').value = pixelratio;
+  /* resize canvas */
   if (DS.anims[id])
-    DS.anims[id].resize( UI.int(id+'_wid',10,10000,900), UI.int(id+'_hgt',10,10000,800) );
+    DS.anims[id].resize( Math.floor(w*pixelratio), Math.floor(h*pixelratio) );
 }
 DS.setspeed = function( id ) {
   if (DS.anims[id])
@@ -417,6 +476,10 @@ UI.style = function( id, prop ) {
   var e = UI.el( id );
   if (!e) return;
   return window.getComputedStyle( e ).getPropertyValue( prop );
+}
+UI.remstyle = function( id, s ) {
+  var e = UI.el( id );
+  if (e) e.style.removeProperty( s );
 }
 UI.swapstyle = function( id1, id2, prop, iseq ) {
   var e1 = UI.el( id1 );
