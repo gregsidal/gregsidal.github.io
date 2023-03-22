@@ -34,7 +34,7 @@ sizes="64x64">
 
   </head>
 
-  <body onload="UI.onload();UI.jsonslideshowarray(1,'sample',UI.rls_pics)">
+  <body onload="UI.onload();UI.jsonslideshowarray(1,'sample',UI.rls_pics)" onresize="UI.resize('canv')"> <!--2022-12 EDIT (onresize)-->
 
     <div class="back" onclick="UI.toggle('controlbtn','controlpane')">
       <canvas id="canv" class="">
