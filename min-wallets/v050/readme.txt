@@ -1,1 +1,1 @@
-v0.50 (2021) of Min-wallets
+Archive for Min-wallets v0.50 (2021)
