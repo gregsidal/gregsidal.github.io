@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qrio Qr/Bar Code Generator and Reader</title>
+
+  <link  href="lib/qrio.css" rel="stylesheet" type="text/css">
+
+  <!-- styles specific to page -->
+  <style>
+    body {font-family: sans-serif; font-size: 98%;}
+    .index {margin: 0.2em 0.2em;}
+    @media all and (orientation:landscape) {
+      .index {margin: 1.5em 1.5em;}
+    }
+    button {cursor: pointer;}
+    .clickable {cursor: pointer; margin-top: 2em; color: #35b;}
+    .clickable:hover, .clickable:active {color: #ff6666;}
+    .index > .chk {display: inline-block; margin-top: 1.2em;}
+    .index > .chklabel {font-size: 85%;}
+    .index > textarea {
+      width: 97%; height:10em; margin-top: 1.5em; border: 1px solid #ccc; 
+      font-family: monospace; font-size: 105%;
+    }
+    .index > .tiny {font-size: 75%; margin-top: 2.5em;}
+  </style>
+
+  <!--
+  These are for optional BarcodeDetector polyfill (to support detection in all browsers)
+    (a license may be required, check their website)
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.0.2/dist/dbr.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/barcode-detection@0.4.0/dist/barcode-detector.umd.js"></script>
+  <script src="https://unpkg.com/eruda@2.4.1/eruda.js"></script>
+  <script>eruda.init();</script>
+  -->
+
+  <script type="text/javascript" src="lib/qrcode.js"></script>
+  <script type="text/javascript" src="lib/qrio.js"></script>
+
+  <script>
+    var Demo = {
+      onpageload: function() {
+        QRIO.generator.insertHTML();
+        QRIO.reader.insertHTML();
+      },
+      gen: function() {
+        QRIO.generator.open( document.getElementById('msgin').value );
+      },
+      read: function() {
+        Demo.qrr = Demo.qrr ? Demo.qrr : new QRIO.Reader();
+        function callback( selectedmsgs ) {
+        }
+        Demo.qrr.setmultisel( document.getElementById('multisel').checked );
+        //Demo.qrr._settestpolyfill();  // (crude test on devices w/o BarcodeDetector)
+        Demo.qrr.open( document.getElementById('msgout'), callback );
+      }
+    }
+  </script>
+
+</head>
+
+<body onload="Demo.onpageload();">
+
+  <div class="index">
+    <h3>QR-code Generator and Reader (QrioJS Demo)</h3>
+    <div class="clickable" onclick="Demo.gen()">Generate</div>
+    <textarea id="msgin">A message to encode.</textarea>
+    <div class="clickable" onclick="Demo.read()">Scan</div>
+    <input type="checkbox" id="multisel" class="chk"/><span class="chklabel">enable multiple selection</span>
+    <textarea id="msgout">[Detected message(s) will be put here after scan]</textarea>
+    <div class="tiny">QrioJS project
+      <span class="clickable" onclick="QRIO.generator.open(this)">https://github.com/gregsidal</span>
+      <br/><a href="downloadable/qrio2023v010.html" download="downloadable/qrio2023v010.html" 
+                          class="clickable" target="_blank">Self-contained downloadable</a>
+    </div>
+  </div>
+
+  <div id="qrio-generator-html"></div>
+
+  <div id="qrio-reader-html"></div>
+
+</body>
+</html>
